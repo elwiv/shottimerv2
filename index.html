@@ -211,7 +211,37 @@ body {
   color: #ddd;
 }
 .split-row:first-child .split-time { color: #4ade80; }
-.split-delta { font-size: 13px; color: #444; width: 68px; text-align: right; font-variant-numeric: tabular-nums; }
+.split-delta { font-size: 15px; color: #999; width: 68px; text-align: right; font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+/* ── Summary stats bar ── */
+#stats-bar {
+  padding: 4px 14px 2px;
+  flex-shrink: 0;
+  gap: 10px;
+}
+.stat-chip {
+  flex: 1;
+  background: #181818;
+  border: 1px solid #232323;
+  border-radius: 12px;
+  padding: 8px 14px;
+  text-align: center;
+}
+.stat-chip-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #555;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.stat-chip-value {
+  font-size: clamp(17px, 5.2vw, 22px);
+  font-weight: 300;
+  color: #ddd;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
 
 /* ── Hint ── */
 #tap-hint {
@@ -394,6 +424,8 @@ body {
   <div id="splits-list"></div>
 </div>
 
+<div id="stats-bar" style="display:none"></div>
+
 <div id="tap-hint"></div>
 
 <div id="btn-area">
@@ -456,6 +488,7 @@ const btnReset    = document.getElementById('btn-reset');
 const btnModeTap  = document.getElementById('mode-tap');
 const btnModeMic  = document.getElementById('mode-mic');
 const btnCal      = document.getElementById('btn-cal');
+const elStatsBar  = document.getElementById('stats-bar');
 
 // ── Helpers ─────────────────────────────────────────────────────────────
 // Always set display explicitly — never rely on CSS defaults.
@@ -610,6 +643,7 @@ function enterIdle() {
   elSplits.innerHTML = '';
   hide(elOverlay);
   hide(elMicWrap);
+  hide(elStatsBar);
 
   show(btnStart, 'block');
   hide(btnStop); hide(btnCancel); hide(btnReset);
@@ -630,6 +664,7 @@ function enterWaiting() {
   elSplits.innerHTML = '';
   hide(elOverlay);
   hide(elMicWrap);
+  hide(elStatsBar);
 
   hide(btnStart); hide(btnStop); hide(btnReset);
   show(btnCancel, 'block');
@@ -683,6 +718,21 @@ function enterStopped() {
   elHint.textContent = '';
   hide(elOverlay);
   hide(elMicWrap);
+
+  // Build summary card
+  if (n > 0) {
+    const firstShot = fmt(splits[0].elapsed);
+    let html = `<div class="stat-chip"><div class="stat-chip-label">First shot</div><div class="stat-chip-value">${firstShot}</div></div>`;
+    if (n > 1) {
+      const deltas = splits.slice(1).map(s => s.delta);
+      const avg = deltas.reduce((a, b) => a + b, 0) / deltas.length;
+      html += `<div class="stat-chip"><div class="stat-chip-label">Avg split</div><div class="stat-chip-value">+${fmt(avg)}</div></div>`;
+    }
+    elStatsBar.innerHTML = html;
+    show(elStatsBar, 'flex');
+  } else {
+    hide(elStatsBar);
+  }
 
   hide(btnStart); hide(btnStop); hide(btnCancel);
   show(btnReset, 'block');
