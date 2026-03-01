@@ -684,6 +684,36 @@ body {
   margin-top: 12px;
   padding-bottom: 4px;
 }
+.bd-sh-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bd-sh-btn {
+  width: 44px;
+  height: 34px;
+  border: 1.5px solid #2a2a2a;
+  border-radius: 10px;
+  background: #181818;
+  color: #888;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  transition: background 0.1s, color 0.1s;
+}
+.bd-sh-btn:active { background: #252525; color: #fff; }
+#bd-sh-val {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 300;
+  color: #ddd;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
 </style>
 </head>
 <body>
@@ -795,23 +825,32 @@ body {
   <div class="bd-ctrl" id="bd-barrel-ctrl">
     <div class="bd-label">Barrel Length</div>
     <div class="bd-group" id="bd-barrel-group">
-      <button class="bd-btn"        data-barrel="0">10.5"</button>
-      <button class="bd-btn"        data-barrel="1">14.5"</button>
-      <button class="bd-btn active" data-barrel="2">16"</button>
-      <button class="bd-btn"        data-barrel="3">18"</button>
-      <button class="bd-btn"        data-barrel="4">20"</button>
+      <button class="bd-btn"        data-barrel="0">10.3"</button>
+      <button class="bd-btn"        data-barrel="1">11.5"</button>
+      <button class="bd-btn"        data-barrel="2">14.5"</button>
+      <button class="bd-btn active" data-barrel="3">16"</button>
     </div>
     <div class="bd-subtext" id="bd-barrel-vel">2,960 fps · M855 62gr</div>
   </div>
 
-  <!-- 9mm platform -->
+  <!-- 9mm platform (Carbine / Pistol) -->
   <div class="bd-ctrl" id="bd-plat-ctrl" style="display:none">
     <div class="bd-label">Platform</div>
     <div class="bd-group" id="bd-plat-group">
-      <button class="bd-btn active" data-plat="0">PCC · 16"</button>
-      <button class="bd-btn"        data-plat="1">Pistol · 4"</button>
+      <button class="bd-btn active" data-plat="carbine">Carbine</button>
+      <button class="bd-btn"        data-plat="pistol">Pistol · 4"</button>
     </div>
-    <div class="bd-subtext" id="bd-plat-vel">1,350 fps · 124gr FMJ</div>
+  </div>
+
+  <!-- 9mm carbine barrel (shown only when Carbine selected) -->
+  <div class="bd-ctrl" id="bd-9mm-barrel-ctrl" style="display:none">
+    <div class="bd-label">Barrel Length</div>
+    <div class="bd-group" id="bd-9mm-barrel-group">
+      <button class="bd-btn"        data-barrel="0">6"</button>
+      <button class="bd-btn"        data-barrel="1">8"</button>
+      <button class="bd-btn active" data-barrel="2">16"</button>
+    </div>
+    <div class="bd-subtext" id="bd-9mm-vel">1,350 fps · 124gr FMJ</div>
   </div>
 
   <!-- Zero – 5.56 -->
@@ -829,8 +868,19 @@ body {
   <div class="bd-ctrl" id="bd-zero-9mm-ctrl" style="display:none">
     <div class="bd-label">Zero Distance</div>
     <div class="bd-group" id="bd-zero-9mm-group">
-      <button class="bd-btn active" data-zero="0">25y</button>
-      <button class="bd-btn"        data-zero="1">50y</button>
+      <button class="bd-btn"        data-zero="0">15y</button>
+      <button class="bd-btn active" data-zero="1">25y</button>
+      <button class="bd-btn"        data-zero="2">50y</button>
+    </div>
+  </div>
+
+  <!-- Sight height adjustment -->
+  <div class="bd-ctrl">
+    <div class="bd-label">Sight Height</div>
+    <div class="bd-sh-row">
+      <button class="bd-sh-btn" id="bd-sh-minus">&#x2212;</button>
+      <span id="bd-sh-val">2.79"</span>
+      <button class="bd-sh-btn" id="bd-sh-plus">+</button>
     </div>
   </div>
 
@@ -1409,39 +1459,49 @@ wire(tabDrop,  () => showTab('drop'));
 // Config data
 const BD = {
   '5.56': {
-    bc: 0.307,       // G1 BC, M855 62gr
-    sightH: 2.5,     // sight height above bore, inches (AR iron sights / std optic)
+    bc:        0.307,  // G1 BC, M855 62gr
+    defSightH: 2.79,   // EOTech EXPS3 on DDM4: 1.22" rail-to-bore + 1.57" optic = 2.79"
     barrels: [
-      { label: '10.5"', vel: 2650 },
-      { label: '14.5"', vel: 2900 },
-      { label: '16"',   vel: 2960 },
-      { label: '18"',   vel: 3020 },
-      { label: '20"',   vel: 3100 },
+      { vel: 2530 },   // 10.3" (CQBR)
+      { vel: 2680 },   // 11.5"
+      { vel: 2900 },   // 14.5" (M4)
+      { vel: 2960 },   // 16"
     ],
     zeros:     [25, 36, 50, 100],
-    defBarrel: 2,   // 16"
-    defZero:   2,   // 50y
+    defBarrel: 3,      // 16"
+    defZero:   2,      // 50y
     ranges:    [25, 36, 50, 75, 100, 125, 150, 200, 250, 300],
     ammo:      'M855 62gr',
   },
   '9mm': {
-    bc: 0.145,   // G1 BC, 124gr FMJ
-    platforms: [
-      { label: 'PCC · 16"',    vel: 1350, sightH: 2.5 },
-      { label: 'Pistol · 4"',  vel: 1150, sightH: 0.6 },
-    ],
-    zeros:    [25, 50],
-    defPlat:  0,   // PCC
-    defZero:  0,   // 25y
-    ranges:   [25, 50, 75, 100, 150, 200, 250, 300],
+    bc:   0.145,  // G1 BC, 124gr FMJ
+    carbine: {
+      defSightH: 2.79,  // EOTech EXPS3 on carbine
+      barrels: [
+        { vel: 1220 },  // 6"
+        { vel: 1270 },  // 8"
+        { vel: 1350 },  // 16"
+      ],
+      defBarrel: 2,     // 16"
+    },
+    pistol: {
+      vel:       1150,
+      defSightH: 0.80,  // Osight SE on CZ P-09
+    },
+    zeros:    [15, 25, 50],
+    defZero:  1,   // 25y
+    ranges:   [15, 25, 50, 75, 100, 150, 200, 250, 300],
     ammo:     '124gr FMJ',
   },
 };
 
 // Mutable state
-let bdCal   = '5.56';
-let bdSel   = BD['5.56'].defBarrel;  // barrel index (5.56) or platform index (9mm)
-let bdZeroI = BD['5.56'].defZero;
+let bdCal        = '5.56';
+let bdSel        = BD['5.56'].defBarrel;  // 5.56 barrel index
+let bd9Platform  = 'carbine';             // 9mm: 'carbine' | 'pistol'
+let bd9BarrelIdx = BD['9mm'].carbine.defBarrel;
+let bdZeroI      = BD['5.56'].defZero;
+let bdSightH     = BD['5.56'].defSightH;  // adjustable sight height, inches
 
 // Numerical integration using simplified G1 drag model (sea level, standard atmosphere).
 // Returns { [rangeYd]: dropBelowBoreFeet } — positive = below bore.
@@ -1499,17 +1559,19 @@ function bdGetParams() {
     return {
       vel:    cfg.barrels[bdSel].vel,
       bc:     cfg.bc,
-      sightH: cfg.sightH,
+      sightH: bdSightH,
       zero:   cfg.zeros[bdZeroI],
       ranges: cfg.ranges,
       ammo:   cfg.ammo,
     };
   } else {
-    const p = cfg.platforms[bdSel];
+    const vel = bd9Platform === 'carbine'
+      ? cfg.carbine.barrels[bd9BarrelIdx].vel
+      : cfg.pistol.vel;
     return {
-      vel:    p.vel,
+      vel,
       bc:     cfg.bc,
-      sightH: p.sightH,
+      sightH: bdSightH,
       zero:   cfg.zeros[bdZeroI],
       ranges: cfg.ranges,
       ammo:   cfg.ammo,
@@ -1526,11 +1588,12 @@ function bdRender() {
   if (bdCal === '5.56') {
     document.getElementById('bd-barrel-vel').textContent = velStr;
   } else {
-    document.getElementById('bd-plat-vel').textContent = velStr;
+    document.getElementById('bd-9mm-vel').textContent = velStr;
   }
 
-  // Update sight height info line
-  const sightStr = sightH.toFixed(1) + '" sight height · G1 drag · sea level';
+  // Update sight height display and info line
+  document.getElementById('bd-sh-val').textContent = bdSightH.toFixed(2) + '"';
+  const sightStr = bdSightH.toFixed(2) + '" sight height · G1 drag · sea level';
   document.getElementById('bd-info-line').textContent = sightStr;
 
   // Build table rows
@@ -1585,22 +1648,28 @@ document.getElementById('bd-cal-group').addEventListener('click', e => {
   );
 
   if (bdCal === '5.56') {
-    document.getElementById('bd-barrel-ctrl').style.display = '';
-    document.getElementById('bd-plat-ctrl').style.display   = 'none';
-    document.getElementById('bd-zero-556-ctrl').style.display = '';
-    document.getElementById('bd-zero-9mm-ctrl').style.display = 'none';
+    document.getElementById('bd-barrel-ctrl').style.display      = '';
+    document.getElementById('bd-plat-ctrl').style.display        = 'none';
+    document.getElementById('bd-9mm-barrel-ctrl').style.display  = 'none';
+    document.getElementById('bd-zero-556-ctrl').style.display    = '';
+    document.getElementById('bd-zero-9mm-ctrl').style.display    = 'none';
     bdSel   = BD['5.56'].defBarrel;
     bdZeroI = BD['5.56'].defZero;
-    bdSetActive('bd-barrel-group', bdSel,   'barrel');
+    bdSightH = BD['5.56'].defSightH;
+    bdSetActive('bd-barrel-group', bdSel, 'barrel');
     bdSetActive('bd-zero-556-group', bdZeroI, 'zero');
   } else {
-    document.getElementById('bd-barrel-ctrl').style.display = 'none';
-    document.getElementById('bd-plat-ctrl').style.display   = '';
-    document.getElementById('bd-zero-556-ctrl').style.display = 'none';
-    document.getElementById('bd-zero-9mm-ctrl').style.display = '';
-    bdSel   = BD['9mm'].defPlat;
-    bdZeroI = BD['9mm'].defZero;
-    bdSetActive('bd-plat-group', bdSel,   'plat');
+    document.getElementById('bd-barrel-ctrl').style.display      = 'none';
+    document.getElementById('bd-plat-ctrl').style.display        = '';
+    document.getElementById('bd-zero-556-ctrl').style.display    = 'none';
+    document.getElementById('bd-zero-9mm-ctrl').style.display    = '';
+    bd9Platform  = 'carbine';
+    bd9BarrelIdx = BD['9mm'].carbine.defBarrel;
+    bdZeroI      = BD['9mm'].defZero;
+    bdSightH     = BD['9mm'].carbine.defSightH;
+    document.getElementById('bd-9mm-barrel-ctrl').style.display  = '';
+    bdSetActive('bd-plat-group', 'carbine', 'plat');
+    bdSetActive('bd-9mm-barrel-group', bd9BarrelIdx, 'barrel');
     bdSetActive('bd-zero-9mm-group', bdZeroI, 'zero');
   }
   bdRender();
@@ -1617,12 +1686,32 @@ document.getElementById('bd-barrel-group').addEventListener('click', e => {
   bdRender();
 });
 
-// Platform (9mm)
+// Platform toggle (9mm): Carbine / Pistol
 document.getElementById('bd-plat-group').addEventListener('click', e => {
   const btn = e.target.closest('[data-plat]');
   if (!btn) return;
-  bdSel = parseInt(btn.dataset.plat);
+  bd9Platform = btn.dataset.plat;
   document.querySelectorAll('#bd-plat-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+  if (bd9Platform === 'carbine') {
+    bd9BarrelIdx = BD['9mm'].carbine.defBarrel;
+    bdSightH     = BD['9mm'].carbine.defSightH;
+    document.getElementById('bd-9mm-barrel-ctrl').style.display = '';
+    bdSetActive('bd-9mm-barrel-group', bd9BarrelIdx, 'barrel');
+  } else {
+    bdSightH = BD['9mm'].pistol.defSightH;
+    document.getElementById('bd-9mm-barrel-ctrl').style.display = 'none';
+  }
+  bdRender();
+});
+
+// Carbine barrel length (9mm)
+document.getElementById('bd-9mm-barrel-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-barrel]');
+  if (!btn) return;
+  bd9BarrelIdx = parseInt(btn.dataset.barrel);
+  document.querySelectorAll('#bd-9mm-barrel-group .bd-btn').forEach(b =>
     b.classList.toggle('active', b === btn)
   );
   bdRender();
@@ -1647,6 +1736,16 @@ document.getElementById('bd-zero-9mm-group').addEventListener('click', e => {
   document.querySelectorAll('#bd-zero-9mm-group .bd-btn').forEach(b =>
     b.classList.toggle('active', b === btn)
   );
+  bdRender();
+});
+
+// Sight height ± buttons (0.05" steps, clamped 0.10"–5.00")
+document.getElementById('bd-sh-minus').addEventListener('click', () => {
+  bdSightH = Math.max(0.10, Math.round((bdSightH - 0.05) * 100) / 100);
+  bdRender();
+});
+document.getElementById('bd-sh-plus').addEventListener('click', () => {
+  bdSightH = Math.min(5.00, Math.round((bdSightH + 0.05) * 100) / 100);
   bdRender();
 });
 
