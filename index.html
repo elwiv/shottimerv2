@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Shot Timer">
+<meta name="apple-mobile-web-app-title" content="Shooting Tool">
 <meta name="theme-color" content="#0d0d0d">
-<title>Shot Timer</title>
+<title>Shooting Tool</title>
 <style>
 *, *::before, *::after {
   box-sizing: border-box;
@@ -15,6 +15,7 @@
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   user-select: none;
+  touch-action: manipulation;
 }
 html, body { height: 100%; background: #0d0d0d; }
 body {
@@ -37,6 +38,45 @@ body {
   color: #3a3a3a;
   text-transform: uppercase;
   flex-shrink: 0;
+  position: relative;
+}
+
+/* ── Nav tabs ── */
+#nav-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px 14px 8px;
+  flex-shrink: 0;
+}
+.nav-tab {
+  flex: 1;
+  height: 38px;
+  border: 1.5px solid #2a2a2a;
+  border-radius: 12px;
+  background: #181818;
+  color: #555;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-appearance: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.nav-tab.active {
+  background: #222;
+  color: #fff;
+  border-color: #555;
+}
+.nav-tab:active { opacity: 0.75; }
+
+/* ── Section wrappers ── */
+#section-timer, #section-drop {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
 }
 
 /* ── Mode toggle ── */
@@ -257,9 +297,7 @@ body {
   min-height: 22px;
 }
 
-/* ── Buttons ──
-   No display:none in CSS — JS controls visibility exclusively via inline style.
-──────────────────────────────────────────────────────────── */
+/* ── Buttons ── */
 #btn-area {
   display: flex;
   gap: 10px;
@@ -295,7 +333,6 @@ body {
 }
 
 /* ── History button ── */
-#header { position: relative; }
 #btn-history {
   position: absolute;
   right: 14px;
@@ -463,6 +500,9 @@ body {
   padding: 28px 24px 24px;
   max-width: 380px;
   width: 100%;
+  max-height: 90dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 #modal h1 {
   font-size: 18px;
@@ -527,10 +567,128 @@ body {
   -webkit-appearance: none;
 }
 #modal-dismiss:active { opacity: 0.8; }
+
+/* ── Bullet Drop ── */
+.bd-ctrl {
+  flex-shrink: 0;
+  padding: 5px 14px;
+}
+.bd-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #555;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.bd-group {
+  display: flex;
+  gap: 5px;
+}
+.bd-btn {
+  flex: 1;
+  height: 34px;
+  border: 1.5px solid #2a2a2a;
+  border-radius: 10px;
+  background: #181818;
+  color: #555;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-appearance: none;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.bd-btn.active {
+  background: #222;
+  color: #fff;
+  border-color: #555;
+}
+.bd-btn:active { opacity: 0.75; }
+.bd-subtext {
+  font-size: 10px;
+  color: #333;
+  letter-spacing: 1px;
+  margin-top: 4px;
+  text-align: right;
+}
+.bd-sep {
+  height: 1px;
+  background: #1a1a1a;
+  margin: 6px 14px 0;
+  flex-shrink: 0;
+}
+.bd-table-wrap {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 14px;
+  padding-bottom: max(env(safe-area-inset-bottom), 20px);
+}
+.bd-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 4px;
+}
+.bd-table thead th {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #383838;
+  text-transform: uppercase;
+  padding: 0 16px 2px;
+  text-align: left;
+}
+.bd-table thead th:last-child { text-align: right; }
+.bd-table tbody td {
+  padding: 10px 16px;
+  background: #141414;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+.bd-table tbody tr td:first-child {
+  border-radius: 12px 0 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #444;
+  text-transform: uppercase;
+  width: 54px;
+}
+.bd-table tbody tr td:last-child {
+  border-radius: 0 12px 12px 0;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 300;
+}
+/* Zero row */
+.bd-r-zero td { background: #0e1f12; }
+.bd-r-zero td:first-child { color: #4ade80; }
+.bd-r-zero td:last-child  { color: #4ade80; font-weight: 500; }
+/* Above LoS */
+.bd-r-up td:last-child  { color: #e0e0e0; }
+/* Slightly below */
+.bd-r-lo1 td:last-child { color: #999; }
+/* Moderately below */
+.bd-r-lo2 td:last-child { color: #666; }
+/* Significantly below */
+.bd-r-lo3 td:last-child { color: #c0392b; }
+.bd-info {
+  text-align: center;
+  font-size: 10px;
+  color: #252525;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 12px;
+  padding-bottom: 4px;
+}
 </style>
 </head>
 <body>
 
+<!-- ── History modal ── -->
 <div id="history-backdrop" style="display:none">
   <div id="history-modal">
     <div id="history-modal-header">
@@ -542,70 +700,162 @@ body {
   </div>
 </div>
 
+<!-- ── Help modal ── -->
 <div id="modal-backdrop">
   <div id="modal">
-    <h1>Shot Timer</h1>
-    <div class="modal-sub">Shooting sports practice tool</div>
+    <h1>Shooting Tool</h1>
+    <div class="modal-sub">Two tools for the range</div>
 
-    <div class="section-label">How it works</div>
+    <div class="section-label">Shot Timer</div>
     <ul>
       <li>Tap <strong>Start</strong> — after a random 1–4 s delay a loud beep fires as the start signal.</li>
       <li>Your <strong>reaction time</strong> is the elapsed time from the beep to your first recorded shot.</li>
       <li><strong>Follow-up shot times</strong> appear as split rows below, each showing total time and the gap since the previous shot.</li>
-      <li>Tap <strong>Stop</strong> at any point to freeze the display and review your splits.</li>
+      <li><strong>Tap</strong> mode — tap anywhere on screen after each shot. <strong>Mic</strong> mode — the microphone listens for gunshots automatically.</li>
     </ul>
 
-    <div class="section-label">Modes</div>
+    <div class="section-label">Bullet Drop</div>
     <ul>
-      <li><strong>Tap</strong> — tap anywhere on screen after each shot to log the time manually.</li>
-      <li><strong>Mic</strong> — the microphone listens for gunshots and records splits automatically. Use the sensitivity slider to tune the detection threshold.</li>
+      <li>Select <strong>5.56</strong> or <strong>9mm</strong>, your barrel length or platform, and your zero distance.</li>
+      <li>The table shows bullet impact relative to point of aim at each range out to <strong>300 yards</strong>.</li>
+      <li>Green = your zero. White = above LoS. Gray / red = below LoS.</li>
     </ul>
 
     <button id="modal-dismiss">Got it</button>
   </div>
 </div>
 
-<div id="header"><span>Shot Timer</span><button id="btn-history">History</button></div>
-
-<div id="mode-row">
-  <button class="mode-btn"        id="mode-tap">&#9654; Tap</button>
-  <button class="mode-btn active" id="mode-mic">&#127908; Mic</button>
+<!-- ── Header ── -->
+<div id="header">
+  <span>Shooting Tool</span>
+  <button id="btn-history">History</button>
 </div>
 
-<div id="sens-row" style="display:flex">
-  <label>Sensitivity</label>
-  <input type="range" id="sens-slider" min="1" max="100" value="55">
-  <span id="sens-val">55</span>
-  <button id="btn-cal">Cal</button>
+<!-- ── Tool nav tabs ── -->
+<div id="nav-tabs">
+  <button class="nav-tab active" id="tab-timer">Shot Timer</button>
+  <button class="nav-tab"        id="tab-drop">Bullet Drop</button>
 </div>
 
-<div id="display-area">
-  <div id="time-display">0.00</div>
-  <div id="status-line">Ready</div>
-  <div id="mic-bar-wrap" style="display:none"><div id="mic-bar"></div></div>
-</div>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- Shot Timer section                                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="section-timer">
 
-<div id="splits-wrap">
-  <div id="splits-list"></div>
-</div>
+  <div id="mode-row">
+    <button class="mode-btn"        id="mode-tap">&#9654; Tap</button>
+    <button class="mode-btn active" id="mode-mic">&#127908; Mic</button>
+  </div>
 
-<div id="stats-bar" style="display:none"></div>
+  <div id="sens-row" style="display:flex">
+    <label>Sensitivity</label>
+    <input type="range" id="sens-slider" min="1" max="100" value="55">
+    <span id="sens-val">55</span>
+    <button id="btn-cal">Cal</button>
+  </div>
 
-<div id="tap-hint"></div>
+  <div id="display-area">
+    <div id="time-display">0.00</div>
+    <div id="status-line">Ready</div>
+    <div id="mic-bar-wrap" style="display:none"><div id="mic-bar"></div></div>
+  </div>
 
-<div id="btn-area">
-  <button class="btn" id="btn-start">Start</button>
-  <button class="btn" id="btn-stop"  style="display:none">Stop</button>
-  <button class="btn" id="btn-cancel" style="display:none">Cancel</button>
-  <button class="btn" id="btn-reset" style="display:none">Reset</button>
-</div>
+  <div id="splits-wrap">
+    <div id="splits-list"></div>
+  </div>
 
+  <div id="stats-bar" style="display:none"></div>
+
+  <div id="tap-hint"></div>
+
+  <div id="btn-area">
+    <button class="btn" id="btn-start">Start</button>
+    <button class="btn" id="btn-stop"   style="display:none">Stop</button>
+    <button class="btn" id="btn-cancel" style="display:none">Cancel</button>
+    <button class="btn" id="btn-reset"  style="display:none">Reset</button>
+  </div>
+
+</div><!-- /section-timer -->
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- Bullet Drop section                                     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="section-drop" style="display:none">
+
+  <!-- Caliber -->
+  <div class="bd-ctrl">
+    <div class="bd-label">Caliber</div>
+    <div class="bd-group" id="bd-cal-group">
+      <button class="bd-btn active" data-cal="5.56">5.56 NATO</button>
+      <button class="bd-btn"        data-cal="9mm">9mm Luger</button>
+    </div>
+  </div>
+
+  <!-- 5.56 barrel length -->
+  <div class="bd-ctrl" id="bd-barrel-ctrl">
+    <div class="bd-label">Barrel Length</div>
+    <div class="bd-group" id="bd-barrel-group">
+      <button class="bd-btn"        data-barrel="0">10.5"</button>
+      <button class="bd-btn"        data-barrel="1">14.5"</button>
+      <button class="bd-btn active" data-barrel="2">16"</button>
+      <button class="bd-btn"        data-barrel="3">18"</button>
+      <button class="bd-btn"        data-barrel="4">20"</button>
+    </div>
+    <div class="bd-subtext" id="bd-barrel-vel">2,960 fps · M855 62gr</div>
+  </div>
+
+  <!-- 9mm platform -->
+  <div class="bd-ctrl" id="bd-plat-ctrl" style="display:none">
+    <div class="bd-label">Platform</div>
+    <div class="bd-group" id="bd-plat-group">
+      <button class="bd-btn active" data-plat="0">PCC · 16"</button>
+      <button class="bd-btn"        data-plat="1">Pistol · 4"</button>
+    </div>
+    <div class="bd-subtext" id="bd-plat-vel">1,350 fps · 124gr FMJ</div>
+  </div>
+
+  <!-- Zero – 5.56 -->
+  <div class="bd-ctrl" id="bd-zero-556-ctrl">
+    <div class="bd-label">Zero Distance</div>
+    <div class="bd-group" id="bd-zero-556-group">
+      <button class="bd-btn"        data-zero="0">25y</button>
+      <button class="bd-btn"        data-zero="1">36y</button>
+      <button class="bd-btn active" data-zero="2">50y</button>
+      <button class="bd-btn"        data-zero="3">100y</button>
+    </div>
+  </div>
+
+  <!-- Zero – 9mm -->
+  <div class="bd-ctrl" id="bd-zero-9mm-ctrl" style="display:none">
+    <div class="bd-label">Zero Distance</div>
+    <div class="bd-group" id="bd-zero-9mm-group">
+      <button class="bd-btn active" data-zero="0">25y</button>
+      <button class="bd-btn"        data-zero="1">50y</button>
+    </div>
+  </div>
+
+  <div class="bd-sep"></div>
+
+  <!-- Results table -->
+  <div class="bd-table-wrap">
+    <table class="bd-table">
+      <thead>
+        <tr><th>Range</th><th>Drop from zero</th></tr>
+      </thead>
+      <tbody id="bd-tbody"></tbody>
+    </table>
+    <p class="bd-info" id="bd-info-line">2.5" sight height · G1 drag · sea level</p>
+  </div>
+
+</div><!-- /section-drop -->
+
+<!-- Tap overlay: fixed, outside sections -->
 <div id="tap-overlay" style="display:none"></div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────────
+// ── Shot Timer State ────────────────────────────────────────────────────
 let appState  = 'idle';  // idle | waiting | running | stopped
-let micMode   = true;   // mic is the default mode
+let micMode   = true;
 let startTime = 0;
 let splits    = [];
 let rafId     = null;
@@ -622,7 +872,7 @@ let calRafId    = null;
 let calTimeout  = null;
 let calCountId  = null;
 let calSecsLeft = 0;
-const CAL_DURATION = 5; // seconds
+const CAL_DURATION = 5;
 
 // Audio
 let audioCtx    = null;
@@ -635,7 +885,7 @@ let micPollId   = null;
 let lastDetect  = 0;
 const LOCKOUT_MS = 100;
 
-// ── Elements ───────────────────────────────────────────────────────────
+// ── Elements ────────────────────────────────────────────────────────────
 const elTime      = document.getElementById('time-display');
 const elStatus    = document.getElementById('status-line');
 const elSplits    = document.getElementById('splits-list');
@@ -656,21 +906,17 @@ const btnCal      = document.getElementById('btn-cal');
 const elStatsBar  = document.getElementById('stats-bar');
 
 // ── Helpers ─────────────────────────────────────────────────────────────
-// Always set display explicitly — never rely on CSS defaults.
 function show(el, displayVal) { el.style.display = displayVal || 'block'; }
 function hide(el)              { el.style.display = 'none'; }
 function fmt(ms)               { return (ms / 1000).toFixed(2); }
 
-// ── Audio context ───────────────────────────────────────────────────────
+// ── Audio ────────────────────────────────────────────────────────────────
 function ensureAudio() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
 
-// Must be called synchronously inside a user-gesture handler.
-// Plays a silent 1-sample buffer — the standard iOS Safari trick to fully
-// unlock the audio pipeline so that later (non-gesture) calls work.
 function unlockAudio() {
   const ctx = ensureAudio();
   try {
@@ -709,14 +955,11 @@ function playBeep() {
   });
 }
 
-// ── Microphone ──────────────────────────────────────────────────────────
+// ── Microphone ───────────────────────────────────────────────────────────
 function sensitivityToThreshold(s) {
-  // sensitivity 1-100 → amplitude threshold 120-3 (lower = easier to trigger)
   return Math.round(120 - (s / 100) * 117);
 }
 
-// micStream must already be obtained in the user-gesture handler (START tap).
-// This function just wires up the analyser and starts polling.
 function startMic() {
   if (!micStream) { elStatus.textContent = 'No mic stream'; return; }
   const ctx = ensureAudio();
@@ -736,7 +979,6 @@ function pollMic() {
     const amp = Math.abs(micBuf[i] - 128);
     if (amp > peak) peak = amp;
   }
-  // Update level bar
   const pct = Math.min(100, (peak / 128) * 100);
   elMicBar.style.width = pct + '%';
   elMicBar.style.background = pct > 60 ? '#ef4444' : pct > 30 ? '#f59e0b' : '#4ade80';
@@ -760,14 +1002,14 @@ function stopMic() {
   elMicBar.style.width = '0%';
 }
 
-// ── Timer display loop ──────────────────────────────────────────────────
+// ── Timer loop ───────────────────────────────────────────────────────────
 function tick() {
   if (appState !== 'running') return;
   elTime.textContent = fmt(performance.now() - startTime);
   rafId = requestAnimationFrame(tick);
 }
 
-// ── Splits ──────────────────────────────────────────────────────────────
+// ── Splits ───────────────────────────────────────────────────────────────
 function recordSplit() {
   if (appState !== 'running') return;
   const elapsed = performance.now() - startTime;
@@ -782,7 +1024,7 @@ function recordSplit() {
 function renderSplits() {
   elSplits.innerHTML = '';
   splits.forEach((s, i) => {
-    const row = document.createElement('div');
+    const row   = document.createElement('div');
     row.className = 'split-row';
     const lbl   = document.createElement('div'); lbl.className = 'split-label'; lbl.textContent = `S${i + 1}`;
     const time  = document.createElement('div'); time.className = 'split-time'; time.textContent = fmt(s.elapsed);
@@ -884,10 +1126,8 @@ function enterStopped() {
   hide(elOverlay);
   hide(elMicWrap);
 
-  // Save to history
   if (n > 0) saveSession(splits);
 
-  // Build summary card
   if (n > 0) {
     const firstShot = fmt(splits[0].elapsed);
     let html = `<div class="stat-chip"><div class="stat-chip-label">First shot</div><div class="stat-chip-value">${firstShot}</div></div>`;
@@ -909,7 +1149,7 @@ function enterStopped() {
   btnModeMic.disabled = false;
 }
 
-// ── Calibration ──────────────────────────────────────────────────────────
+// ── Calibration ───────────────────────────────────────────────────────────
 function pollCal() {
   if (!calActive) return;
   calAnalyser.getByteTimeDomainData(calBuf);
@@ -934,7 +1174,6 @@ function finishCalibration() {
   if (calStream)  { calStream.getTracks().forEach(t => t.stop()); calStream = null; }
   calAnalyser = null; calBuf = null;
 
-  // If a session started while calibration was running, leave all UI alone.
   if (appState !== 'idle') return;
 
   elMicBar.style.width = '0%';
@@ -946,7 +1185,6 @@ function finishCalibration() {
   btnModeMic.disabled = false;
 
   if (calPeak > 5) {
-    // threshold = 80% of peak; invert sensitivityToThreshold formula
     const thr = Math.max(3, Math.round(calPeak * 0.80));
     let s = Math.round((120 - thr) / 117 * 100);
     s = Math.max(1, Math.min(100, s));
@@ -959,29 +1197,20 @@ function finishCalibration() {
   elHint.textContent = '';
 }
 
-// ── Button wiring ────────────────────────────────────────────────────────
-// Use touchend on iOS — it's a confirmed user-gesture for AudioContext
-// unlock AND getUserMedia. preventDefault stops the synthetic click.
+// ── Button wiring ─────────────────────────────────────────────────────────
 function wire(el, fn) {
   el.addEventListener('touchend', e => { e.preventDefault(); fn(); }, { passive: false });
-  el.addEventListener('click', fn); // desktop/mouse fallback only
+  el.addEventListener('click', fn);
 }
 
-// START: async so we can await mic permission, but BOTH critical calls
-// (unlockAudio and getUserMedia) happen synchronously before the first await,
-// preserving the user-gesture activation that iOS Safari requires.
 wire(btnStart, async () => {
   if (appState !== 'idle') return;
-
-  // 1. Unlock AudioContext while still inside the user-gesture handler.
   unlockAudio();
 
   if (micMode) {
     elStatus.textContent = 'Allow mic access…';
     btnStart.disabled = true;
     try {
-      // getUserMedia() call is synchronous here (before any await),
-      // so iOS grants permission. The await just waits for the dialog.
       micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     } catch(e) {
       elStatus.textContent = 'Mic access denied';
@@ -1024,13 +1253,13 @@ wire(btnCal, async () => {
   const ctx   = ensureAudio();
   calSource   = ctx.createMediaStreamSource(calStream);
   calAnalyser = ctx.createAnalyser();
-  calAnalyser.fftSize = 2048; // 46 ms window at 44 kHz — no gaps between 60 fps polls
+  calAnalyser.fftSize = 2048;
   calBuf = new Uint8Array(calAnalyser.fftSize);
   calSource.connect(calAnalyser);
 
   btnCal.disabled   = true;
   btnCal.classList.add('listening');
-  btnStart.disabled   = true;  // prevent starting a session mid-calibration
+  btnStart.disabled   = true;
   btnModeTap.disabled = true;
   btnModeMic.disabled = true;
 
@@ -1046,7 +1275,6 @@ wire(btnCal, async () => {
   pollCal();
 });
 
-// Mode toggle
 wire(btnModeTap, () => {
   if (appState !== 'idle') return;
   micMode = false;
@@ -1063,12 +1291,11 @@ wire(btnModeMic, () => {
   show(elSensRow, 'flex');
 });
 
-// Sensitivity slider
 elSensSlide.addEventListener('input', () => {
   elSensVal.textContent = elSensSlide.value;
 });
 
-// ── Tap overlay for shot recording ────────────────────────────────────────
+// ── Tap overlay ───────────────────────────────────────────────────────────
 function aboveBtnArea(y) {
   return y < document.getElementById('btn-area').getBoundingClientRect().top;
 }
@@ -1080,20 +1307,18 @@ elOverlay.addEventListener('click', e => {
   if (aboveBtnArea(e.clientY)) recordSplit();
 });
 
-// ── Help modal dismiss ────────────────────────────────────────────────────
+// ── Help modal ────────────────────────────────────────────────────────────
 const modalBackdrop = document.getElementById('modal-backdrop');
 const modalDismiss  = document.getElementById('modal-dismiss');
 function closeModal() { hide(modalBackdrop); }
 modalDismiss.addEventListener('touchend', e => { e.preventDefault(); closeModal(); }, { passive: false });
 modalDismiss.addEventListener('click', closeModal);
 
-// Re-resume AudioContext when page comes back into view (e.g. after screen
-// lock or app-switch). iOS suspends the context on backgrounding.
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && audioCtx) audioCtx.resume();
 });
 
-// ── Session History ───────────────────────────────────────────────────────
+// ── Session History ────────────────────────────────────────────────────────
 const HISTORY_KEY = 'shottimerHistory';
 
 function saveSession(sessionSplits) {
@@ -1138,7 +1363,6 @@ function renderHistory() {
   });
 }
 
-// History button / modal wiring
 const historyBackdrop = document.getElementById('history-backdrop');
 const btnHistory      = document.getElementById('btn-history');
 const btnHistoryClose = document.getElementById('btn-history-close');
@@ -1148,61 +1372,342 @@ wire(btnHistory, () => {
   renderHistory();
   show(historyBackdrop, 'flex');
 });
-
 wire(btnHistoryClose, () => { hide(historyBackdrop); });
-
 wire(btnClearHistory, () => {
   localStorage.removeItem(HISTORY_KEY);
   renderHistory();
 });
 
-// ── PWA home-screen icon (generated via canvas, no external files) ─────────
+// ── Tab navigation ────────────────────────────────────────────────────────
+const tabTimer  = document.getElementById('tab-timer');
+const tabDrop   = document.getElementById('tab-drop');
+const secTimer  = document.getElementById('section-timer');
+const secDrop   = document.getElementById('section-drop');
+
+function showTab(tab) {
+  if (tab === 'timer') {
+    secTimer.style.display = 'flex';
+    secDrop.style.display  = 'none';
+    tabTimer.classList.add('active');
+    tabDrop.classList.remove('active');
+    btnHistory.style.display = '';
+  } else {
+    secTimer.style.display = 'none';
+    secDrop.style.display  = 'flex';
+    tabDrop.classList.add('active');
+    tabTimer.classList.remove('active');
+    btnHistory.style.display = 'none';
+    bdRender();
+  }
+}
+
+wire(tabTimer, () => showTab('timer'));
+wire(tabDrop,  () => showTab('drop'));
+
+// ── Bullet Drop Calculator ────────────────────────────────────────────────
+
+// Config data
+const BD = {
+  '5.56': {
+    bc: 0.307,       // G1 BC, M855 62gr
+    sightH: 2.5,     // sight height above bore, inches (AR iron sights / std optic)
+    barrels: [
+      { label: '10.5"', vel: 2650 },
+      { label: '14.5"', vel: 2900 },
+      { label: '16"',   vel: 2960 },
+      { label: '18"',   vel: 3020 },
+      { label: '20"',   vel: 3100 },
+    ],
+    zeros:     [25, 36, 50, 100],
+    defBarrel: 2,   // 16"
+    defZero:   2,   // 50y
+    ranges:    [25, 36, 50, 75, 100, 125, 150, 200, 250, 300],
+    ammo:      'M855 62gr',
+  },
+  '9mm': {
+    bc: 0.145,   // G1 BC, 124gr FMJ
+    platforms: [
+      { label: 'PCC · 16"',    vel: 1350, sightH: 2.5 },
+      { label: 'Pistol · 4"',  vel: 1150, sightH: 0.6 },
+    ],
+    zeros:    [25, 50],
+    defPlat:  0,   // PCC
+    defZero:  0,   // 25y
+    ranges:   [25, 50, 75, 100, 150, 200, 250, 300],
+    ammo:     '124gr FMJ',
+  },
+};
+
+// Mutable state
+let bdCal   = '5.56';
+let bdSel   = BD['5.56'].defBarrel;  // barrel index (5.56) or platform index (9mm)
+let bdZeroI = BD['5.56'].defZero;
+
+// Numerical integration using simplified G1 drag model (sea level, standard atmosphere).
+// Returns { [rangeYd]: dropBelowBoreFeet } — positive = below bore.
+function bdBoreDrop(v0Fps, bcG1, rangesYd) {
+  const K  = 166550;  // G1 drag constant, fps² (empirical, sea level)
+  const g  = 32.174;  // gravity, ft/s²
+  const dt = 0.001;   // 1 ms time step
+  let vx = v0Fps, vy = 0, x = 0, y = 0;
+
+  const sorted = [...rangesYd].sort((a, b) => a - b);
+  const out = {};
+  let ri = 0;
+
+  while (ri < sorted.length) {
+    const tgtFt = sorted[ri] * 3;  // yards → feet
+    while (x < tgtFt) {
+      const v = Math.sqrt(vx * vx + vy * vy);
+      if (v < 10) break;
+      const drag = v * v / (bcG1 * K);
+      // drag opposes velocity direction; gravity acts downward
+      vx += -drag * (vx / v) * dt;
+      vy += (-g - drag * (vy / v)) * dt;
+      x  += vx * dt;
+      y  += vy * dt;
+    }
+    out[sorted[ri]] = -y;  // feet below bore (positive = below)
+    ri++;
+  }
+  return out;
+}
+
+// Returns height above/below line of sight in inches for each display range.
+// Positive = above LoS (bullet still climbing relative to aim), Negative = below.
+// Accounts for sight height (LoS starts above bore at muzzle).
+function bdHeightFromZero(v0Fps, bcG1, sightHIn, zeroYd, displayRanges) {
+  const allYd  = [...new Set([zeroYd, ...displayRanges])];
+  const boreFt = bdBoreDrop(v0Fps, bcG1, allYd);
+
+  // Drop below bore at the zero distance, in inches
+  const zdropIn = (boreFt[zeroYd] || 0) * 12;
+
+  const results = {};
+  displayRanges.forEach(r => {
+    const dropIn = (boreFt[r] || 0) * 12;  // bullet drop below bore at range r, inches
+    // LoS: straight line from (0, +sightH) above bore to (zeroYd, -zdropIn) above bore
+    // At range r: height_above_LoS = -dropIn - sightH + (sightH + zdropIn) * (r / zeroYd)
+    results[r] = -dropIn - sightHIn + (sightHIn + zdropIn) * (r / zeroYd);
+  });
+  return results;
+}
+
+function bdGetParams() {
+  const cfg = BD[bdCal];
+  if (bdCal === '5.56') {
+    return {
+      vel:    cfg.barrels[bdSel].vel,
+      bc:     cfg.bc,
+      sightH: cfg.sightH,
+      zero:   cfg.zeros[bdZeroI],
+      ranges: cfg.ranges,
+      ammo:   cfg.ammo,
+    };
+  } else {
+    const p = cfg.platforms[bdSel];
+    return {
+      vel:    p.vel,
+      bc:     cfg.bc,
+      sightH: p.sightH,
+      zero:   cfg.zeros[bdZeroI],
+      ranges: cfg.ranges,
+      ammo:   cfg.ammo,
+    };
+  }
+}
+
+function bdRender() {
+  const { vel, bc, sightH, zero, ranges, ammo } = bdGetParams();
+  const heights = bdHeightFromZero(vel, bc, sightH, zero, ranges);
+
+  // Update velocity/ammo subtext
+  const velStr = vel.toLocaleString() + ' fps · ' + ammo;
+  if (bdCal === '5.56') {
+    document.getElementById('bd-barrel-vel').textContent = velStr;
+  } else {
+    document.getElementById('bd-plat-vel').textContent = velStr;
+  }
+
+  // Update sight height info line
+  const sightStr = sightH.toFixed(1) + '" sight height · G1 drag · sea level';
+  document.getElementById('bd-info-line').textContent = sightStr;
+
+  // Build table rows
+  const tbody = document.getElementById('bd-tbody');
+  tbody.innerHTML = '';
+
+  ranges.forEach(r => {
+    const h      = heights[r];
+    const isZero = r === zero;
+    const absH   = Math.abs(h);
+
+    let valStr;
+    if (isZero || absH < 0.05) {
+      valStr = '0.0"';
+    } else {
+      // Use proper minus sign (−) for negative values
+      const sign = h > 0 ? '+' : '\u2212';
+      valStr = sign + absH.toFixed(1) + '"';
+    }
+
+    let rowCls;
+    if (isZero)       rowCls = 'bd-r-zero';
+    else if (h > 0)   rowCls = 'bd-r-up';
+    else if (h > -5)  rowCls = 'bd-r-lo1';
+    else if (h > -12) rowCls = 'bd-r-lo2';
+    else              rowCls = 'bd-r-lo3';
+
+    const tr = document.createElement('tr');
+    tr.className = rowCls;
+    tr.innerHTML = `<td>${r}y</td><td>${valStr}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── Bullet Drop control wiring ─────────────────────────────────────────────
+
+// Helper: update active button in a group
+function bdSetActive(groupId, value, attr) {
+  document.querySelectorAll(`#${groupId} .bd-btn`).forEach(b => {
+    b.classList.toggle('active', b.dataset[attr] === String(value));
+  });
+}
+
+// Caliber toggle
+document.getElementById('bd-cal-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-cal]');
+  if (!btn) return;
+  bdCal = btn.dataset.cal;
+
+  document.querySelectorAll('#bd-cal-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+
+  if (bdCal === '5.56') {
+    document.getElementById('bd-barrel-ctrl').style.display = '';
+    document.getElementById('bd-plat-ctrl').style.display   = 'none';
+    document.getElementById('bd-zero-556-ctrl').style.display = '';
+    document.getElementById('bd-zero-9mm-ctrl').style.display = 'none';
+    bdSel   = BD['5.56'].defBarrel;
+    bdZeroI = BD['5.56'].defZero;
+    bdSetActive('bd-barrel-group', bdSel,   'barrel');
+    bdSetActive('bd-zero-556-group', bdZeroI, 'zero');
+  } else {
+    document.getElementById('bd-barrel-ctrl').style.display = 'none';
+    document.getElementById('bd-plat-ctrl').style.display   = '';
+    document.getElementById('bd-zero-556-ctrl').style.display = 'none';
+    document.getElementById('bd-zero-9mm-ctrl').style.display = '';
+    bdSel   = BD['9mm'].defPlat;
+    bdZeroI = BD['9mm'].defZero;
+    bdSetActive('bd-plat-group', bdSel,   'plat');
+    bdSetActive('bd-zero-9mm-group', bdZeroI, 'zero');
+  }
+  bdRender();
+});
+
+// Barrel length (5.56)
+document.getElementById('bd-barrel-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-barrel]');
+  if (!btn) return;
+  bdSel = parseInt(btn.dataset.barrel);
+  document.querySelectorAll('#bd-barrel-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+  bdRender();
+});
+
+// Platform (9mm)
+document.getElementById('bd-plat-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-plat]');
+  if (!btn) return;
+  bdSel = parseInt(btn.dataset.plat);
+  document.querySelectorAll('#bd-plat-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+  bdRender();
+});
+
+// Zero – 5.56
+document.getElementById('bd-zero-556-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-zero]');
+  if (!btn) return;
+  bdZeroI = parseInt(btn.dataset.zero);
+  document.querySelectorAll('#bd-zero-556-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+  bdRender();
+});
+
+// Zero – 9mm
+document.getElementById('bd-zero-9mm-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-zero]');
+  if (!btn) return;
+  bdZeroI = parseInt(btn.dataset.zero);
+  document.querySelectorAll('#bd-zero-9mm-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+  bdRender();
+});
+
+// ── PWA icon (canvas-generated) ────────────────────────────────────────────
 (function () {
   const S = 180, cx = 90, cy = 90;
   const cv = document.createElement('canvas');
   cv.width = S; cv.height = S;
   const c = cv.getContext('2d');
 
-  // Dark background
+  // Background
   c.fillStyle = '#0d0d0d';
   c.fillRect(0, 0, S, S);
 
-  // Three concentric rings: outer green, mid dark, inner green
-  [[72, '#4ade80', 5], [50, '#2d2d2d', 4], [28, '#4ade80', 4]].forEach(([r, col, lw]) => {
-    c.strokeStyle = col; c.lineWidth = lw;
-    c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.stroke();
-  });
+  // Outer ring
+  c.strokeStyle = '#4ade80'; c.lineWidth = 5;
+  c.beginPath(); c.arc(cx, cy, 72, 0, Math.PI * 2); c.stroke();
 
-  // Solid center dot
-  c.fillStyle = '#4ade80';
-  c.beginPath(); c.arc(cx, cy, 9, 0, Math.PI * 2); c.fill();
+  // Mid ring (dark)
+  c.strokeStyle = '#2d2d2d'; c.lineWidth = 4;
+  c.beginPath(); c.arc(cx, cy, 50, 0, Math.PI * 2); c.stroke();
 
-  // Crosshair lines in the gap between inner and outer rings
+  // Inner ring
+  c.strokeStyle = '#4ade80'; c.lineWidth = 4;
+  c.beginPath(); c.arc(cx, cy, 28, 0, Math.PI * 2); c.stroke();
+
+  // Crosshair lines
   c.strokeStyle = '#4ade80'; c.lineWidth = 3;
-  [[0, -70, 0, -33], [0, 33, 0, 70], [-70, 0, -33, 0], [33, 0, 70, 0]]
+  [[0, -72, 0, -33], [0, 33, 0, 72], [-72, 0, -33, 0], [33, 0, 72, 0]]
     .forEach(([dx1, dy1, dx2, dy2]) => {
       c.beginPath(); c.moveTo(cx + dx1, cy + dy1); c.lineTo(cx + dx2, cy + dy2); c.stroke();
     });
 
+  // Center dot
+  c.fillStyle = '#4ade80';
+  c.beginPath(); c.arc(cx, cy, 7, 0, Math.PI * 2); c.fill();
+
+  // Small trajectory arc hint (top-right quadrant, subtle)
+  c.strokeStyle = 'rgba(74,222,128,0.35)'; c.lineWidth = 2;
+  c.beginPath();
+  c.moveTo(cx - 20, cy - 55);
+  c.quadraticCurveTo(cx + 40, cy - 62, cx + 60, cy - 30);
+  c.stroke();
+
   const dataUrl = cv.toDataURL('image/png');
 
-  // apple-touch-icon (iOS "Add to Home Screen")
   const iconLink = document.createElement('link');
-  iconLink.rel = 'apple-touch-icon';
+  iconLink.rel  = 'apple-touch-icon';
   iconLink.href = dataUrl;
   document.head.appendChild(iconLink);
 
-  // Web app manifest (Android/Chrome install prompt)
   const manifest = JSON.stringify({
-    name: 'Shot Timer',
-    short_name: 'Shot Timer',
+    name: 'Shooting Tool',
+    short_name: 'Shooting Tool',
     display: 'standalone',
     background_color: '#0d0d0d',
     theme_color: '#0d0d0d',
     icons: [{ src: dataUrl, sizes: '180x180', type: 'image/png' }]
   });
   const mLink = document.createElement('link');
-  mLink.rel = 'manifest';
+  mLink.rel  = 'manifest';
   mLink.href = 'data:application/manifest+json,' + encodeURIComponent(manifest);
   document.head.appendChild(mLink);
 })();
