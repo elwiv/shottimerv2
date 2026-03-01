@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Shot Timer">
+<meta name="theme-color" content="#0d0d0d">
 <title>Shot Timer</title>
 <style>
 *, *::before, *::after {
@@ -292,6 +294,158 @@ body {
   background: transparent;
 }
 
+/* ── History button ── */
+#header { position: relative; }
+#btn-history {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%) translateY(max(calc(env(safe-area-inset-top) / 2), 0px));
+  height: 28px;
+  padding: 0 10px;
+  border: 1.5px solid #2a2a2a;
+  border-radius: 8px;
+  background: transparent;
+  color: #444;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+#btn-history:active { opacity: 0.7; }
+
+/* ── History modal ── */
+#history-backdrop {
+  position: fixed; inset: 0;
+  z-index: 100;
+  background: rgba(0,0,0,0.82);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+#history-modal {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 24px 24px 0 0;
+  padding-top: 20px;
+  width: 100%;
+  max-height: 80dvh;
+  display: flex;
+  flex-direction: column;
+}
+#history-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 16px;
+  border-bottom: 1px solid #1e1e1e;
+  flex-shrink: 0;
+}
+#history-modal-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #fff;
+}
+#btn-clear-history {
+  height: 28px;
+  padding: 0 10px;
+  border: 1.5px solid #3a3a3a;
+  border-radius: 8px;
+  background: transparent;
+  color: #ef4444;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+#btn-clear-history:active { opacity: 0.7; }
+#history-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#history-empty {
+  text-align: center;
+  color: #444;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 40px 0;
+}
+.history-row {
+  background: #1a1a1a;
+  border: 1px solid #232323;
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.history-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.history-date {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ddd;
+}
+.history-shots {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #555;
+  text-transform: uppercase;
+}
+.history-stats { display: flex; gap: 8px; }
+.history-stat {
+  flex: 1;
+  background: #131313;
+  border-radius: 10px;
+  padding: 8px 10px;
+  text-align: center;
+}
+.history-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #555;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.history-stat-value {
+  font-size: 18px;
+  font-weight: 300;
+  color: #ddd;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+#btn-history-close {
+  margin: 12px 14px;
+  margin-bottom: max(env(safe-area-inset-bottom), 20px);
+  height: 52px;
+  border: none;
+  border-radius: 16px;
+  background: #222;
+  color: #777;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+}
+#btn-history-close:active { opacity: 0.7; }
+
 /* ── Help modal ── */
 #modal-backdrop {
   position: fixed; inset: 0;
@@ -377,6 +531,17 @@ body {
 </head>
 <body>
 
+<div id="history-backdrop" style="display:none">
+  <div id="history-modal">
+    <div id="history-modal-header">
+      <h2>History</h2>
+      <button id="btn-clear-history">Clear All</button>
+    </div>
+    <div id="history-list"></div>
+    <button id="btn-history-close">Done</button>
+  </div>
+</div>
+
 <div id="modal-backdrop">
   <div id="modal">
     <h1>Shot Timer</h1>
@@ -400,7 +565,7 @@ body {
   </div>
 </div>
 
-<div id="header">Shot Timer</div>
+<div id="header"><span>Shot Timer</span><button id="btn-history">History</button></div>
 
 <div id="mode-row">
   <button class="mode-btn"        id="mode-tap">&#9654; Tap</button>
@@ -719,6 +884,9 @@ function enterStopped() {
   hide(elOverlay);
   hide(elMicWrap);
 
+  // Save to history
+  if (n > 0) saveSession(splits);
+
   // Build summary card
   if (n > 0) {
     const firstShot = fmt(splits[0].elapsed);
@@ -924,6 +1092,120 @@ modalDismiss.addEventListener('click', closeModal);
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && audioCtx) audioCtx.resume();
 });
+
+// ── Session History ───────────────────────────────────────────────────────
+const HISTORY_KEY = 'shottimerHistory';
+
+function saveSession(sessionSplits) {
+  if (!sessionSplits.length) return;
+  const now = new Date();
+  const timeOfDay = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const date = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+  const firstShot = sessionSplits[0].elapsed;
+  const totalShots = sessionSplits.length;
+  let avgSplit = null;
+  if (totalShots > 1) {
+    const deltas = sessionSplits.slice(1).map(s => s.delta);
+    avgSplit = deltas.reduce((a, b) => a + b, 0) / deltas.length;
+  }
+  const history = loadHistory();
+  history.unshift({ timeOfDay, date, firstShot, totalShots, avgSplit });
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch(e) {}
+}
+
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e) { return []; }
+}
+
+function renderHistory() {
+  const history = loadHistory();
+  const listEl  = document.getElementById('history-list');
+  if (!history.length) {
+    listEl.innerHTML = '<div id="history-empty">No sessions recorded yet.</div>';
+    return;
+  }
+  listEl.innerHTML = '';
+  history.forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'history-row';
+    const shotsLabel = `${s.totalShots} shot${s.totalShots !== 1 ? 's' : ''}`;
+    let statsHtml = `<div class="history-stat"><div class="history-stat-label">First shot</div><div class="history-stat-value">${fmt(s.firstShot)}</div></div>`;
+    if (s.avgSplit !== null) {
+      statsHtml += `<div class="history-stat"><div class="history-stat-label">Avg split</div><div class="history-stat-value">+${fmt(s.avgSplit)}</div></div>`;
+    }
+    row.innerHTML = `<div class="history-meta"><span class="history-date">${s.date} · ${s.timeOfDay}</span><span class="history-shots">${shotsLabel}</span></div><div class="history-stats">${statsHtml}</div>`;
+    listEl.appendChild(row);
+  });
+}
+
+// History button / modal wiring
+const historyBackdrop = document.getElementById('history-backdrop');
+const btnHistory      = document.getElementById('btn-history');
+const btnHistoryClose = document.getElementById('btn-history-close');
+const btnClearHistory = document.getElementById('btn-clear-history');
+
+wire(btnHistory, () => {
+  renderHistory();
+  show(historyBackdrop, 'flex');
+});
+
+wire(btnHistoryClose, () => { hide(historyBackdrop); });
+
+wire(btnClearHistory, () => {
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+});
+
+// ── PWA home-screen icon (generated via canvas, no external files) ─────────
+(function () {
+  const S = 180, cx = 90, cy = 90;
+  const cv = document.createElement('canvas');
+  cv.width = S; cv.height = S;
+  const c = cv.getContext('2d');
+
+  // Dark background
+  c.fillStyle = '#0d0d0d';
+  c.fillRect(0, 0, S, S);
+
+  // Three concentric rings: outer green, mid dark, inner green
+  [[72, '#4ade80', 5], [50, '#2d2d2d', 4], [28, '#4ade80', 4]].forEach(([r, col, lw]) => {
+    c.strokeStyle = col; c.lineWidth = lw;
+    c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.stroke();
+  });
+
+  // Solid center dot
+  c.fillStyle = '#4ade80';
+  c.beginPath(); c.arc(cx, cy, 9, 0, Math.PI * 2); c.fill();
+
+  // Crosshair lines in the gap between inner and outer rings
+  c.strokeStyle = '#4ade80'; c.lineWidth = 3;
+  [[0, -70, 0, -33], [0, 33, 0, 70], [-70, 0, -33, 0], [33, 0, 70, 0]]
+    .forEach(([dx1, dy1, dx2, dy2]) => {
+      c.beginPath(); c.moveTo(cx + dx1, cy + dy1); c.lineTo(cx + dx2, cy + dy2); c.stroke();
+    });
+
+  const dataUrl = cv.toDataURL('image/png');
+
+  // apple-touch-icon (iOS "Add to Home Screen")
+  const iconLink = document.createElement('link');
+  iconLink.rel = 'apple-touch-icon';
+  iconLink.href = dataUrl;
+  document.head.appendChild(iconLink);
+
+  // Web app manifest (Android/Chrome install prompt)
+  const manifest = JSON.stringify({
+    name: 'Shot Timer',
+    short_name: 'Shot Timer',
+    display: 'standalone',
+    background_color: '#0d0d0d',
+    theme_color: '#0d0d0d',
+    icons: [{ src: dataUrl, sizes: '180x180', type: 'image/png' }]
+  });
+  const mLink = document.createElement('link');
+  mLink.rel = 'manifest';
+  mLink.href = 'data:application/manifest+json,' + encodeURIComponent(manifest);
+  document.head.appendChild(mLink);
+})();
 
 // ── Init ──────────────────────────────────────────────────────────────────
 enterIdle();
