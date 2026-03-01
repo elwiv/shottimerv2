@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Shot Timer">
+<meta name="theme-color" content="#0d0d0d">
 <title>Shot Timer</title>
 <style>
 *, *::before, *::after {
@@ -1153,6 +1155,57 @@ wire(btnClearHistory, () => {
   localStorage.removeItem(HISTORY_KEY);
   renderHistory();
 });
+
+// ── PWA home-screen icon (generated via canvas, no external files) ─────────
+(function () {
+  const S = 180, cx = 90, cy = 90;
+  const cv = document.createElement('canvas');
+  cv.width = S; cv.height = S;
+  const c = cv.getContext('2d');
+
+  // Dark background
+  c.fillStyle = '#0d0d0d';
+  c.fillRect(0, 0, S, S);
+
+  // Three concentric rings: outer green, mid dark, inner green
+  [[72, '#4ade80', 5], [50, '#2d2d2d', 4], [28, '#4ade80', 4]].forEach(([r, col, lw]) => {
+    c.strokeStyle = col; c.lineWidth = lw;
+    c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.stroke();
+  });
+
+  // Solid center dot
+  c.fillStyle = '#4ade80';
+  c.beginPath(); c.arc(cx, cy, 9, 0, Math.PI * 2); c.fill();
+
+  // Crosshair lines in the gap between inner and outer rings
+  c.strokeStyle = '#4ade80'; c.lineWidth = 3;
+  [[0, -70, 0, -33], [0, 33, 0, 70], [-70, 0, -33, 0], [33, 0, 70, 0]]
+    .forEach(([dx1, dy1, dx2, dy2]) => {
+      c.beginPath(); c.moveTo(cx + dx1, cy + dy1); c.lineTo(cx + dx2, cy + dy2); c.stroke();
+    });
+
+  const dataUrl = cv.toDataURL('image/png');
+
+  // apple-touch-icon (iOS "Add to Home Screen")
+  const iconLink = document.createElement('link');
+  iconLink.rel = 'apple-touch-icon';
+  iconLink.href = dataUrl;
+  document.head.appendChild(iconLink);
+
+  // Web app manifest (Android/Chrome install prompt)
+  const manifest = JSON.stringify({
+    name: 'Shot Timer',
+    short_name: 'Shot Timer',
+    display: 'standalone',
+    background_color: '#0d0d0d',
+    theme_color: '#0d0d0d',
+    icons: [{ src: dataUrl, sizes: '180x180', type: 'image/png' }]
+  });
+  const mLink = document.createElement('link');
+  mLink.rel = 'manifest';
+  mLink.href = 'data:application/manifest+json,' + encodeURIComponent(manifest);
+  document.head.appendChild(mLink);
+})();
 
 // ── Init ──────────────────────────────────────────────────────────────────
 enterIdle();
