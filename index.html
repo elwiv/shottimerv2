@@ -714,9 +714,392 @@ body {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+
+/* ── Inputs: allow text selection ── */
+input, textarea, select {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* ── Lock Screen ── */
+#lock-screen {
+  position: fixed; inset: 0; z-index: 999;
+  background: #0d0d0d;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 24px;
+}
+#lock-logo {
+  text-align: center; margin-bottom: 36px;
+}
+#lock-logo-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 4px;
+  color: #3a3a3a; text-transform: uppercase; margin-bottom: 14px;
+}
+#lock-icon {
+  font-size: 40px; line-height: 1;
+}
+#lock-input {
+  width: 100%; max-width: 280px; height: 54px;
+  background: #181818; border: 1.5px solid #2a2a2a;
+  border-radius: 16px; color: #fff; font-size: 20px;
+  font-family: inherit; text-align: center;
+  letter-spacing: 6px; outline: none; margin-bottom: 12px;
+  -webkit-appearance: none;
+}
+#lock-input:focus { border-color: #4ade80; }
+#lock-btn {
+  width: 100%; max-width: 280px; height: 54px;
+  background: #4ade80; border: none; border-radius: 16px;
+  color: #000; font-size: 14px; font-weight: 800;
+  letter-spacing: 2px; text-transform: uppercase;
+  cursor: pointer; -webkit-appearance: none;
+}
+#lock-btn:active { opacity: 0.8; }
+#lock-error {
+  margin-top: 14px; font-size: 12px; color: #ef4444;
+  letter-spacing: 1px; text-transform: uppercase;
+  min-height: 18px; text-align: center;
+}
+
+/* ── Nav tabs: scrollable for 5 tabs ── */
+#nav-tabs {
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+#nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab { flex: 0 0 auto; padding: 0 14px; min-width: 72px; }
+
+/* ── Shared section container ── */
+#section-guns, #section-log, #section-reports {
+  display: flex; flex-direction: column; flex: 1;
+  overflow: hidden; min-height: 0;
+}
+.section-scroll {
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding-bottom: max(env(safe-area-inset-bottom), 20px);
+}
+
+/* ── Sub-header inside scrollable sections ── */
+.sec-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px 6px; flex-shrink: 0;
+}
+.sec-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  color: #444; text-transform: uppercase;
+}
+.back-btn {
+  height: 32px; padding: 0 12px;
+  border: 1.5px solid #2a2a2a; border-radius: 10px;
+  background: transparent; color: #555;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; cursor: pointer; -webkit-appearance: none;
+}
+.back-btn:active { opacity: 0.7; }
+.icon-btn {
+  height: 32px; padding: 0 12px;
+  border: 1.5px solid #2a2a2a; border-radius: 10px;
+  background: transparent; color: #ef4444;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; cursor: pointer; -webkit-appearance: none;
+}
+.icon-btn:active { opacity: 0.7; }
+
+/* ── Gun grid ── */
+.guns-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 10px; padding: 10px 14px;
+}
+.gun-card {
+  background: #181818; border: 1px solid #232323;
+  border-radius: 16px; overflow: hidden; cursor: pointer;
+}
+.gun-card:active { opacity: 0.75; }
+.gun-card-photo {
+  width: 100%; aspect-ratio: 16/9; object-fit: cover;
+  background: #111; display: block;
+}
+.gun-card-no-photo {
+  width: 100%; aspect-ratio: 16/9; background: #111;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.gun-card-body { padding: 10px 12px 12px; }
+.gun-card-name {
+  font-size: 13px; font-weight: 600; color: #ddd;
+  margin-bottom: 3px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.gun-card-caliber {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  color: #555; text-transform: uppercase;
+}
+.fab-btn {
+  margin: 0 14px 14px; height: 52px; border: none;
+  border-radius: 16px; background: #4ade80; color: #000;
+  font-size: 14px; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer; -webkit-appearance: none;
+  width: calc(100% - 28px); flex-shrink: 0;
+}
+.fab-btn:active { opacity: 0.8; }
+
+/* ── Gun detail ── */
+.gun-detail-hero {
+  padding: 14px; display: flex; gap: 14px; align-items: center;
+}
+.gun-detail-photo {
+  width: 72px; height: 72px; border-radius: 14px;
+  object-fit: cover; background: #111; flex-shrink: 0;
+}
+.gun-detail-no-photo {
+  width: 72px; height: 72px; border-radius: 14px;
+  background: #111; display: flex; align-items: center;
+  justify-content: center; font-size: 30px; flex-shrink: 0;
+}
+.gun-detail-name {
+  font-size: 18px; font-weight: 600; color: #ddd; margin-bottom: 4px;
+}
+.gun-detail-caliber {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  color: #555; text-transform: uppercase;
+}
+.stat-grid-2 {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 8px; padding: 0 14px 12px;
+}
+.stat-card {
+  background: #181818; border: 1px solid #232323;
+  border-radius: 14px; padding: 12px; text-align: center;
+}
+.stat-card-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  color: #555; text-transform: uppercase; margin-bottom: 5px;
+}
+.stat-card-value {
+  font-size: clamp(16px,5vw,22px); font-weight: 300; color: #ddd;
+  font-variant-numeric: tabular-nums;
+}
+.stat-card-value.green { color: #4ade80; }
+.clean-btn {
+  margin: 0 14px 14px; height: 44px;
+  border: 1.5px solid #4ade80; border-radius: 14px;
+  background: transparent; color: #4ade80;
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer; -webkit-appearance: none;
+  width: calc(100% - 28px); flex-shrink: 0;
+}
+.clean-btn:active { opacity: 0.7; }
+.chart-wrap {
+  height: 200px; position: relative; padding: 0 14px; margin-bottom: 14px;
+}
+.section-label-small {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  color: #4ade80; text-transform: uppercase;
+  padding: 0 14px; margin-bottom: 8px;
+}
+.monthly-table { padding: 0 14px; }
+.monthly-table table {
+  width: 100%; border-collapse: separate; border-spacing: 0 4px;
+}
+.monthly-table thead th {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  color: #383838; text-transform: uppercase;
+  padding: 0 12px 4px; text-align: left;
+}
+.monthly-table thead th:last-child { text-align: right; }
+.monthly-table tbody td {
+  padding: 8px 12px; background: #141414;
+  font-size: 13px; color: #bbb;
+  font-variant-numeric: tabular-nums;
+}
+.monthly-table tbody tr td:first-child {
+  border-radius: 10px 0 0 10px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  color: #555; text-transform: uppercase;
+}
+.monthly-table tbody tr td:last-child {
+  border-radius: 0 10px 10px 0; text-align: right;
+}
+
+/* ── Modals (shared) ── */
+.modal-back {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.85);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.modal-sheet {
+  background: #161616; border: 1px solid #2a2a2a;
+  border-radius: 24px 24px 0 0; padding: 24px 20px;
+  width: 100%; max-height: 90dvh; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: max(env(safe-area-inset-bottom), 24px);
+}
+.modal-sheet h2 {
+  font-size: 16px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: #fff; margin-bottom: 20px;
+}
+
+/* ── Form elements ── */
+.form-field { margin-bottom: 14px; }
+.form-label {
+  display: block; font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; color: #555; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.form-input {
+  width: 100%; height: 48px; background: #1a1a1a;
+  border: 1.5px solid #2a2a2a; border-radius: 12px;
+  color: #ddd; font-size: 15px; font-family: inherit;
+  padding: 0 14px; outline: none; -webkit-appearance: none;
+}
+.form-input:focus { border-color: #4ade80; }
+textarea.form-input {
+  height: 80px; padding: 12px 14px;
+  resize: none; line-height: 1.5;
+}
+select.form-input { cursor: pointer; background-color: #1a1a1a; }
+.form-input::placeholder { color: #3a3a3a; }
+.submit-btn {
+  width: 100%; height: 52px; border: none;
+  border-radius: 16px; background: #4ade80; color: #000;
+  font-size: 14px; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer; -webkit-appearance: none;
+  margin-top: 6px;
+}
+.submit-btn:active { opacity: 0.8; }
+.submit-btn:disabled { opacity: 0.4; cursor: default; }
+.cancel-link {
+  display: block; text-align: center; margin-top: 14px;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+  color: #555; text-transform: uppercase; cursor: pointer;
+}
+.cancel-link:active { opacity: 0.7; }
+.photo-preview-wrap {
+  width: 100%; aspect-ratio: 16/9; border-radius: 12px;
+  background: #111; border: 1.5px dashed #2a2a2a;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; margin-bottom: 8px; cursor: pointer;
+}
+.photo-preview-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.photo-hint {
+  font-size: 11px; color: #444; letter-spacing: 1px;
+  text-transform: uppercase; text-align: center;
+}
+
+/* ── Log Session ── */
+.log-form-wrap { padding: 14px; }
+.success-banner {
+  background: #0e1f12; border: 1px solid #4ade80;
+  border-radius: 14px; padding: 14px;
+  text-align: center; margin-top: 14px;
+  font-size: 13px; font-weight: 600; letter-spacing: 1px;
+  color: #4ade80; text-transform: uppercase;
+}
+
+/* ── Reports ── */
+.reports-wrap { padding: 14px; }
+.filter-card {
+  background: #181818; border: 1px solid #232323;
+  border-radius: 16px; padding: 14px; margin-bottom: 14px;
+}
+.filter-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.filter-row:last-child { margin-bottom: 0; }
+.filter-row .form-input { flex: 1; height: 40px; font-size: 13px; }
+.filter-row .form-input[type="month"] { padding: 0 10px; }
+.apply-btn {
+  width: 100%; height: 40px; border: none;
+  border-radius: 12px; background: #222; color: #fff;
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer; -webkit-appearance: none;
+  border: 1.5px solid #333; margin-top: 4px;
+}
+.apply-btn:active { opacity: 0.7; }
+.summary-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 8px; margin-bottom: 14px;
+}
+.chart-toggle { display: flex; gap: 8px; margin-bottom: 12px; }
+.chart-toggle-btn {
+  flex: 1; height: 36px;
+  border: 1.5px solid #2a2a2a; border-radius: 10px;
+  background: #181818; color: #555;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; cursor: pointer; -webkit-appearance: none;
+}
+.chart-toggle-btn.active {
+  background: #222; color: #fff; border-color: #555;
+}
+.chart-toggle-btn:active { opacity: 0.75; }
+.reports-chart-wrap {
+  height: 220px; position: relative; margin-bottom: 14px;
+}
+.data-table-wrap { margin-bottom: 14px; }
+.data-table-wrap table {
+  width: 100%; border-collapse: separate; border-spacing: 0 4px;
+  font-size: 12px;
+}
+.data-table-wrap thead th {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  color: #383838; text-transform: uppercase;
+  padding: 0 10px 4px; text-align: left;
+}
+.data-table-wrap tbody td {
+  padding: 7px 10px; background: #141414; color: #bbb;
+  font-variant-numeric: tabular-nums;
+}
+.data-table-wrap tbody tr td:first-child { border-radius: 10px 0 0 10px; }
+.data-table-wrap tbody tr td:last-child { border-radius: 0 10px 10px 0; text-align: right; }
+.range-card-grid { display: flex; flex-direction: column; gap: 8px; }
+.range-card {
+  background: #181818; border: 1px solid #232323;
+  border-radius: 14px; padding: 14px;
+}
+.range-card-name {
+  font-size: 14px; font-weight: 600; color: #ddd; margin-bottom: 8px;
+}
+.range-card-stats { display: flex; gap: 8px; }
+.range-stat {
+  flex: 1; background: #131313; border-radius: 10px;
+  padding: 8px; text-align: center;
+}
+.range-stat-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  color: #555; text-transform: uppercase; margin-bottom: 3px;
+}
+.range-stat-value {
+  font-size: 16px; font-weight: 300; color: #ddd;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center; padding: 48px 24px;
+  color: #333; font-size: 13px; letter-spacing: 1px;
+  line-height: 1.8;
+}
+.empty-state-icon { font-size: 36px; margin-bottom: 12px; }
+
+/* ── Callout for reports loading ── */
+.loading-text {
+  text-align: center; color: #333; font-size: 12px;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 32px 0;
+}
 </style>
 </head>
 <body>
+
+<!-- ── Lock Screen ── -->
+<div id="lock-screen">
+  <div id="lock-logo">
+    <div id="lock-logo-title">Shooting Tool</div>
+    <div id="lock-icon">🔒</div>
+  </div>
+  <input type="password" id="lock-input" placeholder="••••••" autocomplete="current-password">
+  <button id="lock-btn">Unlock</button>
+  <div id="lock-error"></div>
+</div>
 
 <!-- ── History modal ── -->
 <div id="history-backdrop" style="display:none">
@@ -765,6 +1148,9 @@ body {
 <div id="nav-tabs">
   <button class="nav-tab active" id="tab-timer">Shot Timer</button>
   <button class="nav-tab"        id="tab-drop">Bullet Drop</button>
+  <button class="nav-tab"        id="tab-guns">My Guns</button>
+  <button class="nav-tab"        id="tab-log">Log Session</button>
+  <button class="nav-tab"        id="tab-reports">Reports</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ -->
@@ -899,9 +1285,189 @@ body {
 
 </div><!-- /section-drop -->
 
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- My Guns section                                         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="section-guns" style="display:none">
+
+  <!-- Gun grid view -->
+  <div id="guns-grid-view" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0">
+    <div class="section-scroll">
+      <div id="guns-grid" class="guns-grid"></div>
+      <div id="guns-empty" class="empty-state" style="display:none">
+        <div class="empty-state-icon">🔫</div>
+        No guns added yet.<br>Tap <strong style="color:#ddd">Add Gun</strong> to get started.
+      </div>
+    </div>
+    <button id="btn-add-gun" class="fab-btn">+ Add Gun</button>
+  </div>
+
+  <!-- Per-gun detail view -->
+  <div id="gun-detail-view" style="display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0">
+    <div class="sec-header" style="flex-shrink:0">
+      <button id="btn-back-guns" class="back-btn">← Back</button>
+      <span id="gun-detail-heading" class="sec-title"></span>
+      <button id="btn-delete-gun" class="icon-btn">Delete</button>
+    </div>
+    <div class="section-scroll">
+      <div class="gun-detail-hero">
+        <div id="gun-detail-photo-wrap"></div>
+        <div>
+          <div id="gun-detail-name" class="gun-detail-name"></div>
+          <div id="gun-detail-caliber" class="gun-detail-caliber"></div>
+        </div>
+      </div>
+
+      <div class="stat-grid-2" id="gun-stats"></div>
+
+      <button id="btn-log-cleaning" class="clean-btn" style="margin-top:4px">🧹 Log Cleaning</button>
+
+      <div class="section-label-small" style="margin-top:16px">Rounds per Month</div>
+      <div class="chart-wrap">
+        <canvas id="gun-monthly-chart"></canvas>
+      </div>
+
+      <div class="section-label-small">Monthly Breakdown</div>
+      <div class="monthly-table" id="gun-monthly-table" style="margin-bottom:14px"></div>
+    </div>
+  </div>
+
+</div><!-- /section-guns -->
+
+<!-- ── Add Gun Modal ── -->
+<div id="add-gun-backdrop" class="modal-back" style="display:none">
+  <div class="modal-sheet" style="max-width:480px">
+    <h2>Add Gun</h2>
+    <div class="form-field">
+      <label class="form-label">Name *</label>
+      <input type="text" id="gun-name-input" class="form-input" placeholder="e.g. Daniel Defense DDM4">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Caliber *</label>
+      <input type="text" id="gun-caliber-input" class="form-input" placeholder="e.g. 5.56 NATO">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Photo (optional)</label>
+      <div class="photo-preview-wrap" id="gun-photo-preview-wrap">
+        <div id="gun-photo-placeholder" class="photo-hint">Tap to choose photo</div>
+        <img id="gun-photo-preview-img" style="display:none;width:100%;height:100%;object-fit:cover">
+      </div>
+      <input type="file" id="gun-photo-file" accept="image/*" style="display:none">
+    </div>
+    <button id="btn-add-gun-submit" class="submit-btn">Add Gun</button>
+    <span id="btn-add-gun-cancel" class="cancel-link">Cancel</span>
+  </div>
+</div>
+
+<!-- ── Log Cleaning Modal ── -->
+<div id="clean-backdrop" class="modal-back" style="display:none">
+  <div class="modal-sheet" style="max-width:480px">
+    <h2>Log Cleaning</h2>
+    <div class="form-field">
+      <label class="form-label">Date</label>
+      <input type="date" id="clean-date-input" class="form-input">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Notes (optional)</label>
+      <textarea id="clean-notes-input" class="form-input" placeholder="Products used, condition, etc."></textarea>
+    </div>
+    <button id="btn-clean-submit" class="submit-btn">Log Cleaning</button>
+    <span id="btn-clean-cancel" class="cancel-link">Cancel</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- Log Session section                                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="section-log" style="display:none">
+  <div class="section-scroll">
+    <div class="log-form-wrap">
+      <div class="form-field">
+        <label class="form-label">Gun *</label>
+        <select id="log-gun-select" class="form-input">
+          <option value="">— Select a gun —</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Date *</label>
+        <input type="date" id="log-date-input" class="form-input">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Rounds Fired *</label>
+        <input type="number" id="log-rounds-input" class="form-input" min="1" placeholder="0">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Range Location</label>
+        <input type="text" id="log-range-input" class="form-input" list="range-datalist" placeholder="Where did you shoot?">
+        <datalist id="range-datalist"></datalist>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Notes</label>
+        <textarea id="log-notes-input" class="form-input" placeholder="Drills, conditions, ammo, etc."></textarea>
+      </div>
+      <button id="btn-log-submit" class="submit-btn">Log Session</button>
+      <div id="log-success" class="success-banner" style="display:none">✓ Session logged successfully!</div>
+    </div>
+  </div>
+</div><!-- /section-log -->
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- Reports section                                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="section-reports" style="display:none">
+  <div class="section-scroll">
+    <div class="reports-wrap">
+
+      <!-- Filters -->
+      <div class="filter-card">
+        <div class="filter-row">
+          <select id="rpt-gun-select" class="form-input"><option value="">All Guns</option></select>
+          <select id="rpt-caliber-select" class="form-input"><option value="">All Calibers</option></select>
+        </div>
+        <div class="filter-row">
+          <input type="month" id="rpt-start-month" class="form-input" placeholder="From">
+          <input type="month" id="rpt-end-month"   class="form-input" placeholder="To">
+        </div>
+        <div class="filter-row">
+          <select id="rpt-range-select" class="form-input"><option value="">All Ranges</option></select>
+          <button id="btn-apply-reports" class="apply-btn" style="flex:1">Apply Filters</button>
+        </div>
+      </div>
+
+      <!-- Summary stat cards -->
+      <div class="summary-grid" id="rpt-summary"></div>
+
+      <!-- Chart toggle -->
+      <div class="chart-toggle">
+        <button class="chart-toggle-btn active" id="rpt-view-gun">By Gun</button>
+        <button class="chart-toggle-btn"        id="rpt-view-caliber">By Caliber</button>
+      </div>
+
+      <!-- Chart -->
+      <div class="reports-chart-wrap">
+        <canvas id="reports-chart-canvas"></canvas>
+      </div>
+
+      <!-- Data table -->
+      <div class="section-label-small" style="margin-bottom:8px">Session Data</div>
+      <div class="data-table-wrap" id="rpt-table-wrap"></div>
+
+      <!-- Range breakdown -->
+      <div class="section-label-small" id="rpt-ranges-label" style="margin-bottom:8px;display:none">Range Breakdown</div>
+      <div class="range-card-grid" id="rpt-ranges-wrap"></div>
+
+      <div id="rpt-empty" class="empty-state" style="display:none">
+        <div class="empty-state-icon">📊</div>
+        No sessions found.<br>Log some sessions first.
+      </div>
+    </div>
+  </div>
+</div><!-- /section-reports -->
+
 <!-- Tap overlay: fixed, outside sections -->
 <div id="tap-overlay" style="display:none"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
 // ── Shot Timer State ────────────────────────────────────────────────────
 let appState  = 'idle';  // idle | waiting | running | stopped
@@ -1429,30 +1995,45 @@ wire(btnClearHistory, () => {
 });
 
 // ── Tab navigation ────────────────────────────────────────────────────────
-const tabTimer  = document.getElementById('tab-timer');
-const tabDrop   = document.getElementById('tab-drop');
-const secTimer  = document.getElementById('section-timer');
-const secDrop   = document.getElementById('section-drop');
+const tabTimer   = document.getElementById('tab-timer');
+const tabDrop    = document.getElementById('tab-drop');
+const tabGuns    = document.getElementById('tab-guns');
+const tabLog     = document.getElementById('tab-log');
+const tabReports = document.getElementById('tab-reports');
+const secTimer   = document.getElementById('section-timer');
+const secDrop    = document.getElementById('section-drop');
+const secGuns    = document.getElementById('section-guns');
+const secLog     = document.getElementById('section-log');
+const secReports = document.getElementById('section-reports');
 
-function showTab(tab) {
-  if (tab === 'timer') {
-    secTimer.style.display = 'flex';
-    secDrop.style.display  = 'none';
-    tabTimer.classList.add('active');
-    tabDrop.classList.remove('active');
-    btnHistory.style.display = '';
-  } else {
-    secTimer.style.display = 'none';
-    secDrop.style.display  = 'flex';
-    tabDrop.classList.add('active');
-    tabTimer.classList.remove('active');
-    btnHistory.style.display = 'none';
-    bdRender();
-  }
+const ALL_TABS = [
+  { tab: tabTimer,   sec: secTimer,   id: 'timer' },
+  { tab: tabDrop,    sec: secDrop,    id: 'drop' },
+  { tab: tabGuns,    sec: secGuns,    id: 'guns' },
+  { tab: tabLog,     sec: secLog,     id: 'log' },
+  { tab: tabReports, sec: secReports, id: 'reports' },
+];
+let currentTab = 'timer';
+
+function showTab(id) {
+  currentTab = id;
+  ALL_TABS.forEach(({ tab, sec, id: tid }) => {
+    const active = tid === id;
+    tab.classList.toggle('active', active);
+    sec.style.display = active ? 'flex' : 'none';
+  });
+  btnHistory.style.display = id === 'timer' ? '' : 'none';
+  if (id === 'drop')    bdRender();
+  if (id === 'guns')    initGunsTab();
+  if (id === 'log')     initLogTab();
+  if (id === 'reports') initReportsTab();
 }
 
-wire(tabTimer, () => showTab('timer'));
-wire(tabDrop,  () => showTab('drop'));
+wire(tabTimer,   () => showTab('timer'));
+wire(tabDrop,    () => showTab('drop'));
+wire(tabGuns,    () => showTab('guns'));
+wire(tabLog,     () => showTab('log'));
+wire(tabReports, () => showTab('reports'));
 
 // ── Bullet Drop Calculator ────────────────────────────────────────────────
 
@@ -1813,6 +2394,707 @@ document.getElementById('bd-sh-plus').addEventListener('click', () => {
 
 // ── Init ──────────────────────────────────────────────────────────────────
 enterIdle();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PASSWORD GATE
+// ═══════════════════════════════════════════════════════════════════════════
+const lockScreen = document.getElementById('lock-screen');
+const lockInput  = document.getElementById('lock-input');
+const lockBtn    = document.getElementById('lock-btn');
+const lockError  = document.getElementById('lock-error');
+
+function unlock() {
+  if (lockInput.value === 'elwiv') {
+    lockScreen.style.display = 'none';
+    // Bootstrap DB schema (idempotent — runs CREATE TABLE IF NOT EXISTS)
+    fetch('/api/setup').catch(() => {});
+  } else {
+    lockError.textContent = 'Incorrect password';
+    lockInput.value = '';
+    lockInput.focus();
+    setTimeout(() => { lockError.textContent = ''; }, 2000);
+  }
+}
+
+lockBtn.addEventListener('click', unlock);
+lockInput.addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// API HELPER
+// ═══════════════════════════════════════════════════════════════════════════
+async function apiFetch(path, options = {}) {
+  const res = await fetch('/api/' + path, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `HTTP ${res.status}`);
+  }
+  return res.status === 204 ? null : res.json();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CHART.JS DEFAULTS (dark theme)
+// ═══════════════════════════════════════════════════════════════════════════
+function applyChartDefaults() {
+  if (typeof Chart === 'undefined') return;
+  Chart.defaults.color        = '#555';
+  Chart.defaults.borderColor  = '#1a1a1a';
+}
+applyChartDefaults();
+
+const CHART_COLORS = [
+  '#4ade80','#60a5fa','#f59e0b','#ef4444',
+  '#a78bfa','#f97316','#ec4899','#14b8a6',
+  '#facc15','#38bdf8',
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// IMAGE PROCESSING
+// ═══════════════════════════════════════════════════════════════════════════
+function processPhoto(file, maxDim = 800) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (w > maxDim || h > maxDim) {
+          const s = maxDim / Math.max(w, h);
+          w = Math.round(w * s); h = Math.round(h * s);
+        }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MY GUNS TAB
+// ═══════════════════════════════════════════════════════════════════════════
+let gunsData     = [];
+let currentGunId = null;
+let gunChart     = null;
+let gunsLoaded   = false;
+
+async function initGunsTab() {
+  if (!gunsLoaded) await loadGuns();
+}
+
+async function loadGuns() {
+  gunsLoaded = true;
+  showGunGrid();
+  try {
+    gunsData = await apiFetch('guns');
+    renderGunGrid(gunsData);
+  } catch (e) {
+    document.getElementById('guns-empty').style.display = 'block';
+    document.getElementById('guns-empty').textContent = 'Error loading guns.';
+  }
+}
+
+function renderGunGrid(guns) {
+  const grid  = document.getElementById('guns-grid');
+  const empty = document.getElementById('guns-empty');
+  grid.innerHTML = '';
+  if (!guns.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  guns.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'gun-card';
+    const photoHtml = g.photo_url
+      ? `<img class="gun-card-photo" src="${g.photo_url}" alt="${escHtml(g.name)}" loading="lazy">`
+      : `<div class="gun-card-no-photo">🔫</div>`;
+    card.innerHTML = `
+      ${photoHtml}
+      <div class="gun-card-body">
+        <div class="gun-card-name">${escHtml(g.name)}</div>
+        <div class="gun-card-caliber">${escHtml(g.caliber)}</div>
+      </div>`;
+    card.addEventListener('click', () => openGunDetail(g.id));
+    grid.appendChild(card);
+  });
+}
+
+function showGunGrid() {
+  document.getElementById('guns-grid-view').style.display   = 'flex';
+  document.getElementById('gun-detail-view').style.display  = 'none';
+}
+
+function showGunDetail() {
+  document.getElementById('guns-grid-view').style.display  = 'none';
+  document.getElementById('gun-detail-view').style.display = 'flex';
+}
+
+async function openGunDetail(gunId) {
+  currentGunId = gunId;
+  showGunDetail();
+  document.getElementById('gun-detail-heading').textContent = '…';
+  try {
+    const gun = await apiFetch(`guns/${gunId}`);
+    renderGunDetail(gun);
+  } catch (e) {
+    document.getElementById('gun-detail-heading').textContent = 'Error';
+  }
+}
+
+function renderGunDetail(gun) {
+  document.getElementById('gun-detail-heading').textContent = gun.caliber;
+
+  // Photo / placeholder
+  const photoWrap = document.getElementById('gun-detail-photo-wrap');
+  photoWrap.innerHTML = gun.photo_url
+    ? `<img class="gun-detail-photo" src="${gun.photo_url}" alt="${escHtml(gun.name)}">`
+    : `<div class="gun-detail-no-photo">🔫</div>`;
+
+  document.getElementById('gun-detail-name').textContent    = gun.name;
+  document.getElementById('gun-detail-caliber').textContent = gun.caliber;
+
+  // Stat cards
+  const s = gun.stats || {};
+  const lastCleaned = s.last_cleaned
+    ? new Date(s.last_cleaned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : 'Never';
+  document.getElementById('gun-stats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-card-label">Total Rounds</div>
+      <div class="stat-card-value">${(s.total_rounds || 0).toLocaleString()}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Since Cleaning</div>
+      <div class="stat-card-value ${(s.rounds_since_cleaning || 0) > 500 ? 'green' : ''}">${(s.rounds_since_cleaning || 0).toLocaleString()}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Total Sessions</div>
+      <div class="stat-card-value">${(s.total_sessions || 0).toLocaleString()}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Last Cleaned</div>
+      <div class="stat-card-value" style="font-size:clamp(11px,3.5vw,15px)">${lastCleaned}</div>
+    </div>`;
+
+  // Monthly chart
+  renderGunChart(gun.monthly || []);
+
+  // Monthly table
+  renderMonthlyTable(gun.monthly || []);
+}
+
+function renderGunChart(monthly) {
+  const canvas = document.getElementById('gun-monthly-chart');
+  if (gunChart) { gunChart.destroy(); gunChart = null; }
+  if (!monthly.length) return;
+
+  const rev    = [...monthly].reverse();
+  const labels = rev.map(d => fmtMonth(d.month));
+  const data   = rev.map(d => d.rounds);
+
+  gunChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data, backgroundColor: '#4ade80', borderRadius: 4, borderSkipped: false }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a1a1a', borderColor: '#2a2a2a', borderWidth: 1,
+          titleColor: '#ddd', bodyColor: '#aaa',
+          callbacks: {
+            label: ctx => `${ctx.parsed.y} rounds`,
+            afterLabel: (ctx) => {
+              const s = rev[ctx.dataIndex];
+              return s ? `${s.sessions} session${s.sessions !== 1 ? 's' : ''}` : '';
+            },
+          },
+        },
+      },
+      scales: {
+        x: { grid: { color: '#1a1a1a' }, ticks: { color: '#555', font: { size: 10 } } },
+        y: { grid: { color: '#1a1a1a' }, ticks: { color: '#555', font: { size: 10 } }, beginAtZero: true },
+      },
+    },
+  });
+}
+
+function renderMonthlyTable(monthly) {
+  const wrap = document.getElementById('gun-monthly-table');
+  if (!monthly.length) { wrap.innerHTML = ''; return; }
+  let rows = '';
+  monthly.forEach(m => {
+    rows += `<tr>
+      <td>${fmtMonth(m.month)}</td>
+      <td>${m.sessions}</td>
+      <td>${m.rounds.toLocaleString()}</td>
+      <td>${m.ranges || '—'}</td>
+    </tr>`;
+  });
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>Month</th><th>Sess.</th><th>Rounds</th><th>Ranges</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── Add Gun button & modal ────────────────────────────────
+let pendingPhotoDataUrl = null;
+
+document.getElementById('btn-add-gun').addEventListener('click', openAddGunModal);
+document.getElementById('gun-photo-preview-wrap').addEventListener('click', () => {
+  document.getElementById('gun-photo-file').click();
+});
+document.getElementById('gun-photo-file').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  pendingPhotoDataUrl = await processPhoto(file);
+  document.getElementById('gun-photo-preview-img').src = pendingPhotoDataUrl;
+  document.getElementById('gun-photo-preview-img').style.display = 'block';
+  document.getElementById('gun-photo-placeholder').style.display = 'none';
+});
+
+function openAddGunModal() {
+  pendingPhotoDataUrl = null;
+  document.getElementById('gun-name-input').value    = '';
+  document.getElementById('gun-caliber-input').value = '';
+  document.getElementById('gun-photo-file').value    = '';
+  document.getElementById('gun-photo-preview-img').style.display = 'none';
+  document.getElementById('gun-photo-placeholder').style.display = '';
+  document.getElementById('add-gun-backdrop').style.display = 'flex';
+}
+function closeAddGunModal() {
+  document.getElementById('add-gun-backdrop').style.display = 'none';
+}
+
+document.getElementById('btn-add-gun-cancel').addEventListener('click', closeAddGunModal);
+document.getElementById('add-gun-backdrop').addEventListener('click', e => {
+  if (e.target === document.getElementById('add-gun-backdrop')) closeAddGunModal();
+});
+
+document.getElementById('btn-add-gun-submit').addEventListener('click', async () => {
+  const name    = document.getElementById('gun-name-input').value.trim();
+  const caliber = document.getElementById('gun-caliber-input').value.trim();
+  if (!name || !caliber) { alert('Name and caliber are required.'); return; }
+
+  const btn = document.getElementById('btn-add-gun-submit');
+  btn.disabled = true; btn.textContent = 'Adding…';
+  try {
+    await apiFetch('guns', {
+      method: 'POST',
+      body: JSON.stringify({ name, caliber, photo_url: pendingPhotoDataUrl }),
+    });
+    closeAddGunModal();
+    gunsLoaded = false;
+    await loadGuns();
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Add Gun';
+  }
+});
+
+// ── Back / Delete ─────────────────────────────────────────
+document.getElementById('btn-back-guns').addEventListener('click', () => {
+  if (gunChart) { gunChart.destroy(); gunChart = null; }
+  currentGunId = null;
+  showGunGrid();
+});
+
+document.getElementById('btn-delete-gun').addEventListener('click', async () => {
+  if (!currentGunId) return;
+  const gun = gunsData.find(g => g.id === currentGunId);
+  if (!confirm(`Delete "${gun?.name || 'this gun'}"? All sessions and cleaning logs will be deleted.`)) return;
+  try {
+    await apiFetch(`guns/${currentGunId}`, { method: 'DELETE' });
+    if (gunChart) { gunChart.destroy(); gunChart = null; }
+    currentGunId = null;
+    gunsLoaded = false;
+    await loadGuns();
+    showGunGrid();
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+});
+
+// ── Log Cleaning modal ────────────────────────────────────
+document.getElementById('btn-log-cleaning').addEventListener('click', () => {
+  document.getElementById('clean-date-input').value  = todayStr();
+  document.getElementById('clean-notes-input').value = '';
+  document.getElementById('clean-backdrop').style.display = 'flex';
+});
+document.getElementById('btn-clean-cancel').addEventListener('click', () => {
+  document.getElementById('clean-backdrop').style.display = 'none';
+});
+document.getElementById('clean-backdrop').addEventListener('click', e => {
+  if (e.target === document.getElementById('clean-backdrop'))
+    document.getElementById('clean-backdrop').style.display = 'none';
+});
+
+document.getElementById('btn-clean-submit').addEventListener('click', async () => {
+  if (!currentGunId) return;
+  const cleaned_at = document.getElementById('clean-date-input').value;
+  const notes      = document.getElementById('clean-notes-input').value.trim();
+  if (!cleaned_at) { alert('Please select a date.'); return; }
+
+  const btn = document.getElementById('btn-clean-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    await apiFetch('cleanings', {
+      method: 'POST',
+      body: JSON.stringify({ gun_id: currentGunId, cleaned_at, notes }),
+    });
+    document.getElementById('clean-backdrop').style.display = 'none';
+    await openGunDetail(currentGunId); // refresh stats
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Log Cleaning';
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOG SESSION TAB
+// ═══════════════════════════════════════════════════════════════════════════
+let logTabReady = false;
+
+async function initLogTab() {
+  document.getElementById('log-date-input').value = todayStr();
+  document.getElementById('log-success').style.display = 'none';
+  if (!logTabReady) {
+    logTabReady = true;
+    await refreshLogGunList();
+    await refreshRangeSuggestions();
+  }
+}
+
+async function refreshLogGunList() {
+  const sel = document.getElementById('log-gun-select');
+  try {
+    const guns = await apiFetch('guns');
+    gunsData = guns;
+    sel.innerHTML = '<option value="">— Select a gun —</option>';
+    guns.forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g.id; opt.textContent = `${g.name} (${g.caliber})`;
+      sel.appendChild(opt);
+    });
+  } catch (e) { /* ignore */ }
+}
+
+async function refreshRangeSuggestions() {
+  try {
+    const ranges = await apiFetch('ranges');
+    const dl = document.getElementById('range-datalist');
+    dl.innerHTML = ranges.map(r => `<option value="${escHtml(r)}">`).join('');
+  } catch (e) { /* ignore */ }
+}
+
+document.getElementById('btn-log-submit').addEventListener('click', async () => {
+  const gun_id        = document.getElementById('log-gun-select').value;
+  const session_date  = document.getElementById('log-date-input').value;
+  const rounds_fired  = parseInt(document.getElementById('log-rounds-input').value, 10);
+  const range_location = document.getElementById('log-range-input').value.trim();
+  const notes         = document.getElementById('log-notes-input').value.trim();
+
+  if (!gun_id)         { alert('Please select a gun.'); return; }
+  if (!session_date)   { alert('Please select a date.'); return; }
+  if (!rounds_fired || rounds_fired < 1) { alert('Please enter rounds fired (minimum 1).'); return; }
+
+  const btn = document.getElementById('btn-log-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    await apiFetch('sessions', {
+      method: 'POST',
+      body: JSON.stringify({ gun_id, session_date, rounds_fired, range_location, notes }),
+    });
+    // Reset form
+    document.getElementById('log-gun-select').value  = '';
+    document.getElementById('log-date-input').value  = todayStr();
+    document.getElementById('log-rounds-input').value = '';
+    document.getElementById('log-range-input').value  = '';
+    document.getElementById('log-notes-input').value  = '';
+    document.getElementById('log-success').style.display = 'block';
+    // Refresh ranges + flag guns tab as stale
+    await refreshRangeSuggestions();
+    gunsLoaded = false;
+    reportsLoaded = false;
+    setTimeout(() => { document.getElementById('log-success').style.display = 'none'; }, 3000);
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Log Session';
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// REPORTS TAB
+// ═══════════════════════════════════════════════════════════════════════════
+let reportsChart  = null;
+let reportsData   = null;
+let reportsLoaded = false;
+let rptViewMode   = 'gun'; // 'gun' | 'caliber'
+
+async function initReportsTab() {
+  if (!reportsLoaded) {
+    reportsLoaded = true;
+    await populateReportsFilters();
+    await loadReports();
+  }
+}
+
+async function populateReportsFilters() {
+  try {
+    const guns   = await apiFetch('guns');
+    const ranges = await apiFetch('ranges');
+
+    const gunSel = document.getElementById('rpt-gun-select');
+    gunSel.innerHTML = '<option value="">All Guns</option>';
+    guns.forEach(g => {
+      const o = document.createElement('option');
+      o.value = g.id; o.textContent = `${g.name} (${g.caliber})`;
+      gunSel.appendChild(o);
+    });
+
+    // Unique calibers from guns
+    const calibers = [...new Set(guns.map(g => g.caliber))].sort();
+    const calSel = document.getElementById('rpt-caliber-select');
+    calSel.innerHTML = '<option value="">All Calibers</option>';
+    calibers.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c;
+      calSel.appendChild(o);
+    });
+
+    const rangeSel = document.getElementById('rpt-range-select');
+    rangeSel.innerHTML = '<option value="">All Ranges</option>';
+    ranges.forEach(r => {
+      const o = document.createElement('option');
+      o.value = r; o.textContent = r;
+      rangeSel.appendChild(o);
+    });
+  } catch (e) { /* ignore */ }
+}
+
+document.getElementById('btn-apply-reports').addEventListener('click', () => {
+  reportsLoaded = false;
+  initReportsTab();
+});
+
+async function loadReports() {
+  const params = new URLSearchParams();
+  const gunId      = document.getElementById('rpt-gun-select').value;
+  const caliber    = document.getElementById('rpt-caliber-select').value;
+  const rangeVal   = document.getElementById('rpt-range-select').value;
+  const startMonth = document.getElementById('rpt-start-month').value;
+  const endMonth   = document.getElementById('rpt-end-month').value;
+
+  if (gunId)      params.set('gunId', gunId);
+  if (caliber)    params.set('caliber', caliber);
+  if (rangeVal)   params.set('range', rangeVal);
+  if (startMonth) params.set('startMonth', startMonth);
+  if (endMonth)   params.set('endMonth', endMonth);
+
+  document.getElementById('rpt-summary').innerHTML   = '<div class="loading-text">Loading…</div>';
+  document.getElementById('rpt-table-wrap').innerHTML = '';
+  document.getElementById('rpt-ranges-wrap').innerHTML = '';
+  document.getElementById('rpt-empty').style.display  = 'none';
+  document.getElementById('rpt-ranges-label').style.display = 'none';
+
+  try {
+    const qs   = params.toString() ? '?' + params.toString() : '';
+    reportsData = await apiFetch('reports' + qs);
+    renderReportsSummary(reportsData.summary);
+    renderReportsChart(reportsData.byGun);
+    renderReportsTable(reportsData.byGun);
+    renderRangeBreakdown(reportsData.rangeBreakdown);
+  } catch (e) {
+    document.getElementById('rpt-summary').innerHTML = '';
+    document.getElementById('rpt-empty').style.display = 'block';
+  }
+}
+
+function renderReportsSummary(s) {
+  if (!s) { document.getElementById('rpt-summary').innerHTML = ''; return; }
+  document.getElementById('rpt-summary').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-card-label">Total Rounds</div>
+      <div class="stat-card-value">${(s.total_rounds || 0).toLocaleString()}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Total Sessions</div>
+      <div class="stat-card-value">${(s.total_sessions || 0).toLocaleString()}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Guns Used</div>
+      <div class="stat-card-value">${s.unique_guns || 0}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Ranges Visited</div>
+      <div class="stat-card-value">${s.ranges_visited || 0}</div>
+    </div>`;
+}
+
+function renderReportsChart(byGun) {
+  const canvas = document.getElementById('reports-chart-canvas');
+  if (reportsChart) { reportsChart.destroy(); reportsChart = null; }
+  if (!byGun || !byGun.length) return;
+
+  // Collect sorted unique months
+  const monthSet = [...new Set(byGun.map(r => r.month))].sort();
+  const labels   = monthSet.map(fmtMonth);
+
+  let datasets;
+  if (rptViewMode === 'gun') {
+    const gunIds = [...new Set(byGun.map(r => r.gun_id))];
+    datasets = gunIds.map((gid, i) => {
+      const name = byGun.find(r => r.gun_id === gid)?.gun_name || gid;
+      return {
+        label: name,
+        data: monthSet.map(m => {
+          const row = byGun.find(r => r.gun_id === gid && r.month === m);
+          return row ? row.rounds_fired : 0;
+        }),
+        backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
+        borderRadius: 3,
+        borderSkipped: false,
+      };
+    });
+  } else {
+    const calibers = [...new Set(byGun.map(r => r.caliber))];
+    datasets = calibers.map((cal, i) => ({
+      label: cal,
+      data: monthSet.map(m => {
+        const rows = byGun.filter(r => r.caliber === cal && r.month === m);
+        return rows.reduce((sum, r) => sum + r.rounds_fired, 0);
+      }),
+      backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
+      borderRadius: 3,
+      borderSkipped: false,
+    }));
+  }
+
+  reportsChart = new Chart(canvas, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#555', font: { size: 10 }, boxWidth: 12, padding: 10 },
+        },
+        tooltip: {
+          backgroundColor: '#1a1a1a', borderColor: '#2a2a2a', borderWidth: 1,
+          titleColor: '#ddd', bodyColor: '#aaa',
+        },
+      },
+      scales: {
+        x: { stacked: true, grid: { color: '#1a1a1a' }, ticks: { color: '#555', font: { size: 10 } } },
+        y: { stacked: true, grid: { color: '#1a1a1a' }, ticks: { color: '#555', font: { size: 10 } }, beginAtZero: true },
+      },
+    },
+  });
+}
+
+document.getElementById('rpt-view-gun').addEventListener('click', () => {
+  rptViewMode = 'gun';
+  document.getElementById('rpt-view-gun').classList.add('active');
+  document.getElementById('rpt-view-caliber').classList.remove('active');
+  if (reportsData) renderReportsChart(reportsData.byGun);
+});
+document.getElementById('rpt-view-caliber').addEventListener('click', () => {
+  rptViewMode = 'caliber';
+  document.getElementById('rpt-view-caliber').classList.add('active');
+  document.getElementById('rpt-view-gun').classList.remove('active');
+  if (reportsData) renderReportsChart(reportsData.byGun);
+});
+
+function renderReportsTable(byGun) {
+  const wrap = document.getElementById('rpt-table-wrap');
+  if (!byGun || !byGun.length) { wrap.innerHTML = ''; return; }
+
+  // Sort by month desc, then gun
+  const rows = [...byGun].sort((a, b) => b.month.localeCompare(a.month) || a.gun_name.localeCompare(b.gun_name));
+  let html = `
+    <table>
+      <thead><tr><th>Month</th><th>Gun</th><th>Cal.</th><th>Sess.</th><th>Rounds</th></tr></thead>
+      <tbody>`;
+  rows.forEach(r => {
+    html += `<tr>
+      <td>${fmtMonth(r.month)}</td>
+      <td>${escHtml(r.gun_name)}</td>
+      <td>${escHtml(r.caliber)}</td>
+      <td style="text-align:center">${r.session_count}</td>
+      <td>${r.rounds_fired.toLocaleString()}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function renderRangeBreakdown(rangeBreakdown) {
+  const wrap  = document.getElementById('rpt-ranges-wrap');
+  const label = document.getElementById('rpt-ranges-label');
+  if (!rangeBreakdown || !rangeBreakdown.length) {
+    wrap.innerHTML = ''; label.style.display = 'none'; return;
+  }
+  label.style.display = '';
+  wrap.innerHTML = rangeBreakdown.map(r => `
+    <div class="range-card">
+      <div class="range-card-name">📍 ${escHtml(r.range_location)}</div>
+      <div class="range-card-stats">
+        <div class="range-stat">
+          <div class="range-stat-label">Sessions</div>
+          <div class="range-stat-value">${r.total_visits}</div>
+        </div>
+        <div class="range-stat">
+          <div class="range-stat-label">Rounds</div>
+          <div class="range-stat-value">${r.total_rounds.toLocaleString()}</div>
+        </div>
+        <div class="range-stat">
+          <div class="range-stat-label">Guns</div>
+          <div class="range-stat-value">${r.guns_used}</div>
+        </div>
+        <div class="range-stat">
+          <div class="range-stat-label">Last Visit</div>
+          <div class="range-stat-value" style="font-size:12px">${fmtDate(r.last_visited)}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════════════════
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function todayStr() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10);
+}
+
+function fmtMonth(yyyymm) {
+  if (!yyyymm) return '';
+  const [y, m] = yyyymm.split('-');
+  return new Date(parseInt(y), parseInt(m) - 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+}
+
+function fmtDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 </script>
 </body>
 </html>
