@@ -1,6 +1,6 @@
-import { neon } from '@netlify/neon';
+import { neon } from '@neondatabase/serverless';
 
-const sql = neon();
+const sql = neon(process.env.NETLIFY_DATABASE_URL);
 
 export const handler = async () => {
   const headers = { 'Content-Type': 'application/json' };
