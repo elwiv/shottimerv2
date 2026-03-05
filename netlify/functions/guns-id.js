@@ -47,6 +47,20 @@ export const handler = async (event) => {
         ORDER BY month DESC
       `;
 
+      const sessions = await sql`
+        SELECT id, session_date, rounds_fired, range_location, notes
+        FROM shooting_sessions
+        WHERE gun_id = ${id}
+        ORDER BY session_date DESC, created_at DESC
+      `;
+
+      const cleanings = await sql`
+        SELECT id, cleaned_at, notes
+        FROM cleaning_logs
+        WHERE gun_id = ${id}
+        ORDER BY cleaned_at DESC
+      `;
+
       return {
         statusCode: 200, headers: h,
         body: JSON.stringify({
@@ -58,6 +72,8 @@ export const handler = async (event) => {
             last_cleaned: lastClean?.cleaned_at || null,
           },
           monthly,
+          sessions,
+          cleanings,
         }),
       };
     }
