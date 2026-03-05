@@ -4,9 +4,16 @@ const sql = neon(process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL);
 const h = { 'Content-Type': 'application/json' };
 
 export const handler = async (event) => {
-  // Prefer ?id= from redirect, fall back to last path segment (/api/guns/:id)
-  const id = event.queryStringParameters?.id
-    || event.path?.split('/').filter(Boolean).pop();
+  // Extract gun UUID: check query params first, then parse from the original URL
+  let id = event.queryStringParameters?.id;
+  if (!id) {
+    try {
+      const pathname = new URL(event.rawUrl).pathname;
+      id = pathname.split('/').find(
+        s => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)
+      );
+    } catch {}
+  }
   if (!id) return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'Missing id' }) };
 
   try {

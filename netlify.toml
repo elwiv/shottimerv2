@@ -3,7 +3,7 @@
 
 [[redirects]]
   from = "/api/guns/:id"
-  to = "/.netlify/functions/guns-id?id=:id"
+  to = "/.netlify/functions/guns-id"
   status = 200
 
 [[redirects]]
