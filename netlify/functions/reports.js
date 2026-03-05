@@ -25,11 +25,11 @@ export const handler = async (event) => {
         MAX(s.session_date)       AS last_session_date
       FROM shooting_sessions s
       JOIN guns g ON s.gun_id = g.id
-      WHERE (${gunId}::UUID IS NULL    OR s.gun_id = ${gunId}::UUID)
-        AND (${caliber}    IS NULL     OR g.caliber = ${caliber})
-        AND (${rangeVal}   IS NULL     OR s.range_location = ${rangeVal})
-        AND (${startMonth} IS NULL     OR TO_CHAR(s.session_date, 'YYYY-MM') >= ${startMonth})
-        AND (${endMonth}   IS NULL     OR TO_CHAR(s.session_date, 'YYYY-MM') <= ${endMonth})
+      WHERE (${gunId}::UUID IS NULL         OR s.gun_id = ${gunId}::UUID)
+        AND (${caliber}::text    IS NULL   OR g.caliber = ${caliber}::text)
+        AND (${rangeVal}::text   IS NULL   OR s.range_location = ${rangeVal}::text)
+        AND (${startMonth}::text IS NULL   OR TO_CHAR(s.session_date, 'YYYY-MM') >= ${startMonth}::text)
+        AND (${endMonth}::text   IS NULL   OR TO_CHAR(s.session_date, 'YYYY-MM') <= ${endMonth}::text)
       GROUP BY TO_CHAR(s.session_date, 'YYYY-MM'), g.id, g.name, g.caliber
       ORDER BY month DESC, g.name
     `;
@@ -42,11 +42,11 @@ export const handler = async (event) => {
         COUNT(DISTINCT s.range_location) FILTER (WHERE s.range_location IS NOT NULL)::int AS ranges_visited
       FROM shooting_sessions s
       JOIN guns g ON s.gun_id = g.id
-      WHERE (${gunId}::UUID IS NULL    OR s.gun_id = ${gunId}::UUID)
-        AND (${caliber}    IS NULL     OR g.caliber = ${caliber})
-        AND (${rangeVal}   IS NULL     OR s.range_location = ${rangeVal})
-        AND (${startMonth} IS NULL     OR TO_CHAR(s.session_date, 'YYYY-MM') >= ${startMonth})
-        AND (${endMonth}   IS NULL     OR TO_CHAR(s.session_date, 'YYYY-MM') <= ${endMonth})
+      WHERE (${gunId}::UUID IS NULL         OR s.gun_id = ${gunId}::UUID)
+        AND (${caliber}::text    IS NULL   OR g.caliber = ${caliber}::text)
+        AND (${rangeVal}::text   IS NULL   OR s.range_location = ${rangeVal}::text)
+        AND (${startMonth}::text IS NULL   OR TO_CHAR(s.session_date, 'YYYY-MM') >= ${startMonth}::text)
+        AND (${endMonth}::text   IS NULL   OR TO_CHAR(s.session_date, 'YYYY-MM') <= ${endMonth}::text)
     `;
 
     const rangeBreakdown = await sql`
@@ -59,10 +59,10 @@ export const handler = async (event) => {
       FROM shooting_sessions s
       JOIN guns g ON s.gun_id = g.id
       WHERE s.range_location IS NOT NULL
-        AND (${gunId}::UUID IS NULL OR s.gun_id = ${gunId}::UUID)
-        AND (${caliber}    IS NULL  OR g.caliber = ${caliber})
-        AND (${startMonth} IS NULL  OR TO_CHAR(s.session_date, 'YYYY-MM') >= ${startMonth})
-        AND (${endMonth}   IS NULL  OR TO_CHAR(s.session_date, 'YYYY-MM') <= ${endMonth})
+        AND (${gunId}::UUID IS NULL         OR s.gun_id = ${gunId}::UUID)
+        AND (${caliber}::text    IS NULL   OR g.caliber = ${caliber}::text)
+        AND (${startMonth}::text IS NULL   OR TO_CHAR(s.session_date, 'YYYY-MM') >= ${startMonth}::text)
+        AND (${endMonth}::text   IS NULL   OR TO_CHAR(s.session_date, 'YYYY-MM') <= ${endMonth}::text)
       GROUP BY s.range_location
       ORDER BY total_rounds DESC
     `;
