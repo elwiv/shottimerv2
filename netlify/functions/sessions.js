@@ -17,9 +17,9 @@ export const handler = async (event) => {
         FROM shooting_sessions s
         LEFT JOIN guns g ON s.gun_id = g.id
         WHERE (${gunId}::UUID IS NULL OR s.gun_id = ${gunId}::UUID)
-          AND (${month} IS NULL OR TO_CHAR(s.session_date, 'YYYY-MM') = ${month})
-          AND (${caliber} IS NULL OR g.caliber = ${caliber})
-          AND (${rangeVal} IS NULL OR s.range_location = ${rangeVal})
+          AND (${month}::text IS NULL OR TO_CHAR(s.session_date, 'YYYY-MM') = ${month}::text)
+          AND (${caliber}::text IS NULL OR g.caliber = ${caliber}::text)
+          AND (${rangeVal}::text IS NULL OR s.range_location = ${rangeVal}::text)
         ORDER BY s.session_date DESC, s.created_at DESC
       `;
       return { statusCode: 200, headers: h, body: JSON.stringify(sessions) };
