@@ -890,6 +890,11 @@ input, textarea, select {
   width: calc(100% - 28px); flex-shrink: 0;
 }
 .clean-btn:active { opacity: 0.7; }
+.row-del-btn {
+  background: transparent; border: none; color: #555;
+  font-size: 13px; cursor: pointer; padding: 2px 4px; border-radius: 4px;
+}
+.row-del-btn:hover { color: #ef4444; }
 .chart-wrap {
   height: 200px; position: relative; padding: 0 14px; margin-bottom: 14px;
 }
@@ -2552,6 +2557,8 @@ async function openGunDetail(gunId) {
     renderGunDetail(gun);
   } catch (e) {
     document.getElementById('gun-detail-heading').textContent = 'Error';
+    document.getElementById('gun-stats').innerHTML =
+      `<div style="color:#c44;font-size:12px;grid-column:1/-1">Error: ${escHtml(e.message)}</div>`;
   }
 }
 
@@ -2674,11 +2681,12 @@ function renderSessionsList(sessions) {
       <td>${date}</td>
       <td style="text-align:right">${s.rounds_fired.toLocaleString()}</td>
       <td>${range}</td>
-    </tr>${notes ? `<tr><td colspan="3" style="padding-top:0">${notes}</td></tr>` : ''}`;
+      <td style="text-align:right"><button class="row-del-btn" onclick="deleteSession('${escHtml(s.id)}')">✕</button></td>
+    </tr>${notes ? `<tr><td colspan="4" style="padding-top:0">${notes}</td></tr>` : ''}`;
   });
   wrap.innerHTML = `
     <table>
-      <thead><tr><th>Date</th><th style="text-align:right">Rounds</th><th>Range</th></tr></thead>
+      <thead><tr><th>Date</th><th style="text-align:right">Rounds</th><th>Range</th><th></th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
@@ -2695,13 +2703,37 @@ function renderCleaningsList(cleanings) {
     rows += `<tr>
       <td>${fmtDate(c.cleaned_at)}</td>
       <td>${notes}</td>
+      <td style="text-align:right"><button class="row-del-btn" onclick="deleteCleaning('${escHtml(c.id)}')">✕</button></td>
     </tr>`;
   });
   wrap.innerHTML = `
     <table>
-      <thead><tr><th>Date</th><th>Notes</th></tr></thead>
+      <thead><tr><th>Date</th><th>Notes</th><th></th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
+}
+
+async function deleteSession(id) {
+  if (!confirm('Delete this session?')) return;
+  try {
+    await apiFetch(`sessions?id=${id}`, { method: 'DELETE' });
+    gunsLoaded = false;
+    reportsLoaded = false;
+    await openGunDetail(currentGunId);
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+async function deleteCleaning(id) {
+  if (!confirm('Delete this cleaning log?')) return;
+  try {
+    await apiFetch(`cleanings?id=${id}`, { method: 'DELETE' });
+    gunsLoaded = false;
+    await openGunDetail(currentGunId);
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
 }
 
 // ── Add Gun button & modal ────────────────────────────────
