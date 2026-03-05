@@ -16,20 +16,20 @@ export const handler = async (event) => {
         SELECT
           COALESCE(SUM(rounds_fired), 0)::int AS total_rounds,
           COUNT(*)::int AS total_sessions
-        FROM shooting_sessions WHERE gun_id = ${id}
+        FROM shooting_sessions WHERE gun_id = ${id}::uuid
       `;
 
       const [lastClean] = await sql`
         SELECT cleaned_at FROM cleaning_logs
-        WHERE gun_id = ${id} ORDER BY cleaned_at DESC LIMIT 1
+        WHERE gun_id = ${id}::uuid ORDER BY cleaned_at DESC LIMIT 1
       `;
 
       const [sinceCleaning] = await sql`
         SELECT COALESCE(SUM(rounds_fired), 0)::int AS rounds
         FROM shooting_sessions
-        WHERE gun_id = ${id}
+        WHERE gun_id = ${id}::uuid
           AND session_date > COALESCE(
-            (SELECT cleaned_at FROM cleaning_logs WHERE gun_id = ${id} ORDER BY cleaned_at DESC LIMIT 1),
+            (SELECT cleaned_at FROM cleaning_logs WHERE gun_id = ${id}::uuid ORDER BY cleaned_at DESC LIMIT 1),
             '1900-01-01'::DATE
           )
       `;
@@ -42,7 +42,7 @@ export const handler = async (event) => {
           STRING_AGG(DISTINCT range_location, ', ')
             FILTER (WHERE range_location IS NOT NULL) AS ranges
         FROM shooting_sessions
-        WHERE gun_id = ${id}
+        WHERE gun_id = ${id}::uuid
         GROUP BY TO_CHAR(session_date, 'YYYY-MM')
         ORDER BY month DESC
       `;
@@ -50,14 +50,14 @@ export const handler = async (event) => {
       const sessions = await sql`
         SELECT id, session_date, rounds_fired, range_location, notes
         FROM shooting_sessions
-        WHERE gun_id = ${id}
+        WHERE gun_id = ${id}::uuid
         ORDER BY session_date DESC, created_at DESC
       `;
 
       const cleanings = await sql`
         SELECT id, cleaned_at, notes
         FROM cleaning_logs
-        WHERE gun_id = ${id}
+        WHERE gun_id = ${id}::uuid
         ORDER BY cleaned_at DESC
       `;
 

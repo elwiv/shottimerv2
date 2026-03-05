@@ -28,6 +28,15 @@ export const handler = async (event) => {
       return { statusCode: 201, headers: h, body: JSON.stringify(log) };
     }
 
+    if (event.httpMethod === 'DELETE') {
+      const cleaningId = event.queryStringParameters?.id;
+      if (!cleaningId) {
+        return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'Missing id' }) };
+      }
+      await sql`DELETE FROM cleaning_logs WHERE id = ${cleaningId}::uuid`;
+      return { statusCode: 204, headers: h, body: '' };
+    }
+
     return { statusCode: 405, headers: h, body: JSON.stringify({ error: 'Method not allowed' }) };
   } catch (err) {
     return { statusCode: 500, headers: h, body: JSON.stringify({ error: err.message }) };

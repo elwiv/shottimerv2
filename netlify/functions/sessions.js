@@ -51,6 +51,15 @@ export const handler = async (event) => {
       return { statusCode: 201, headers: h, body: JSON.stringify(session) };
     }
 
+    if (event.httpMethod === 'DELETE') {
+      const sessionId = event.queryStringParameters?.id;
+      if (!sessionId) {
+        return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'Missing id' }) };
+      }
+      await sql`DELETE FROM shooting_sessions WHERE id = ${sessionId}::uuid`;
+      return { statusCode: 204, headers: h, body: '' };
+    }
+
     return { statusCode: 405, headers: h, body: JSON.stringify({ error: 'Method not allowed' }) };
   } catch (err) {
     return { statusCode: 500, headers: h, body: JSON.stringify({ error: err.message }) };
