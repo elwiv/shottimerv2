@@ -4,7 +4,9 @@ const sql = neon(process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL);
 const h = { 'Content-Type': 'application/json' };
 
 export const handler = async (event) => {
-  const id = event.queryStringParameters?.id;
+  // Prefer ?id= from redirect, fall back to last path segment (/api/guns/:id)
+  const id = event.queryStringParameters?.id
+    || event.path?.split('/').filter(Boolean).pop();
   if (!id) return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'Missing id' }) };
 
   try {
