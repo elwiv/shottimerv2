@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.NETLIFY_DATABASE_URL);
+const sql = neon(process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL);
 const h = { 'Content-Type': 'application/json' };
 
 export const handler = async (event) => {
@@ -15,7 +15,7 @@ export const handler = async (event) => {
       const sessions = await sql`
         SELECT s.*, g.name AS gun_name, g.caliber AS gun_caliber
         FROM shooting_sessions s
-        JOIN guns g ON s.gun_id = g.id
+        LEFT JOIN guns g ON s.gun_id = g.id
         WHERE (${gunId}::UUID IS NULL OR s.gun_id = ${gunId}::UUID)
           AND (${month} IS NULL OR TO_CHAR(s.session_date, 'YYYY-MM') = ${month})
           AND (${caliber} IS NULL OR g.caliber = ${caliber})
