@@ -1414,6 +1414,11 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
       <button id="btn-log-submit" class="submit-btn">Log Session</button>
       <div id="log-success" class="success-banner" style="display:none">✓ Session logged successfully!</div>
     </div>
+
+    <div style="padding:0 16px 16px">
+      <div class="section-label-small" style="margin-bottom:8px">Recent Sessions</div>
+      <div id="log-sessions-list"></div>
+    </div>
   </div>
 </div><!-- /section-log -->
 
@@ -2827,6 +2832,38 @@ async function initLogTab() {
     await refreshLogGunList();
     await refreshRangeSuggestions();
   }
+  loadLogSessionsList();
+}
+
+async function loadLogSessionsList() {
+  const wrap = document.getElementById('log-sessions-list');
+  wrap.innerHTML = '<div style="color:#555;font-size:12px">Loading…</div>';
+  try {
+    const sessions = await apiFetch('sessions');
+    if (!sessions.length) {
+      wrap.innerHTML = '<div style="color:#555;font-size:12px">No sessions logged yet.</div>';
+      return;
+    }
+    let rows = '';
+    sessions.forEach(s => {
+      const gun  = s.gun_name ? escHtml(s.gun_name) : '—';
+      const date = fmtDate(s.session_date);
+      const range = s.range_location ? escHtml(s.range_location) : '—';
+      rows += `<tr>
+        <td>${date}</td>
+        <td>${gun}</td>
+        <td style="text-align:right">${s.rounds_fired.toLocaleString()}</td>
+        <td>${range}</td>
+      </tr>`;
+    });
+    wrap.innerHTML = `
+      <table>
+        <thead><tr><th>Date</th><th>Gun</th><th style="text-align:right">Rounds</th><th>Range</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  } catch (e) {
+    wrap.innerHTML = `<div style="color:#c44;font-size:12px">Error loading sessions: ${escHtml(e.message)}</div>`;
+  }
 }
 
 async function refreshLogGunList() {
@@ -2876,8 +2913,9 @@ document.getElementById('btn-log-submit').addEventListener('click', async () => 
     document.getElementById('log-range-input').value  = '';
     document.getElementById('log-notes-input').value  = '';
     document.getElementById('log-success').style.display = 'block';
-    // Refresh ranges + flag guns tab as stale
+    // Refresh ranges, sessions list, and flag other tabs as stale
     await refreshRangeSuggestions();
+    loadLogSessionsList();
     gunsLoaded = false;
     reportsLoaded = false;
     setTimeout(() => { document.getElementById('log-success').style.display = 'none'; }, 3000);
