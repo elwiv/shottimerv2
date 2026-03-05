@@ -1328,7 +1328,13 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
       </div>
 
       <div class="section-label-small">Monthly Breakdown</div>
-      <div class="monthly-table" id="gun-monthly-table" style="margin-bottom:14px"></div>
+      <div class="monthly-table" id="gun-monthly-table"></div>
+
+      <div class="section-label-small" style="margin-top:16px">Session History</div>
+      <div id="gun-sessions-list" style="margin-bottom:4px"></div>
+
+      <div class="section-label-small" style="margin-top:12px">Cleaning History</div>
+      <div id="gun-cleanings-list" style="margin-bottom:14px"></div>
     </div>
   </div>
 
@@ -2584,6 +2590,10 @@ function renderGunDetail(gun) {
 
   // Monthly table
   renderMonthlyTable(gun.monthly || []);
+
+  // Session & cleaning history
+  renderSessionsList(gun.sessions || []);
+  renderCleaningsList(gun.cleanings || []);
 }
 
 function renderGunChart(monthly) {
@@ -2640,6 +2650,51 @@ function renderMonthlyTable(monthly) {
   wrap.innerHTML = `
     <table>
       <thead><tr><th>Month</th><th>Sess.</th><th>Rounds</th><th>Ranges</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function renderSessionsList(sessions) {
+  const wrap = document.getElementById('gun-sessions-list');
+  if (!sessions || !sessions.length) {
+    wrap.innerHTML = '<div style="color:#555;font-size:12px;padding:6px 0">No sessions logged yet.</div>';
+    return;
+  }
+  let rows = '';
+  sessions.forEach(s => {
+    const date  = fmtDate(s.session_date);
+    const range = s.range_location ? escHtml(s.range_location) : '—';
+    const notes = s.notes ? `<div style="color:#555;font-size:11px;margin-top:2px">${escHtml(s.notes)}</div>` : '';
+    rows += `<tr>
+      <td>${date}</td>
+      <td style="text-align:right">${s.rounds_fired.toLocaleString()}</td>
+      <td>${range}</td>
+    </tr>${notes ? `<tr><td colspan="3" style="padding-top:0">${notes}</td></tr>` : ''}`;
+  });
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>Date</th><th style="text-align:right">Rounds</th><th>Range</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function renderCleaningsList(cleanings) {
+  const wrap = document.getElementById('gun-cleanings-list');
+  if (!cleanings || !cleanings.length) {
+    wrap.innerHTML = '<div style="color:#555;font-size:12px;padding:6px 0">No cleanings logged yet.</div>';
+    return;
+  }
+  let rows = '';
+  cleanings.forEach(c => {
+    const notes = c.notes ? escHtml(c.notes) : '—';
+    rows += `<tr>
+      <td>${fmtDate(c.cleaned_at)}</td>
+      <td>${notes}</td>
+    </tr>`;
+  });
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>Date</th><th>Notes</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
