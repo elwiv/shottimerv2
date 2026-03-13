@@ -881,6 +881,11 @@ input, textarea, select {
   font-variant-numeric: tabular-nums;
 }
 .stat-card-value.green { color: #4ade80; }
+.stat-card-value.warn  { color: #f59e0b; }
+.form-hint {
+  font-size: 10px; color: #444; letter-spacing: 0.5px;
+  margin-top: 5px; line-height: 1.5;
+}
 .clean-btn {
   margin: 0 14px 14px; height: 44px;
   border: 1.5px solid #4ade80; border-radius: 14px;
@@ -1312,7 +1317,10 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
     <div class="sec-header" style="flex-shrink:0">
       <button id="btn-back-guns" class="back-btn">← Back</button>
       <span id="gun-detail-heading" class="sec-title"></span>
-      <button id="btn-delete-gun" class="icon-btn">Delete</button>
+      <div style="display:flex;gap:6px">
+        <button id="btn-edit-gun" class="icon-btn" style="color:#4ade80;border-color:#2a4a2e">Edit</button>
+        <button id="btn-delete-gun" class="icon-btn">Delete</button>
+      </div>
     </div>
     <div class="section-scroll">
       <div class="gun-detail-hero">
@@ -1358,6 +1366,11 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
       <input type="text" id="gun-caliber-input" class="form-input" placeholder="e.g. 5.56 NATO">
     </div>
     <div class="form-field">
+      <label class="form-label">Base Round Count <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <input type="number" id="gun-base-count-input" class="form-input" min="0" placeholder="0">
+      <div class="form-hint">Rounds fired before using this app — included in lifetime total only, not in session or monthly reports</div>
+    </div>
+    <div class="form-field">
       <label class="form-label">Photo (optional)</label>
       <div class="photo-preview-wrap" id="gun-photo-preview-wrap">
         <div id="gun-photo-placeholder" class="photo-hint">Tap to choose photo</div>
@@ -1384,6 +1397,36 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
     </div>
     <button id="btn-clean-submit" class="submit-btn">Log Cleaning</button>
     <span id="btn-clean-cancel" class="cancel-link">Cancel</span>
+  </div>
+</div>
+
+<!-- ── Edit Gun Modal ── -->
+<div id="edit-gun-backdrop" class="modal-back" style="display:none">
+  <div class="modal-sheet" style="max-width:480px">
+    <h2>Edit Gun</h2>
+    <div class="form-field">
+      <label class="form-label">Name *</label>
+      <input type="text" id="edit-gun-name-input" class="form-input" placeholder="e.g. Daniel Defense DDM4">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Caliber *</label>
+      <input type="text" id="edit-gun-caliber-input" class="form-input" placeholder="e.g. 5.56 NATO">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Base Round Count</label>
+      <input type="number" id="edit-gun-base-count-input" class="form-input" min="0" placeholder="0">
+      <div class="form-hint">Rounds fired before using this app — included in lifetime total only, not in session or monthly reports</div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Photo (optional)</label>
+      <div class="photo-preview-wrap" id="edit-gun-photo-preview-wrap">
+        <div id="edit-gun-photo-placeholder" class="photo-hint">Tap to change photo</div>
+        <img id="edit-gun-photo-preview-img" style="display:none;width:100%;height:100%;object-fit:cover">
+      </div>
+      <input type="file" id="edit-gun-photo-file" accept="image/*" style="display:none">
+    </div>
+    <button id="btn-edit-gun-submit" class="submit-btn">Save Changes</button>
+    <span id="btn-edit-gun-cancel" class="cancel-link">Cancel</span>
   </div>
 </div>
 
@@ -2563,7 +2606,8 @@ async function openGunDetail(gunId) {
 }
 
 function renderGunDetail(gun) {
-  document.getElementById('gun-detail-heading').textContent = gun.caliber;
+  currentGunData = gun;
+  document.getElementById('gun-detail-heading').textContent = gun.name;
 
   // Photo / placeholder
   const photoWrap = document.getElementById('gun-detail-photo-wrap');
@@ -2576,17 +2620,22 @@ function renderGunDetail(gun) {
 
   // Stat cards
   const s = gun.stats || {};
+  const baseCount = gun.base_round_count || 0;
   const lastCleaned = s.last_cleaned
     ? new Date(s.last_cleaned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : 'Never';
+  const baseHint = baseCount > 0
+    ? `<div style="font-size:10px;color:#444;margin-top:3px">incl. ${baseCount.toLocaleString()} base</div>`
+    : '';
   document.getElementById('gun-stats').innerHTML = `
     <div class="stat-card">
       <div class="stat-card-label">Total Rounds</div>
       <div class="stat-card-value">${(s.total_rounds || 0).toLocaleString()}</div>
+      ${baseHint}
     </div>
     <div class="stat-card">
       <div class="stat-card-label">Since Cleaning</div>
-      <div class="stat-card-value ${(s.rounds_since_cleaning || 0) > 500 ? 'green' : ''}">${(s.rounds_since_cleaning || 0).toLocaleString()}</div>
+      <div class="stat-card-value ${(s.rounds_since_cleaning || 0) > 500 ? 'warn' : ''}">${(s.rounds_since_cleaning || 0).toLocaleString()}</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-label">Total Sessions</div>
@@ -2737,7 +2786,9 @@ async function deleteCleaning(id) {
 }
 
 // ── Add Gun button & modal ────────────────────────────────
-let pendingPhotoDataUrl = null;
+let pendingPhotoDataUrl     = null;
+let editPendingPhotoDataUrl = null;
+let currentGunData          = null;
 
 document.getElementById('btn-add-gun').addEventListener('click', openAddGunModal);
 document.getElementById('gun-photo-preview-wrap').addEventListener('click', () => {
@@ -2754,9 +2805,10 @@ document.getElementById('gun-photo-file').addEventListener('change', async e => 
 
 function openAddGunModal() {
   pendingPhotoDataUrl = null;
-  document.getElementById('gun-name-input').value    = '';
-  document.getElementById('gun-caliber-input').value = '';
-  document.getElementById('gun-photo-file').value    = '';
+  document.getElementById('gun-name-input').value       = '';
+  document.getElementById('gun-caliber-input').value    = '';
+  document.getElementById('gun-base-count-input').value = '';
+  document.getElementById('gun-photo-file').value       = '';
   document.getElementById('gun-photo-preview-img').style.display = 'none';
   document.getElementById('gun-photo-placeholder').style.display = '';
   document.getElementById('add-gun-backdrop').style.display = 'flex';
@@ -2771,8 +2823,9 @@ document.getElementById('add-gun-backdrop').addEventListener('click', e => {
 });
 
 document.getElementById('btn-add-gun-submit').addEventListener('click', async () => {
-  const name    = document.getElementById('gun-name-input').value.trim();
-  const caliber = document.getElementById('gun-caliber-input').value.trim();
+  const name       = document.getElementById('gun-name-input').value.trim();
+  const caliber    = document.getElementById('gun-caliber-input').value.trim();
+  const baseCount  = parseInt(document.getElementById('gun-base-count-input').value) || 0;
   if (!name || !caliber) { alert('Name and caliber are required.'); return; }
 
   const btn = document.getElementById('btn-add-gun-submit');
@@ -2780,7 +2833,7 @@ document.getElementById('btn-add-gun-submit').addEventListener('click', async ()
   try {
     await apiFetch('guns', {
       method: 'POST',
-      body: JSON.stringify({ name, caliber, photo_url: pendingPhotoDataUrl }),
+      body: JSON.stringify({ name, caliber, photo_url: pendingPhotoDataUrl, base_round_count: baseCount }),
     });
     closeAddGunModal();
     gunsLoaded = false;
@@ -2848,6 +2901,73 @@ document.getElementById('btn-clean-submit').addEventListener('click', async () =
     alert('Error: ' + e.message);
   } finally {
     btn.disabled = false; btn.textContent = 'Log Cleaning';
+  }
+});
+
+// ── Edit Gun modal ────────────────────────────────────────
+document.getElementById('btn-edit-gun').addEventListener('click', () => {
+  if (!currentGunData) return;
+  const g = currentGunData;
+  editPendingPhotoDataUrl = g.photo_url || null;
+  document.getElementById('edit-gun-name-input').value        = g.name || '';
+  document.getElementById('edit-gun-caliber-input').value     = g.caliber || '';
+  document.getElementById('edit-gun-base-count-input').value  = g.base_round_count || 0;
+  document.getElementById('edit-gun-photo-file').value        = '';
+  const img = document.getElementById('edit-gun-photo-preview-img');
+  const ph  = document.getElementById('edit-gun-photo-placeholder');
+  if (g.photo_url) {
+    img.src = g.photo_url; img.style.display = 'block'; ph.style.display = 'none';
+  } else {
+    img.style.display = 'none'; ph.style.display = '';
+  }
+  document.getElementById('edit-gun-backdrop').style.display = 'flex';
+});
+
+document.getElementById('edit-gun-photo-preview-wrap').addEventListener('click', () => {
+  document.getElementById('edit-gun-photo-file').click();
+});
+document.getElementById('edit-gun-photo-file').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  editPendingPhotoDataUrl = await processPhoto(file);
+  const img = document.getElementById('edit-gun-photo-preview-img');
+  img.src = editPendingPhotoDataUrl; img.style.display = 'block';
+  document.getElementById('edit-gun-photo-placeholder').style.display = 'none';
+});
+
+function closeEditGunModal() {
+  document.getElementById('edit-gun-backdrop').style.display = 'none';
+}
+document.getElementById('btn-edit-gun-cancel').addEventListener('click', closeEditGunModal);
+document.getElementById('edit-gun-backdrop').addEventListener('click', e => {
+  if (e.target === document.getElementById('edit-gun-backdrop')) closeEditGunModal();
+});
+
+document.getElementById('btn-edit-gun-submit').addEventListener('click', async () => {
+  if (!currentGunId) return;
+  const name      = document.getElementById('edit-gun-name-input').value.trim();
+  const caliber   = document.getElementById('edit-gun-caliber-input').value.trim();
+  const baseCount = parseInt(document.getElementById('edit-gun-base-count-input').value) || 0;
+  if (!name || !caliber) { alert('Name and caliber are required.'); return; }
+
+  const btn = document.getElementById('btn-edit-gun-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    await apiFetch(`guns/${currentGunId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name, caliber, photo_url: editPendingPhotoDataUrl, base_round_count: baseCount }),
+    });
+    closeEditGunModal();
+    gunsLoaded = false;
+    reportsLoaded = false;
+    await openGunDetail(currentGunId);
+    // Also refresh the gun in the local list for the grid
+    const idx = gunsData.findIndex(g => g.id === currentGunId);
+    if (idx !== -1) { gunsData[idx] = { ...gunsData[idx], name, caliber }; }
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Changes';
   }
 });
 

@@ -11,13 +11,13 @@ export const handler = async (event) => {
     }
 
     if (event.httpMethod === 'POST') {
-      const { name, caliber, photo_url } = JSON.parse(event.body || '{}');
+      const { name, caliber, photo_url, base_round_count } = JSON.parse(event.body || '{}');
       if (!name || !caliber) {
         return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'name and caliber required' }) };
       }
       const [gun] = await sql`
-        INSERT INTO guns (name, caliber, photo_url)
-        VALUES (${name}, ${caliber}, ${photo_url || null})
+        INSERT INTO guns (name, caliber, photo_url, base_round_count)
+        VALUES (${name}, ${caliber}, ${photo_url || null}, ${parseInt(base_round_count) || 0})
         RETURNING *
       `;
       return { statusCode: 201, headers: h, body: JSON.stringify(gun) };

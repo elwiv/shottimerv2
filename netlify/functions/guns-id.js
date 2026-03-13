@@ -75,7 +75,8 @@ export const handler = async (event) => {
         body: JSON.stringify({
           ...gun,
           stats: {
-            total_rounds: totals.total_rounds,
+            total_rounds: totals.total_rounds + (gun.base_round_count || 0),
+            session_rounds: totals.total_rounds,
             total_sessions: totals.total_sessions,
             rounds_since_cleaning: sinceCleaning.rounds,
             last_cleaned: lastClean?.cleaned_at || null,
@@ -88,12 +89,13 @@ export const handler = async (event) => {
     }
 
     if (event.httpMethod === 'PUT') {
-      const { name, caliber, photo_url } = JSON.parse(event.body || '{}');
+      const { name, caliber, photo_url, base_round_count } = JSON.parse(event.body || '{}');
       if (!name || !caliber) {
         return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'name and caliber required' }) };
       }
       const [gun] = await sql`
-        UPDATE guns SET name = ${name}, caliber = ${caliber}, photo_url = ${photo_url || null}
+        UPDATE guns SET name = ${name}, caliber = ${caliber}, photo_url = ${photo_url || null},
+          base_round_count = ${parseInt(base_round_count) || 0}
         WHERE id = ${id} RETURNING *
       `;
       if (!gun) return { statusCode: 404, headers: h, body: JSON.stringify({ error: 'Not found' }) };

@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS guns (
   name TEXT NOT NULL,
   caliber TEXT NOT NULL,
   photo_url TEXT,
+  base_round_count INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
