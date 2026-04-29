@@ -484,89 +484,6 @@ body {
 #btn-history-close:active { opacity: 0.7; }
 
 /* ── Help modal ── */
-#modal-backdrop {
-  position: fixed; inset: 0;
-  z-index: 100;
-  background: rgba(0,0,0,0.82);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-#modal {
-  background: #161616;
-  border: 1px solid #2a2a2a;
-  border-radius: 24px;
-  padding: 28px 24px 24px;
-  max-width: 380px;
-  width: 100%;
-  max-height: 90dvh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-#modal h1 {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #fff;
-  margin-bottom: 4px;
-}
-#modal .modal-sub {
-  font-size: 12px;
-  color: #555;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-}
-#modal .section-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #4ade80;
-  margin-bottom: 8px;
-  margin-top: 18px;
-}
-#modal ul {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-#modal ul li {
-  font-size: 14px;
-  color: #aaa;
-  line-height: 1.5;
-  padding-left: 16px;
-  position: relative;
-}
-#modal ul li::before {
-  content: '—';
-  position: absolute;
-  left: 0;
-  color: #333;
-}
-#modal ul li strong {
-  color: #e0e0e0;
-  font-weight: 600;
-}
-#modal-dismiss {
-  margin-top: 24px;
-  width: 100%;
-  height: 56px;
-  border: none;
-  border-radius: 16px;
-  background: #4ade80;
-  color: #000;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  cursor: pointer;
-  -webkit-appearance: none;
-}
-#modal-dismiss:active { opacity: 0.8; }
 
 /* ── Bullet Drop ── */
 .bd-ctrl {
@@ -999,6 +916,38 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
 
 /* ── Log Session ── */
 .log-form-wrap { padding: 14px; }
+.gun-rows-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: #4ade80;
+  margin: 16px 0 8px;
+}
+.gun-row {
+  display: flex; gap: 8px; align-items: center;
+  margin-bottom: 8px;
+}
+.gun-row .gun-row-select {
+  flex: 1; min-width: 0;
+}
+.gun-row .gun-row-rounds {
+  width: 90px; flex-shrink: 0;
+}
+.btn-remove-gun-row {
+  width: 34px; height: 44px; flex-shrink: 0;
+  border: 1px solid #333; border-radius: 10px;
+  background: #1a1a1a; color: #888;
+  font-size: 16px; cursor: pointer; -webkit-appearance: none;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+}
+.btn-remove-gun-row:active { opacity: 0.6; }
+.btn-add-gun-row {
+  width: 100%; height: 40px; border: 1.5px dashed #333;
+  border-radius: 12px; background: transparent; color: #888;
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer; -webkit-appearance: none;
+  margin-bottom: 14px;
+}
+.btn-add-gun-row:active { opacity: 0.6; }
 .success-banner {
   background: #0e1f12; border: 1px solid #4ade80;
   border-radius: 14px; padding: 14px;
@@ -1196,30 +1145,6 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
   </div>
 </div>
 
-<!-- ── Help modal ── -->
-<div id="modal-backdrop">
-  <div id="modal">
-    <h1>Shooting Tool</h1>
-    <div class="modal-sub">Two tools for the range</div>
-
-    <div class="section-label">Shot Timer</div>
-    <ul>
-      <li>Tap <strong>Start</strong> — after a random 1–4 s delay a loud beep fires as the start signal.</li>
-      <li>Your <strong>reaction time</strong> is the elapsed time from the beep to your first recorded shot.</li>
-      <li><strong>Follow-up shot times</strong> appear as split rows below, each showing total time and the gap since the previous shot.</li>
-      <li><strong>Tap</strong> mode — tap anywhere on screen after each shot. <strong>Mic</strong> mode — the microphone listens for gunshots automatically.</li>
-    </ul>
-
-    <div class="section-label">Bullet Drop</div>
-    <ul>
-      <li>Select <strong>5.56</strong> or <strong>9mm</strong>, your barrel length or platform, and your zero distance.</li>
-      <li>The table shows bullet impact relative to point of aim at each range out to <strong>300 yards</strong>.</li>
-      <li>Green = your zero. White = above LoS. Gray / red = below LoS.</li>
-    </ul>
-
-    <button id="modal-dismiss">Got it</button>
-  </div>
-</div>
 
 <!-- ── Header ── -->
 <div id="header">
@@ -1529,28 +1454,23 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
   <div class="section-scroll">
     <div class="log-form-wrap">
       <div class="form-field">
-        <label class="form-label">Gun *</label>
-        <select id="log-gun-select" class="form-input">
-          <option value="">— Select a gun —</option>
-        </select>
-      </div>
-      <div class="form-field">
         <label class="form-label">Date *</label>
         <input type="date" id="log-date-input" class="form-input">
       </div>
       <div class="form-field">
-        <label class="form-label">Rounds Fired *</label>
-        <input type="number" id="log-rounds-input" class="form-input" min="1" placeholder="0">
-      </div>
-      <div class="form-field">
         <label class="form-label">Range Location</label>
-        <input type="text" id="log-range-input" class="form-input" list="range-datalist" placeholder="Where did you shoot?">
-        <datalist id="range-datalist"></datalist>
+        <select id="log-range-select" class="form-input">
+          <option value="">— Select range —</option>
+        </select>
+        <input type="text" id="log-range-new" class="form-input" placeholder="Enter new range name" style="display:none;margin-top:8px">
       </div>
       <div class="form-field">
         <label class="form-label">Notes</label>
         <textarea id="log-notes-input" class="form-input" placeholder="Drills, conditions, ammo, etc."></textarea>
       </div>
+      <div class="gun-rows-label">Guns &amp; Rounds *</div>
+      <div id="log-gun-rows"></div>
+      <button id="btn-log-add-gun" class="btn-add-gun-row">+ Add Gun</button>
       <button id="btn-log-submit" class="submit-btn">Log Session</button>
       <div id="log-success" class="success-banner" style="display:none">✓ Session logged successfully!</div>
     </div>
@@ -2095,12 +2015,6 @@ elOverlay.addEventListener('click', e => {
   if (aboveBtnArea(e.clientY)) recordSplit();
 });
 
-// ── Help modal ────────────────────────────────────────────────────────────
-const modalBackdrop = document.getElementById('modal-backdrop');
-const modalDismiss  = document.getElementById('modal-dismiss');
-function closeModal() { hide(modalBackdrop); }
-modalDismiss.addEventListener('touchend', e => { e.preventDefault(); closeModal(); }, { passive: false });
-modalDismiss.addEventListener('click', closeModal);
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && audioCtx) audioCtx.resume();
@@ -3192,8 +3106,8 @@ async function initLogTab() {
   document.getElementById('log-success').style.display = 'none';
   if (!logTabReady) {
     logTabReady = true;
-    await refreshLogGunList();
-    await refreshRangeSuggestions();
+    await Promise.all([refreshLogGunsData(), refreshRangeDropdown()]);
+    addGunRow(); // start with one empty gun row
   }
   loadLogSessionsList();
 }
@@ -3229,55 +3143,105 @@ async function loadLogSessionsList() {
   }
 }
 
-async function refreshLogGunList() {
-  const sel = document.getElementById('log-gun-select');
+async function refreshLogGunsData() {
   try {
     const guns = await apiFetch('guns');
     gunsData = guns;
-    sel.innerHTML = '<option value="">— Select a gun —</option>';
-    guns.forEach(g => {
-      const opt = document.createElement('option');
-      opt.value = g.id; opt.textContent = `${g.name} (${g.caliber})`;
-      sel.appendChild(opt);
-    });
   } catch (e) { /* ignore */ }
 }
 
-async function refreshRangeSuggestions() {
+function buildGunOptions() {
+  let opts = '<option value="">— Select gun —</option>';
+  (gunsData || []).forEach(g => {
+    opts += `<option value="${escHtml(g.id)}">${escHtml(g.name)} (${escHtml(g.caliber)})</option>`;
+  });
+  return opts;
+}
+
+function addGunRow() {
+  const container = document.getElementById('log-gun-rows');
+  const row = document.createElement('div');
+  row.className = 'gun-row';
+  row.innerHTML = `
+    <select class="gun-row-select form-input">${buildGunOptions()}</select>
+    <input type="number" class="gun-row-rounds form-input" min="1" placeholder="Rounds">
+    <button class="btn-remove-gun-row" type="button">✕</button>`;
+  row.querySelector('.btn-remove-gun-row').addEventListener('click', () => {
+    if (document.querySelectorAll('#log-gun-rows .gun-row').length > 1) {
+      row.remove();
+    }
+  });
+  container.appendChild(row);
+}
+
+document.getElementById('btn-log-add-gun').addEventListener('click', addGunRow);
+
+async function refreshRangeDropdown() {
   try {
     const ranges = await apiFetch('ranges');
-    const dl = document.getElementById('range-datalist');
-    dl.innerHTML = ranges.map(r => `<option value="${escHtml(r)}">`).join('');
+    const sel = document.getElementById('log-range-select');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Select range —</option>';
+    ranges.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r; opt.textContent = r;
+      sel.appendChild(opt);
+    });
+    const newOpt = document.createElement('option');
+    newOpt.value = '__new__'; newOpt.textContent = '+ Add new range…';
+    sel.appendChild(newOpt);
+    if (current && current !== '__new__') sel.value = current;
   } catch (e) { /* ignore */ }
 }
 
-document.getElementById('btn-log-submit').addEventListener('click', async () => {
-  const gun_id        = document.getElementById('log-gun-select').value;
-  const session_date  = document.getElementById('log-date-input').value;
-  const rounds_fired  = parseInt(document.getElementById('log-rounds-input').value, 10);
-  const range_location = document.getElementById('log-range-input').value.trim();
-  const notes         = document.getElementById('log-notes-input').value.trim();
+document.getElementById('log-range-select').addEventListener('change', function() {
+  const newInput = document.getElementById('log-range-new');
+  newInput.style.display = this.value === '__new__' ? 'block' : 'none';
+  if (this.value !== '__new__') newInput.value = '';
+});
 
-  if (!gun_id)         { alert('Please select a gun.'); return; }
-  if (!session_date)   { alert('Please select a date.'); return; }
-  if (!rounds_fired || rounds_fired < 1) { alert('Please enter rounds fired (minimum 1).'); return; }
+document.getElementById('btn-log-submit').addEventListener('click', async () => {
+  const session_date = document.getElementById('log-date-input').value;
+  const notes        = document.getElementById('log-notes-input').value.trim();
+  const rangeSelVal  = document.getElementById('log-range-select').value;
+  const range_location = rangeSelVal === '__new__'
+    ? document.getElementById('log-range-new').value.trim()
+    : rangeSelVal;
+
+  if (!session_date) { alert('Please select a date.'); return; }
+
+  const gunRows = Array.from(document.querySelectorAll('#log-gun-rows .gun-row'));
+  const entries = gunRows.map(row => ({
+    gun_id: row.querySelector('.gun-row-select').value,
+    rounds_fired: parseInt(row.querySelector('.gun-row-rounds').value, 10),
+  }));
+
+  if (entries.length === 0) { alert('Add at least one gun.'); return; }
+  for (const e of entries) {
+    if (!e.gun_id) { alert('Please select a gun for each row.'); return; }
+    if (!e.rounds_fired || e.rounds_fired < 1) { alert('Please enter rounds fired (minimum 1) for each gun.'); return; }
+  }
+  if (rangeSelVal === '__new__' && !range_location) { alert('Please enter a name for the new range.'); return; }
 
   const btn = document.getElementById('btn-log-submit');
   btn.disabled = true; btn.textContent = 'Saving…';
   try {
-    await apiFetch('sessions', {
-      method: 'POST',
-      body: JSON.stringify({ gun_id, session_date, rounds_fired, range_location, notes }),
-    });
+    for (const e of entries) {
+      await apiFetch('sessions', {
+        method: 'POST',
+        body: JSON.stringify({ gun_id: e.gun_id, session_date, rounds_fired: e.rounds_fired, range_location: range_location || null, notes }),
+      });
+    }
     // Reset form
-    document.getElementById('log-gun-select').value  = '';
-    document.getElementById('log-date-input').value  = todayStr();
-    document.getElementById('log-rounds-input').value = '';
-    document.getElementById('log-range-input').value  = '';
-    document.getElementById('log-notes-input').value  = '';
+    document.getElementById('log-date-input').value = todayStr();
+    document.getElementById('log-range-select').value = '';
+    document.getElementById('log-range-new').style.display = 'none';
+    document.getElementById('log-range-new').value = '';
+    document.getElementById('log-notes-input').value = '';
+    document.getElementById('log-gun-rows').innerHTML = '';
+    addGunRow();
     document.getElementById('log-success').style.display = 'block';
-    // Refresh ranges, sessions list, and flag other tabs as stale
-    await refreshRangeSuggestions();
+    await refreshRangeDropdown();
     loadLogSessionsList();
     gunsLoaded = false;
     reportsLoaded = false;
