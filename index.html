@@ -1096,6 +1096,79 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
   letter-spacing: 1px; text-transform: uppercase;
   padding: 32px 0;
 }
+
+/* ── Dashboard ── */
+#section-dashboard {
+  display: flex; flex-direction: column; flex: 1;
+  overflow: hidden; min-height: 0;
+}
+.dashboard-wrap { padding: 10px 14px; }
+
+/* ── Beta Tools tab button ── */
+#beta-tab {
+  flex: 0 0 auto; padding: 0 12px; min-width: 60px;
+  height: 38px; border: 1.5px solid #2a2a3e; border-radius: 12px;
+  background: #13131f; color: #666; font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+  -webkit-appearance: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+#beta-tab.active { background: #1a1a30; color: #818cf8; border-color: #4040a0; }
+#beta-tab:active { opacity: 0.75; }
+
+/* ── Beta Tools drawer ── */
+#beta-backdrop {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.85);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+#beta-drawer {
+  background: #161616; border: 1px solid #2a2a2a;
+  border-radius: 24px 24px 0 0; padding-top: 20px;
+  width: 100%; display: flex; flex-direction: column;
+}
+#beta-drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px 16px; border-bottom: 1px solid #1e1e1e; flex-shrink: 0;
+}
+#beta-drawer-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: #818cf8;
+}
+#btn-beta-close {
+  height: 28px; padding: 0 10px;
+  border: 1.5px solid #3a3a3a; border-radius: 8px;
+  background: transparent; color: #555;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; cursor: pointer; -webkit-appearance: none;
+}
+#btn-beta-close:active { opacity: 0.7; }
+.beta-tool-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px 20px; cursor: pointer;
+  border-bottom: 1px solid #1a1a1a;
+}
+.beta-tool-row:active { background: #1e1e1e; }
+.beta-tool-icon { font-size: 24px; }
+.beta-tool-info { flex: 1; }
+.beta-tool-label { font-size: 14px; font-weight: 600; color: #ddd; margin-bottom: 3px; }
+.beta-tool-desc  { font-size: 11px; color: #555; letter-spacing: 0.5px; }
+.beta-badge {
+  padding: 3px 8px; background: #1a1a30; border: 1px solid #3a3a70;
+  border-radius: 6px; font-size: 9px; font-weight: 700;
+  letter-spacing: 1.5px; color: #818cf8; text-transform: uppercase; flex-shrink: 0;
+}
+#beta-close-wrap {
+  padding: 12px 14px;
+  padding-bottom: max(env(safe-area-inset-bottom), 20px);
+}
+#btn-beta-close-bottom {
+  width: 100%; height: 52px; border: none; border-radius: 16px;
+  background: #222; color: #777; font-size: 14px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+  -webkit-appearance: none;
+}
+#btn-beta-close-bottom:active { opacity: 0.7; }
 </style>
 </head>
 <body>
@@ -1154,19 +1227,38 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
   <button id="btn-history">History</button>
 </div>
 
-<!-- ── Tool nav tabs ── -->
+<!-- ── Primary nav tabs ── -->
 <div id="nav-tabs">
-  <button class="nav-tab active" id="tab-timer">Shot Timer</button>
-  <button class="nav-tab"        id="tab-drop">Bullet Drop</button>
-  <button class="nav-tab"        id="tab-guns">My Guns</button>
+  <button class="nav-tab active" id="tab-dashboard">Dashboard</button>
   <button class="nav-tab"        id="tab-log">Log Session</button>
-  <button class="nav-tab"        id="tab-reports">Reports</button>
+  <button class="nav-tab"        id="tab-guns">My Guns</button>
+  <button class="nav-tab"        id="tab-reports">History</button>
+  <button class="nav-tab"        id="tab-drop">Ballistics</button>
+  <button id="beta-tab">Beta</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ -->
-<!-- Shot Timer section                                      -->
+<!-- Dashboard section                                       -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<div id="section-timer">
+<div id="section-dashboard">
+  <div class="section-scroll">
+    <div class="dashboard-wrap">
+      <div class="summary-grid" id="dash-stats-grid"></div>
+      <div class="section-label-small" id="dash-recent-label" style="margin-bottom:8px;display:none">Recent Sessions</div>
+      <div id="dash-recent-sessions"></div>
+      <div id="dash-empty" class="empty-state" style="display:none">
+        <div class="empty-state-icon">🎯</div>
+        No sessions logged yet.<br>Tap <strong style="color:#ddd">Log Session</strong> to get started.
+      </div>
+    </div>
+  </div>
+  <button id="dash-log-btn" class="fab-btn">+ Log Session</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- Shot Timer section  (Beta)                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="section-timer" style="display:none">
 
   <div id="mode-row">
     <button class="mode-btn"        id="mode-tap">&#9654; Tap</button>
@@ -1522,6 +1614,27 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
     </div>
   </div>
 </div><!-- /section-reports -->
+
+<!-- ── Beta Tools Drawer ── -->
+<div id="beta-backdrop" style="display:none">
+  <div id="beta-drawer">
+    <div id="beta-drawer-header">
+      <div id="beta-drawer-title">Beta Tools</div>
+      <button id="btn-beta-close">Close</button>
+    </div>
+    <div class="beta-tool-row" id="beta-shot-timer-btn">
+      <div class="beta-tool-icon">⏱</div>
+      <div class="beta-tool-info">
+        <div class="beta-tool-label">Shot Timer</div>
+        <div class="beta-tool-desc">Tap or mic-activated timer for range sessions</div>
+      </div>
+      <div class="beta-badge">Beta</div>
+    </div>
+    <div id="beta-close-wrap">
+      <button id="btn-beta-close-bottom">Done</button>
+    </div>
+  </div>
+</div>
 
 <!-- Tap overlay: fixed, outside sections -->
 <div id="tap-overlay" style="display:none"></div>
@@ -2054,45 +2167,142 @@ wire(btnClearHistory, () => {
 });
 
 // ── Tab navigation ────────────────────────────────────────────────────────
-const tabTimer   = document.getElementById('tab-timer');
-const tabDrop    = document.getElementById('tab-drop');
-const tabGuns    = document.getElementById('tab-guns');
-const tabLog     = document.getElementById('tab-log');
-const tabReports = document.getElementById('tab-reports');
-const secTimer   = document.getElementById('section-timer');
-const secDrop    = document.getElementById('section-drop');
-const secGuns    = document.getElementById('section-guns');
-const secLog     = document.getElementById('section-log');
-const secReports = document.getElementById('section-reports');
+const tabDashboard = document.getElementById('tab-dashboard');
+const tabDrop      = document.getElementById('tab-drop');
+const tabGuns      = document.getElementById('tab-guns');
+const tabLog       = document.getElementById('tab-log');
+const tabReports   = document.getElementById('tab-reports');
+const tabBeta      = document.getElementById('beta-tab');
+const secDashboard = document.getElementById('section-dashboard');
+const secTimer     = document.getElementById('section-timer');
+const secDrop      = document.getElementById('section-drop');
+const secGuns      = document.getElementById('section-guns');
+const secLog       = document.getElementById('section-log');
+const secReports   = document.getElementById('section-reports');
 
 const ALL_TABS = [
-  { tab: tabTimer,   sec: secTimer,   id: 'timer' },
-  { tab: tabDrop,    sec: secDrop,    id: 'drop' },
-  { tab: tabGuns,    sec: secGuns,    id: 'guns' },
-  { tab: tabLog,     sec: secLog,     id: 'log' },
-  { tab: tabReports, sec: secReports, id: 'reports' },
+  { tab: tabDashboard, sec: secDashboard, id: 'dashboard' },
+  { tab: tabLog,       sec: secLog,       id: 'log' },
+  { tab: tabGuns,      sec: secGuns,      id: 'guns' },
+  { tab: tabReports,   sec: secReports,   id: 'reports' },
+  { tab: tabDrop,      sec: secDrop,      id: 'drop' },
+  { tab: null,         sec: secTimer,     id: 'timer' },
 ];
-let currentTab = 'timer';
+let currentTab = 'dashboard';
 
 function showTab(id) {
   currentTab = id;
   ALL_TABS.forEach(({ tab, sec, id: tid }) => {
     const active = tid === id;
-    tab.classList.toggle('active', active);
+    if (tab) tab.classList.toggle('active', active);
     sec.style.display = active ? 'flex' : 'none';
   });
+  tabBeta.classList.toggle('active', id === 'timer');
   btnHistory.style.display = id === 'timer' ? '' : 'none';
-  if (id === 'drop')    bdRender();
-  if (id === 'guns')    initGunsTab();
-  if (id === 'log')     initLogTab();
-  if (id === 'reports') initReportsTab();
+  if (id === 'drop')      bdRender();
+  if (id === 'guns')      initGunsTab();
+  if (id === 'log')       initLogTab();
+  if (id === 'reports')   initReportsTab();
+  if (id === 'dashboard') initDashboardTab();
 }
 
-wire(tabTimer,   () => showTab('timer'));
-wire(tabDrop,    () => showTab('drop'));
-wire(tabGuns,    () => showTab('guns'));
-wire(tabLog,     () => showTab('log'));
-wire(tabReports, () => showTab('reports'));
+wire(tabDashboard, () => showTab('dashboard'));
+wire(tabDrop,      () => showTab('drop'));
+wire(tabGuns,      () => showTab('guns'));
+wire(tabLog,       () => showTab('log'));
+wire(tabReports,   () => showTab('reports'));
+
+// ── Beta Tools drawer ─────────────────────────────────────────────────────
+const betaBackdrop       = document.getElementById('beta-backdrop');
+const btnBetaClose       = document.getElementById('btn-beta-close');
+const btnBetaCloseBottom = document.getElementById('btn-beta-close-bottom');
+const betaShotTimerBtn   = document.getElementById('beta-shot-timer-btn');
+
+wire(tabBeta,           () => { betaBackdrop.style.display = 'flex'; });
+wire(btnBetaClose,      () => { betaBackdrop.style.display = 'none'; });
+wire(btnBetaCloseBottom,() => { betaBackdrop.style.display = 'none'; });
+betaBackdrop.addEventListener('click', e => {
+  if (e.target === betaBackdrop) betaBackdrop.style.display = 'none';
+});
+wire(betaShotTimerBtn, () => {
+  betaBackdrop.style.display = 'none';
+  showTab('timer');
+});
+
+// ── Dashboard ─────────────────────────────────────────────────────────────
+
+document.getElementById('dash-log-btn').addEventListener('click', () => showTab('log'));
+
+async function initDashboardTab() {
+  await loadDashboardData();
+}
+
+async function loadDashboardData() {
+  const statsEl  = document.getElementById('dash-stats-grid');
+  const recentEl = document.getElementById('dash-recent-sessions');
+  const emptyEl  = document.getElementById('dash-empty');
+  const lblEl    = document.getElementById('dash-recent-label');
+
+  statsEl.innerHTML  = '<div class="stat-card" style="grid-column:span 2"><div class="loading-text">Loading…</div></div>';
+  recentEl.innerHTML = '';
+  emptyEl.style.display = 'none';
+  lblEl.style.display   = 'none';
+
+  try {
+    const sessions = await apiFetch('sessions');
+
+    if (!sessions.length) {
+      statsEl.innerHTML = '';
+      emptyEl.style.display = '';
+      return;
+    }
+
+    const totalRounds = sessions.reduce((sum, s) => sum + (s.rounds_fired || 0), 0);
+    const yr          = new Date().getFullYear().toString();
+    const yrSess      = sessions.filter(s => s.session_date && s.session_date.startsWith(yr));
+    const yrRounds    = yrSess.reduce((sum, s) => sum + (s.rounds_fired || 0), 0);
+
+    statsEl.innerHTML = `
+      <div class="stat-card">
+        <div class="stat-card-label">Total Sessions</div>
+        <div class="stat-card-value">${sessions.length}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Total Rounds</div>
+        <div class="stat-card-value">${totalRounds.toLocaleString()}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">${yr} Sessions</div>
+        <div class="stat-card-value">${yrSess.length}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">${yr} Rounds</div>
+        <div class="stat-card-value">${yrRounds.toLocaleString()}</div>
+      </div>`;
+
+    lblEl.style.display = '';
+    recentEl.innerHTML  = sessions.slice(0, 5).map(s => `
+      <div style="background:#181818;border:1px solid #232323;border-radius:14px;padding:12px 14px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:13px;font-weight:600;color:#ddd">${s.gun_name ? escHtml(s.gun_name) : '—'}</div>
+          <div style="font-size:11px;color:#555">${fmtDate(s.session_date)}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="background:#131313;border-radius:10px;padding:7px 12px;text-align:center;min-width:64px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#555;text-transform:uppercase;margin-bottom:2px">Rounds</div>
+            <div style="font-size:17px;font-weight:300;color:#ddd;font-variant-numeric:tabular-nums">${s.rounds_fired.toLocaleString()}</div>
+          </div>
+          <div style="flex:1;background:#131313;border-radius:10px;padding:7px 12px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#555;text-transform:uppercase;margin-bottom:2px">Range</div>
+            <div style="font-size:12px;color:#aaa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.range_location ? escHtml(s.range_location) : '—'}</div>
+          </div>
+        </div>
+      </div>`).join('');
+
+  } catch (e) {
+    statsEl.innerHTML = `<div style="color:#c44;font-size:12px;grid-column:span 2;padding:8px">Error loading dashboard</div>`;
+  }
+}
 
 // ── Bullet Drop Calculator ────────────────────────────────────────────────
 
@@ -2467,6 +2677,7 @@ function unlock() {
     lockScreen.style.display = 'none';
     // Bootstrap DB schema (idempotent — runs CREATE TABLE IF NOT EXISTS)
     fetch('/api/setup').catch(() => {});
+    initDashboardTab();
   } else {
     lockError.textContent = 'Incorrect password';
     lockInput.value = '';
