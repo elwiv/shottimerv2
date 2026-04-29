@@ -6,7 +6,14 @@ const h = { 'Content-Type': 'application/json' };
 export const handler = async (event) => {
   try {
     if (event.httpMethod === 'GET') {
-      const guns = await sql`SELECT * FROM guns ORDER BY created_at DESC`;
+      const guns = await sql`
+        SELECT g.*,
+          COALESCE(SUM(s.rounds_fired), 0)::int + g.base_round_count AS total_rounds
+        FROM guns g
+        LEFT JOIN shooting_sessions s ON s.gun_id = g.id
+        GROUP BY g.id
+        ORDER BY g.created_at DESC
+      `;
       return { statusCode: 200, headers: h, body: JSON.stringify(guns) };
     }
 

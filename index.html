@@ -752,6 +752,63 @@ input, textarea, select {
   font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
   color: #555; text-transform: uppercase;
 }
+.gun-card-rounds {
+  font-size: 10px; font-weight: 600; color: #4ade80;
+  margin-top: 2px; letter-spacing: 0.3px;
+}
+/* Manufacturer logo area in gun card */
+.gun-card-logo-wrap {
+  width: 100%; aspect-ratio: 16/9;
+  background: #e8e8e8; display: flex; align-items: center;
+  justify-content: center; padding: 14px; box-sizing: border-box;
+  overflow: hidden;
+}
+.gun-card-logo {
+  max-width: 80%; max-height: 100%;
+  object-fit: contain;
+}
+.gun-card-logo-fallback {
+  font-size: 28px;
+}
+/* Caliber group sections */
+.caliber-section { margin-bottom: 4px; }
+.caliber-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px 8px; cursor: pointer;
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.caliber-header:active { opacity: 0.7; }
+.caliber-chevron {
+  font-size: 8px; color: #4ade80; flex-shrink: 0;
+  display: inline-block; transition: transform 0.18s ease;
+}
+.caliber-header.collapsed .caliber-chevron { transform: rotate(-90deg); }
+.caliber-name {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  color: #4ade80; text-transform: uppercase; flex: 1;
+}
+.caliber-count { font-size: 10px; color: #555; font-weight: 600; }
+.caliber-divider {
+  height: 1px; background: #1e1e1e; margin: 0 14px 6px;
+}
+.caliber-body {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 10px; padding: 0 14px 14px;
+}
+.caliber-body.collapsed { display: none; }
+/* Manufacturer logo in gun detail hero */
+.gun-detail-logo-wrap {
+  width: 72px; height: 72px; border-radius: 14px;
+  background: #e8e8e8; display: flex; align-items: center;
+  justify-content: center; padding: 8px; box-sizing: border-box;
+  flex-shrink: 0; overflow: hidden;
+}
+.gun-detail-logo {
+  max-width: 100%; max-height: 100%; object-fit: contain;
+}
+.gun-detail-logo-fallback {
+  font-size: 30px;
+}
 .fab-btn {
   margin: 0 14px 14px; height: 52px; border: none;
   border-radius: 16px; background: #4ade80; color: #000;
@@ -1320,7 +1377,7 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
   <!-- Gun grid view -->
   <div id="guns-grid-view" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0">
     <div class="section-scroll">
-      <div id="guns-grid" class="guns-grid"></div>
+      <div id="guns-grid"></div>
       <div id="guns-empty" class="empty-state" style="display:none">
         <div class="empty-state-icon">🔫</div>
         No guns added yet.<br>Tap <strong style="color:#ddd">Add Gun</strong> to get started.
@@ -2667,6 +2724,91 @@ let currentGunId = null;
 let gunChart     = null;
 let gunsLoaded   = false;
 
+// Manufacturer keyword → clearbit domain, most-specific entries first
+const MANUFACTURER_MAP = [
+  ['daniel defense', 'danieldefense.com'],
+  ['smith & wesson', 'smith-wesson.com'],
+  ['heckler & koch', 'heckler-koch.com'],
+  ['springfield armory', 'springfield-armory.com'],
+  ['wilson combat', 'wilsoncombat.com'],
+  ['aero precision', 'aeroprecisionusa.com'],
+  ['bravo company', 'bravocompanymfg.com'],
+  ['fn america', 'fnamerica.com'],
+  ['sig sauer', 'sigsauer.com'],
+  ['kel-tec', 'keltecweapons.com'],
+  ['keltec', 'keltecweapons.com'],
+  ['beretta', 'beretta.com'],
+  ['browning', 'browning.com'],
+  ['benelli', 'benelli.com'],
+  ['mossberg', 'mossberg.com'],
+  ['remington', 'remington.com'],
+  ['winchester', 'winchesterguns.com'],
+  ['kimber', 'kimberamerica.com'],
+  ['walther', 'waltherarms.com'],
+  ['taurus', 'taurususa.com'],
+  ['savage', 'savagearms.com'],
+  ['tikka', 'tikka.fi'],
+  ['ruger', 'ruger.com'],
+  ['glock', 'glock.com'],
+  ['colt', 'coltsmfg.com'],
+  ['s&w', 'smith-wesson.com'],
+  ['h&k', 'heckler-koch.com'],
+  ['bcm', 'bravocompanymfg.com'],
+  ['cz', 'cz-usa.com'],
+];
+
+function detectManufacturerLogo(gunName) {
+  const lower = gunName.toLowerCase();
+  for (const [keyword, domain] of MANUFACTURER_MAP) {
+    if (lower.includes(keyword)) {
+      return `https://logo.clearbit.com/${domain}`;
+    }
+  }
+  return null;
+}
+
+function logoImgError(img) {
+  const wrap = img.parentElement;
+  if (img.dataset.fallbackSrc) {
+    const newImg = document.createElement('img');
+    newImg.className = img.className;
+    newImg.src = img.dataset.fallbackSrc;
+    newImg.alt = img.alt;
+    newImg.loading = 'lazy';
+    newImg.onerror = () => {
+      const fb = document.createElement('div');
+      fb.className = img.dataset.fallbackClass;
+      fb.textContent = '🔫';
+      wrap.replaceChild(fb, newImg);
+    };
+    wrap.replaceChild(newImg, img);
+  } else {
+    const fb = document.createElement('div');
+    fb.className = img.dataset.fallbackClass;
+    fb.textContent = '🔫';
+    wrap.replaceChild(fb, img);
+  }
+}
+
+function gunLogoHtml(gun, cardClass, imgClass, fallbackClass) {
+  const logoUrl = detectManufacturerLogo(gun.name);
+  if (logoUrl) {
+    const fbAttr = gun.photo_url
+      ? ` data-fallback-src="${escHtml(gun.photo_url)}"`
+      : '';
+    return `<div class="${cardClass}">
+      <img class="${imgClass}" src="${logoUrl}" alt="${escHtml(gun.name)}" loading="lazy"
+        data-fallback-class="${fallbackClass}"${fbAttr} onerror="logoImgError(this)">
+    </div>`;
+  }
+  if (gun.photo_url) {
+    return `<div class="${cardClass}">
+      <img class="${imgClass}" src="${escHtml(gun.photo_url)}" alt="${escHtml(gun.name)}" loading="lazy">
+    </div>`;
+  }
+  return `<div class="${cardClass}"><div class="${fallbackClass}">🔫</div></div>`;
+}
+
 async function initGunsTab() {
   if (!gunsLoaded) await loadGuns();
 }
@@ -2689,20 +2831,62 @@ function renderGunGrid(guns) {
   grid.innerHTML = '';
   if (!guns.length) { empty.style.display = 'block'; return; }
   empty.style.display = 'none';
+
+  // Group by caliber
+  const groups = {};
   guns.forEach(g => {
-    const card = document.createElement('div');
-    card.className = 'gun-card';
-    const photoHtml = g.photo_url
-      ? `<img class="gun-card-photo" src="${g.photo_url}" alt="${escHtml(g.name)}" loading="lazy">`
-      : `<div class="gun-card-no-photo">🔫</div>`;
-    card.innerHTML = `
-      ${photoHtml}
-      <div class="gun-card-body">
-        <div class="gun-card-name">${escHtml(g.name)}</div>
-        <div class="gun-card-caliber">${escHtml(g.caliber)}</div>
-      </div>`;
-    card.addEventListener('click', () => openGunDetail(g.id));
-    grid.appendChild(card);
+    const cal = (g.caliber || 'Unknown').trim();
+    if (!groups[cal]) groups[cal] = [];
+    groups[cal].push(g);
+  });
+
+  const sortedCalibers = Object.keys(groups).sort((a, b) =>
+    a.toLowerCase().localeCompare(b.toLowerCase())
+  );
+
+  sortedCalibers.forEach(caliber => {
+    const gunsInGroup = groups[caliber];
+    const count = gunsInGroup.length;
+
+    const section = document.createElement('div');
+    section.className = 'caliber-section';
+
+    const header = document.createElement('div');
+    header.className = 'caliber-header';
+    header.innerHTML = `
+      <span class="caliber-chevron">▼</span>
+      <span class="caliber-name">${escHtml(caliber)}</span>
+      <span class="caliber-count">${count} gun${count !== 1 ? 's' : ''}</span>`;
+
+    const divider = document.createElement('div');
+    divider.className = 'caliber-divider';
+
+    const body = document.createElement('div');
+    body.className = 'caliber-body';
+
+    gunsInGroup.forEach(g => {
+      const card = document.createElement('div');
+      card.className = 'gun-card';
+      const totalRounds = (g.total_rounds || 0).toLocaleString();
+      card.innerHTML = `
+        ${gunLogoHtml(g, 'gun-card-logo-wrap', 'gun-card-logo', 'gun-card-logo-fallback')}
+        <div class="gun-card-body">
+          <div class="gun-card-name">${escHtml(g.name)}</div>
+          <div class="gun-card-rounds">${totalRounds} rds</div>
+        </div>`;
+      card.addEventListener('click', () => openGunDetail(g.id));
+      body.appendChild(card);
+    });
+
+    header.addEventListener('click', () => {
+      const collapsed = body.classList.toggle('collapsed');
+      header.classList.toggle('collapsed', collapsed);
+    });
+
+    section.appendChild(header);
+    section.appendChild(divider);
+    section.appendChild(body);
+    grid.appendChild(section);
   });
 }
 
@@ -2734,11 +2918,9 @@ function renderGunDetail(gun) {
   currentGunData = gun;
   document.getElementById('gun-detail-heading').textContent = gun.name;
 
-  // Photo / placeholder
+  // Logo / photo / placeholder
   const photoWrap = document.getElementById('gun-detail-photo-wrap');
-  photoWrap.innerHTML = gun.photo_url
-    ? `<img class="gun-detail-photo" src="${gun.photo_url}" alt="${escHtml(gun.name)}">`
-    : `<div class="gun-detail-no-photo">🔫</div>`;
+  photoWrap.innerHTML = gunLogoHtml(gun, 'gun-detail-logo-wrap', 'gun-detail-logo', 'gun-detail-logo-fallback');
 
   document.getElementById('gun-detail-name').textContent    = gun.name;
   document.getElementById('gun-detail-caliber').textContent = gun.caliber;
