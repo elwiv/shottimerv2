@@ -1674,6 +1674,10 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
       <input type="text" id="gun-caliber-input" class="form-input" placeholder="e.g. 5.56 NATO">
     </div>
     <div class="form-field">
+      <label class="form-label">Brand <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <select id="gun-brand-input" class="form-input"></select>
+    </div>
+    <div class="form-field">
       <label class="form-label">Base Round Count <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
       <input type="number" id="gun-base-count-input" class="form-input" min="0" placeholder="0">
       <div class="form-hint">Rounds fired before using this app — included in lifetime total only, not in session or monthly reports</div>
@@ -1719,6 +1723,10 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
     <div class="form-field">
       <label class="form-label">Caliber *</label>
       <input type="text" id="edit-gun-caliber-input" class="form-input" placeholder="e.g. 5.56 NATO">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Brand <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <select id="edit-gun-brand-input" class="form-input"></select>
     </div>
     <div class="form-field">
       <label class="form-label">Base Round Count</label>
@@ -3015,43 +3023,51 @@ let gunChart     = null;
 let gunsLoaded   = false;
 
 // Manufacturer keyword → clearbit domain, most-specific entries first
-const MANUFACTURER_MAP = [
-  ['daniel defense', 'danieldefense.com'],
-  ['smith & wesson', 'smith-wesson.com'],
-  ['heckler & koch', 'heckler-koch.com'],
-  ['springfield armory', 'springfield-armory.com'],
-  ['wilson combat', 'wilsoncombat.com'],
-  ['aero precision', 'aeroprecisionusa.com'],
-  ['bravo company', 'bravocompanymfg.com'],
-  ['fn america', 'fnamerica.com'],
-  ['sig sauer', 'sigsauer.com'],
-  ['kel-tec', 'keltecweapons.com'],
-  ['keltec', 'keltecweapons.com'],
-  ['beretta', 'beretta.com'],
-  ['browning', 'browning.com'],
-  ['benelli', 'benelli.com'],
-  ['mossberg', 'mossberg.com'],
-  ['remington', 'remington.com'],
-  ['winchester', 'winchesterguns.com'],
-  ['kimber', 'kimberamerica.com'],
-  ['walther', 'waltherarms.com'],
-  ['taurus', 'taurususa.com'],
-  ['savage', 'savagearms.com'],
-  ['tikka', 'tikka.fi'],
-  ['ruger', 'ruger.com'],
-  ['glock', 'glock.com'],
-  ['colt', 'coltsmfg.com'],
-  ['s&w', 'smith-wesson.com'],
-  ['h&k', 'heckler-koch.com'],
-  ['bcm', 'bravocompanymfg.com'],
-  ['cz', 'cz-usa.com'],
+const BRAND_CATALOG = [
+  { name: 'Aero Precision',      domain: 'aeroprecisionusa.com',   keys: ['aero precision'] },
+  { name: 'Benelli',             domain: 'benelli.com',            keys: ['benelli'] },
+  { name: 'Beretta',             domain: 'beretta.com',            keys: ['beretta'] },
+  { name: 'Bravo Company (BCM)', domain: 'bravocompanymfg.com',    keys: ['bravo company', 'bcm'] },
+  { name: 'Browning',            domain: 'browning.com',           keys: ['browning'] },
+  { name: 'Colt',                domain: 'coltsmfg.com',           keys: ['colt'] },
+  { name: 'CZ',                  domain: 'cz-usa.com',             keys: ['cz-usa', ' cz '] },
+  { name: 'Daniel Defense',      domain: 'danieldefense.com',      keys: ['daniel defense'] },
+  { name: 'FN America',          domain: 'fnamerica.com',          keys: ['fn america', 'fn her', 'fn scar', 'fn 509'] },
+  { name: 'Glock',               domain: 'glock.com',              keys: ['glock'] },
+  { name: 'Heckler & Koch',      domain: 'heckler-koch.com',       keys: ['heckler & koch', 'heckler and koch', 'h&k', ' hk '] },
+  { name: 'Kel-Tec',             domain: 'keltecweapons.com',      keys: ['kel-tec', 'keltec'] },
+  { name: 'Kimber',              domain: 'kimberamerica.com',      keys: ['kimber'] },
+  { name: 'Mossberg',            domain: 'mossberg.com',           keys: ['mossberg'] },
+  { name: 'Remington',           domain: 'remington.com',          keys: ['remington'] },
+  { name: 'Ruger',               domain: 'ruger.com',              keys: ['ruger'] },
+  { name: 'Savage Arms',         domain: 'savagearms.com',         keys: ['savage'] },
+  { name: 'Sig Sauer',           domain: 'sigsauer.com',           keys: ['sig sauer', 'sig p', 'sig m'] },
+  { name: 'Smith & Wesson',      domain: 'smith-wesson.com',       keys: ['smith & wesson', 'smith and wesson', 's&w', 's & w'] },
+  { name: 'Springfield Armory',  domain: 'springfield-armory.com', keys: ['springfield armory', 'springfield'] },
+  { name: 'Taurus',              domain: 'taurususa.com',          keys: ['taurus'] },
+  { name: 'Tikka',               domain: 'tikka.fi',               keys: ['tikka'] },
+  { name: 'Walther',             domain: 'waltherarms.com',        keys: ['walther'] },
+  { name: 'Wilson Combat',       domain: 'wilsoncombat.com',       keys: ['wilson combat'] },
+  { name: 'Winchester',          domain: 'winchesterguns.com',     keys: ['winchester'] },
 ];
 
-function detectManufacturerLogo(gunName) {
-  const lower = gunName.toLowerCase();
-  for (const [keyword, domain] of MANUFACTURER_MAP) {
-    if (lower.includes(keyword)) {
-      return `https://logo.clearbit.com/${domain}`;
+function populateBrandSelects() {
+  const opts = '<option value="">— Select brand —</option>' +
+    BRAND_CATALOG.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+  document.getElementById('gun-brand-input').innerHTML = opts;
+  document.getElementById('edit-gun-brand-input').innerHTML = opts;
+}
+populateBrandSelects();
+
+function detectManufacturerLogo(gun) {
+  if (gun.brand) {
+    const entry = BRAND_CATALOG.find(b => b.name === gun.brand);
+    if (entry) return `https://icons.duckduckgo.com/ip3/${entry.domain}.ico`;
+  }
+  const lower = (gun.name || '').toLowerCase();
+  for (const entry of BRAND_CATALOG) {
+    if (entry.keys.some(k => lower.includes(k))) {
+      return `https://icons.duckduckgo.com/ip3/${entry.domain}.ico`;
     }
   }
   return null;
@@ -3081,7 +3097,7 @@ function logoImgError(img) {
 }
 
 function gunLogoHtml(gun, cardClass, imgClass, fallbackClass) {
-  const logoUrl = detectManufacturerLogo(gun.name);
+  const logoUrl = detectManufacturerLogo(gun);
   if (logoUrl) {
     const fbAttr = gun.photo_url
       ? ` data-fallback-src="${escHtml(gun.photo_url)}"`
@@ -3404,6 +3420,7 @@ function openAddGunModal() {
   pendingPhotoDataUrl = null;
   document.getElementById('gun-name-input').value       = '';
   document.getElementById('gun-caliber-input').value    = '';
+  document.getElementById('gun-brand-input').value      = '';
   document.getElementById('gun-base-count-input').value = '';
   document.getElementById('gun-photo-file').value       = '';
   document.getElementById('gun-photo-preview-img').style.display = 'none';
@@ -3422,6 +3439,7 @@ document.getElementById('add-gun-backdrop').addEventListener('click', e => {
 document.getElementById('btn-add-gun-submit').addEventListener('click', async () => {
   const name       = document.getElementById('gun-name-input').value.trim();
   const caliber    = document.getElementById('gun-caliber-input').value.trim();
+  const brand      = document.getElementById('gun-brand-input').value || null;
   const baseCount  = parseInt(document.getElementById('gun-base-count-input').value) || 0;
   if (!name || !caliber) { alert('Name and caliber are required.'); return; }
 
@@ -3430,7 +3448,7 @@ document.getElementById('btn-add-gun-submit').addEventListener('click', async ()
   try {
     await apiFetch('guns', {
       method: 'POST',
-      body: JSON.stringify({ name, caliber, photo_url: pendingPhotoDataUrl, base_round_count: baseCount }),
+      body: JSON.stringify({ name, caliber, brand, photo_url: pendingPhotoDataUrl, base_round_count: baseCount }),
     });
     closeAddGunModal();
     gunsLoaded = false;
@@ -3508,6 +3526,7 @@ document.getElementById('btn-edit-gun').addEventListener('click', () => {
   editPendingPhotoDataUrl = g.photo_url || null;
   document.getElementById('edit-gun-name-input').value        = g.name || '';
   document.getElementById('edit-gun-caliber-input').value     = g.caliber || '';
+  document.getElementById('edit-gun-brand-input').value       = g.brand || '';
   document.getElementById('edit-gun-base-count-input').value  = g.base_round_count || 0;
   document.getElementById('edit-gun-photo-file').value        = '';
   const img = document.getElementById('edit-gun-photo-preview-img');
@@ -3544,6 +3563,7 @@ document.getElementById('btn-edit-gun-submit').addEventListener('click', async (
   if (!currentGunId) return;
   const name      = document.getElementById('edit-gun-name-input').value.trim();
   const caliber   = document.getElementById('edit-gun-caliber-input').value.trim();
+  const brand     = document.getElementById('edit-gun-brand-input').value || null;
   const baseCount = parseInt(document.getElementById('edit-gun-base-count-input').value) || 0;
   if (!name || !caliber) { alert('Name and caliber are required.'); return; }
 
@@ -3552,7 +3572,7 @@ document.getElementById('btn-edit-gun-submit').addEventListener('click', async (
   try {
     await apiFetch(`guns/${currentGunId}`, {
       method: 'PUT',
-      body: JSON.stringify({ name, caliber, photo_url: editPendingPhotoDataUrl, base_round_count: baseCount }),
+      body: JSON.stringify({ name, caliber, brand, photo_url: editPendingPhotoDataUrl, base_round_count: baseCount }),
     });
     closeEditGunModal();
     gunsLoaded = false;
@@ -3560,7 +3580,7 @@ document.getElementById('btn-edit-gun-submit').addEventListener('click', async (
     await openGunDetail(currentGunId);
     // Also refresh the gun in the local list for the grid
     const idx = gunsData.findIndex(g => g.id === currentGunId);
-    if (idx !== -1) { gunsData[idx] = { ...gunsData[idx], name, caliber }; }
+    if (idx !== -1) { gunsData[idx] = { ...gunsData[idx], name, caliber, brand }; }
   } catch (e) {
     alert('Error: ' + e.message);
   } finally {
