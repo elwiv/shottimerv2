@@ -89,13 +89,13 @@ export const handler = async (event) => {
     }
 
     if (event.httpMethod === 'PUT') {
-      const { name, caliber, photo_url, base_round_count } = JSON.parse(event.body || '{}');
+      const { name, caliber, brand, photo_url, base_round_count } = JSON.parse(event.body || '{}');
       if (!name || !caliber) {
         return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'name and caliber required' }) };
       }
       const [gun] = await sql`
-        UPDATE guns SET name = ${name}, caliber = ${caliber}, photo_url = ${photo_url || null},
-          base_round_count = ${parseInt(base_round_count) || 0}
+        UPDATE guns SET name = ${name}, caliber = ${caliber}, brand = ${brand || null},
+          photo_url = ${photo_url || null}, base_round_count = ${parseInt(base_round_count) || 0}
         WHERE id = ${id} RETURNING *
       `;
       if (!gun) return { statusCode: 404, headers: h, body: JSON.stringify({ error: 'Not found' }) };
