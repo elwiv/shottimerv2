@@ -31,42 +31,45 @@ body {
 #header {
   text-align: center;
   padding-top: max(env(safe-area-inset-top), 14px);
-  padding-bottom: 4px;
-  font-size: 11px;
+  padding-bottom: 6px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 4px;
-  color: #3a3a3a;
+  letter-spacing: 5px;
+  color: #2e2e2e;
   text-transform: uppercase;
   flex-shrink: 0;
   position: relative;
+  border-bottom: 1px solid #151515;
 }
 
 /* ── Nav tabs ── */
 #nav-tabs {
   display: flex;
-  gap: 6px;
-  padding: 4px 14px 8px;
+  gap: 5px;
+  padding: 8px 14px 8px;
   flex-shrink: 0;
 }
 .nav-tab {
   flex: 1;
-  height: 38px;
-  border: 1.5px solid #2a2a2a;
-  border-radius: 12px;
-  background: #181818;
-  color: #555;
-  font-size: 11px;
+  height: 36px;
+  border: 1px solid #1e1e1e;
+  border-radius: 10px;
+  background: transparent;
+  color: #3a3a3a;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   cursor: pointer;
   -webkit-appearance: none;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .nav-tab.active {
-  background: #222;
-  color: #fff;
-  border-color: #555;
+  background: #1a1a1a;
+  color: #ddd;
+  border-color: #333;
+  border-bottom-color: #4ade80;
+  border-bottom-width: 2px;
 }
 .nav-tab:active { opacity: 0.75; }
 
@@ -843,15 +846,23 @@ input, textarea, select {
   gap: 8px; padding: 0 14px 12px;
 }
 .stat-card {
-  background: #181818; border: 1px solid #232323;
-  border-radius: 14px; padding: 12px; text-align: center;
+  background: #161616; border: 1px solid #1e1e1e;
+  border-radius: 14px; padding: 12px 12px 11px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 20%; right: 20%;
+  height: 1px;
+  background: rgba(74,222,128,0.15);
 }
 .stat-card-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-  color: #555; text-transform: uppercase; margin-bottom: 5px;
+  font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  color: #444; text-transform: uppercase; margin-bottom: 6px;
 }
 .stat-card-value {
-  font-size: clamp(16px,5vw,22px); font-weight: 300; color: #ddd;
+  font-size: clamp(17px,5.5vw,24px); font-weight: 300; color: #ccc;
   font-variant-numeric: tabular-nums;
 }
 .stat-card-value.green { color: #4ade80; }
@@ -878,8 +889,8 @@ input, textarea, select {
   height: 200px; position: relative; padding: 0 14px; margin-bottom: 14px;
 }
 .section-label-small {
-  font-size: 10px; font-weight: 700; letter-spacing: 2px;
-  color: #4ade80; text-transform: uppercase;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  color: #3a3a3a; text-transform: uppercase;
   padding: 0 14px; margin-bottom: 8px;
 }
 .monthly-table { padding: 0 14px; }
@@ -1108,7 +1119,213 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
   display: flex; flex-direction: column; flex: 1;
   overflow: hidden; min-height: 0;
 }
-.dashboard-wrap { padding: 10px 14px; }
+.dashboard-wrap { padding: 12px 14px 4px; }
+
+.dash-hero {
+  margin-bottom: 16px;
+  padding: 22px 18px 20px;
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.dash-hero::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(74,222,128,0.35), transparent);
+}
+.dash-hero-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  color: #4ade80;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.dash-hero-value {
+  font-size: clamp(56px, 17vw, 88px);
+  font-weight: 100;
+  letter-spacing: -3px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.dash-hero-sub {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  color: #333;
+  text-transform: uppercase;
+}
+.dash-month-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.dash-stat-card {
+  background: #161616;
+  border: 1px solid #222;
+  border-top: 1px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 14px 14px 12px;
+  position: relative;
+  overflow: hidden;
+}
+.dash-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 16px; right: 16px;
+  height: 1px;
+  background: rgba(74,222,128,0.22);
+}
+.dash-stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: #555;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.dash-stat-value {
+  font-size: clamp(22px, 7vw, 30px);
+  font-weight: 300;
+  color: #ddd;
+  font-variant-numeric: tabular-nums;
+}
+.last-sess-card {
+  background: #161616;
+  border: 1px solid #222;
+  border-left: 2px solid #4ade80;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+.last-sess-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+.last-sess-range {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ddd;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.last-sess-date-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #4ade80;
+  text-transform: uppercase;
+  background: rgba(74,222,128,0.07);
+  border: 1px solid rgba(74,222,128,0.18);
+  border-radius: 8px;
+  padding: 4px 9px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.last-sess-guns {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.last-sess-gun-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+.last-sess-gun-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaa;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.last-sess-gun-rounds {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #4ade80;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.last-sess-total-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  margin-top: 10px;
+  gap: 7px;
+  padding-right: 2px;
+}
+.last-sess-total-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #444;
+  text-transform: uppercase;
+}
+.last-sess-total-value {
+  font-size: 18px;
+  font-weight: 300;
+  color: #bbb;
+  font-variant-numeric: tabular-nums;
+}
+.prev-sess-item {
+  background: #131313;
+  border: 1px solid #1e1e1e;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.prev-sess-left {
+  flex: 1;
+  min-width: 0;
+}
+.prev-sess-guns {
+  font-size: 12px;
+  font-weight: 600;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.prev-sess-meta {
+  font-size: 10px;
+  color: #3a3a3a;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.prev-sess-rounds {
+  font-size: 16px;
+  font-weight: 300;
+  color: #666;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
 
 /* ── Beta Tools tab button ── */
 #beta-tab {
@@ -1225,13 +1442,30 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
 <div id="section-dashboard">
   <div class="section-scroll">
     <div class="dashboard-wrap">
-      <div class="summary-grid" id="dash-stats-grid"></div>
-      <div class="section-label-small" id="dash-recent-label" style="margin-bottom:8px;display:none">Recent Sessions</div>
+
+      <!-- Hero: Lifetime Rounds -->
+      <div class="dash-hero">
+        <div class="dash-hero-label">Lifetime Rounds Fired</div>
+        <div class="dash-hero-value" id="dash-lifetime-val">—</div>
+        <div class="dash-hero-sub" id="dash-lifetime-sub">loading…</div>
+      </div>
+
+      <!-- This Month -->
+      <div class="dash-month-row" id="dash-month-grid"></div>
+
+      <!-- Last Session -->
+      <div class="section-label-small" id="dash-last-label" style="display:none;padding:0">Last Session</div>
+      <div id="dash-last-session"></div>
+
+      <!-- Previous Sessions -->
+      <div class="section-label-small" id="dash-recent-label" style="display:none;padding:0">Previous Sessions</div>
       <div id="dash-recent-sessions"></div>
+
       <div id="dash-empty" class="empty-state" style="display:none">
         <div class="empty-state-icon">🎯</div>
         No sessions logged yet.<br>Tap <strong style="color:#ddd">Log Session</strong> to get started.
       </div>
+
     </div>
   </div>
   <button id="dash-log-btn" class="fab-btn">+ Log Session</button>
@@ -2209,69 +2443,125 @@ async function initDashboardTab() {
 }
 
 async function loadDashboardData() {
-  const statsEl  = document.getElementById('dash-stats-grid');
-  const recentEl = document.getElementById('dash-recent-sessions');
-  const emptyEl  = document.getElementById('dash-empty');
-  const lblEl    = document.getElementById('dash-recent-label');
+  const lifetimeVal = document.getElementById('dash-lifetime-val');
+  const lifetimeSub = document.getElementById('dash-lifetime-sub');
+  const monthEl     = document.getElementById('dash-month-grid');
+  const lastLbl     = document.getElementById('dash-last-label');
+  const lastEl      = document.getElementById('dash-last-session');
+  const recentLbl   = document.getElementById('dash-recent-label');
+  const recentEl    = document.getElementById('dash-recent-sessions');
+  const emptyEl     = document.getElementById('dash-empty');
 
-  statsEl.innerHTML  = '<div class="stat-card" style="grid-column:span 2"><div class="loading-text">Loading…</div></div>';
-  recentEl.innerHTML = '';
-  emptyEl.style.display = 'none';
-  lblEl.style.display   = 'none';
+  lifetimeVal.textContent = '—';
+  lifetimeSub.textContent = 'loading…';
+  monthEl.innerHTML       = '<div class="dash-stat-card" style="grid-column:span 2"><div class="loading-text">Loading…</div></div>';
+  lastLbl.style.display   = 'none';
+  lastEl.innerHTML        = '';
+  recentLbl.style.display = 'none';
+  recentEl.innerHTML      = '';
+  emptyEl.style.display   = 'none';
 
   try {
-    const sessions = await apiFetch('sessions');
+    const [sessions, guns] = await Promise.all([
+      apiFetch('sessions'),
+      apiFetch('guns'),
+    ]);
+
+    // Lifetime rounds from guns (includes base_round_count offsets)
+    const lifetimeRounds = guns.reduce((sum, g) => sum + (g.total_rounds || 0), 0);
+    lifetimeVal.textContent = lifetimeRounds.toLocaleString();
+    lifetimeSub.textContent = guns.length
+      ? `across ${guns.length} gun${guns.length !== 1 ? 's' : ''}`
+      : 'no guns registered';
 
     if (!sessions.length) {
-      statsEl.innerHTML = '';
+      monthEl.innerHTML = '';
       emptyEl.style.display = '';
       return;
     }
 
-    const totalRounds = sessions.reduce((sum, s) => sum + (s.rounds_fired || 0), 0);
-    const yr          = new Date().getFullYear().toString();
-    const yrSess      = sessions.filter(s => s.session_date && s.session_date.startsWith(yr));
-    const yrRounds    = yrSess.reduce((sum, s) => sum + (s.rounds_fired || 0), 0);
+    // This month stats
+    const now         = new Date();
+    const monthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const monthName   = now.toLocaleString('en-US', { month: 'long' });
+    const mthSess     = sessions.filter(s => s.session_date && s.session_date.startsWith(monthPrefix));
+    const mthRounds   = mthSess.reduce((sum, s) => sum + (s.rounds_fired || 0), 0);
+    const mthUniq     = new Set(mthSess.map(s => `${s.session_date}|${s.range_location || ''}`)).size;
 
-    statsEl.innerHTML = `
-      <div class="stat-card">
-        <div class="stat-card-label">Total Sessions</div>
-        <div class="stat-card-value">${sessions.length}</div>
+    monthEl.innerHTML = `
+      <div class="dash-stat-card">
+        <div class="dash-stat-label">${monthName} Rounds</div>
+        <div class="dash-stat-value">${mthRounds.toLocaleString()}</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-card-label">Total Rounds</div>
-        <div class="stat-card-value">${totalRounds.toLocaleString()}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-label">${yr} Sessions</div>
-        <div class="stat-card-value">${yrSess.length}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-label">${yr} Rounds</div>
-        <div class="stat-card-value">${yrRounds.toLocaleString()}</div>
+      <div class="dash-stat-card">
+        <div class="dash-stat-label">${monthName} Sessions</div>
+        <div class="dash-stat-value">${mthUniq}</div>
       </div>`;
 
-    lblEl.style.display = '';
-    recentEl.innerHTML  = sessions.slice(0, 5).map(s => `
-      <div style="background:#181818;border:1px solid #232323;border-radius:14px;padding:12px 14px;margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <div style="font-size:13px;font-weight:600;color:#ddd">${s.gun_name ? escHtml(s.gun_name) : '—'}</div>
-          <div style="font-size:11px;color:#555">${fmtDate(s.session_date)}</div>
+    // Last session — group records with same date + range into one logical session
+    const lastDate  = sessions[0].session_date;
+    const lastRange = sessions[0].range_location || '';
+    const lastGroup = sessions.filter(s =>
+      s.session_date === lastDate && (s.range_location || '') === lastRange
+    );
+    const lastTotal = lastGroup.reduce((sum, s) => sum + (s.rounds_fired || 0), 0);
+
+    lastLbl.style.display = '';
+    lastEl.innerHTML = `
+      <div class="last-sess-card">
+        <div class="last-sess-header">
+          <div class="last-sess-range">${lastRange ? escHtml(lastRange) : '<span style="color:#3a3a3a">No range logged</span>'}</div>
+          <div class="last-sess-date-badge">${fmtDate(lastDate)}</div>
         </div>
-        <div style="display:flex;gap:8px">
-          <div style="background:#131313;border-radius:10px;padding:7px 12px;text-align:center;min-width:64px">
-            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#555;text-transform:uppercase;margin-bottom:2px">Rounds</div>
-            <div style="font-size:17px;font-weight:300;color:#ddd;font-variant-numeric:tabular-nums">${s.rounds_fired.toLocaleString()}</div>
-          </div>
-          <div style="flex:1;background:#131313;border-radius:10px;padding:7px 12px">
-            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#555;text-transform:uppercase;margin-bottom:2px">Range</div>
-            <div style="font-size:12px;color:#aaa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.range_location ? escHtml(s.range_location) : '—'}</div>
-          </div>
+        <div class="last-sess-guns">
+          ${lastGroup.map(s => `
+            <div class="last-sess-gun-row">
+              <div class="last-sess-gun-name">${escHtml(s.gun_name || '—')}</div>
+              <div class="last-sess-gun-rounds">${s.rounds_fired.toLocaleString()} rds</div>
+            </div>`).join('')}
         </div>
-      </div>`).join('');
+        ${lastGroup.length > 1 ? `
+        <div class="last-sess-total-row">
+          <span class="last-sess-total-label">Total</span>
+          <span class="last-sess-total-value">${lastTotal.toLocaleString()}</span>
+        </div>` : ''}
+      </div>`;
+
+    // Previous sessions — group remaining into logical sessions, show up to 4
+    const remaining = sessions.filter(s =>
+      !(s.session_date === lastDate && (s.range_location || '') === lastRange)
+    );
+
+    if (remaining.length) {
+      const groups   = [];
+      const keyIndex = {};
+      for (const s of remaining) {
+        const key = `${s.session_date}|${s.range_location || ''}`;
+        if (keyIndex[key] === undefined) {
+          if (groups.length >= 4) continue;
+          keyIndex[key] = groups.length;
+          groups.push({ date: s.session_date, range: s.range_location || '', sessions: [] });
+        }
+        groups[keyIndex[key]].sessions.push(s);
+      }
+      recentLbl.style.display = '';
+      recentEl.innerHTML = groups.map(g => {
+        const total    = g.sessions.reduce((sum, s) => sum + (s.rounds_fired || 0), 0);
+        const gunNames = [...new Set(g.sessions.map(s => s.gun_name).filter(Boolean))].join(', ');
+        return `
+          <div class="prev-sess-item">
+            <div class="prev-sess-left">
+              <div class="prev-sess-guns">${gunNames ? escHtml(gunNames) : '—'}</div>
+              <div class="prev-sess-meta">${fmtDate(g.date)}${g.range ? ' · ' + escHtml(g.range) : ''}</div>
+            </div>
+            <div class="prev-sess-rounds">${total.toLocaleString()}</div>
+          </div>`;
+      }).join('');
+    }
 
   } catch (e) {
-    statsEl.innerHTML = `<div style="color:#c44;font-size:12px;grid-column:span 2;padding:8px">Error loading dashboard</div>`;
+    lifetimeSub.textContent = '';
+    monthEl.innerHTML = `<div style="color:#c44;font-size:12px;grid-column:span 2;padding:8px">Error loading dashboard</div>`;
   }
 }
 
