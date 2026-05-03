@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Shooting Tool">
@@ -1443,7 +1443,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
   flex-shrink: 0;
   background: var(--bg-card);
   border-top: 1px solid var(--border-default);
-  padding-bottom: max(env(safe-area-inset-bottom), 6px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
   position: relative;
   z-index: 50;
 }
