@@ -26,7 +26,7 @@ export const handler = async (event) => {
     }
 
     if (event.httpMethod === 'POST') {
-      const { gun_id, session_date, rounds_fired, range_location, notes } =
+      const { gun_id, session_date, rounds_fired, range_location, notes, suppressor_id } =
         JSON.parse(event.body || '{}');
 
       if (!gun_id || !session_date || !rounds_fired) {
@@ -44,8 +44,8 @@ export const handler = async (event) => {
       }
 
       const [session] = await sql`
-        INSERT INTO shooting_sessions (gun_id, session_date, rounds_fired, range_location, notes)
-        VALUES (${gun_id}, ${session_date}, ${rounds_fired}, ${range_location || null}, ${notes || null})
+        INSERT INTO shooting_sessions (gun_id, session_date, rounds_fired, range_location, notes, suppressor_id)
+        VALUES (${gun_id}, ${session_date}, ${rounds_fired}, ${range_location || null}, ${notes || null}, ${suppressor_id || null})
         RETURNING *
       `;
       return { statusCode: 201, headers: h, body: JSON.stringify(session) };
