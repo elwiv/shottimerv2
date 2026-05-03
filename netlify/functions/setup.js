@@ -66,6 +66,24 @@ export const handler = async () => {
     await sql`
       ALTER TABLE shooting_sessions ADD COLUMN IF NOT EXISTS suppressor_id UUID REFERENCES suppressors(id) ON DELETE SET NULL
     `;
+    // Multi-user migration: add user_id to all tables
+    await sql`ALTER TABLE guns ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user'`;
+    await sql`ALTER TABLE shooting_sessions ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user'`;
+    await sql`ALTER TABLE cleaning_logs ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user'`;
+    await sql`ALTER TABLE range_locations ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user'`;
+    await sql`ALTER TABLE suppressors ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user'`;
+    await sql`ALTER TABLE suppressor_cleaning_logs ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user'`;
+    // Fix range_locations unique constraint to be per-user
+    await sql`
+      DO $$ BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'range_locations_name_user_key'
+        ) THEN
+          ALTER TABLE range_locations DROP CONSTRAINT IF EXISTS range_locations_name_key;
+          ALTER TABLE range_locations ADD CONSTRAINT range_locations_name_user_key UNIQUE(name, user_id);
+        END IF;
+      END $$
+    `;
     return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
   } catch (err) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };

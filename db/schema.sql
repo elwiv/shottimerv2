@@ -50,3 +50,11 @@ CREATE TABLE IF NOT EXISTS suppressor_cleaning_logs (
 
 -- Migration: add suppressor_id to existing shooting_sessions
 ALTER TABLE shooting_sessions ADD COLUMN IF NOT EXISTS suppressor_id UUID REFERENCES suppressors(id) ON DELETE SET NULL;
+
+-- Migration: add user_id for multi-user support (existing rows get 'legacy-user' placeholder)
+ALTER TABLE guns ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user';
+ALTER TABLE shooting_sessions ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user';
+ALTER TABLE cleaning_logs ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user';
+ALTER TABLE range_locations ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user';
+ALTER TABLE suppressors ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user';
+ALTER TABLE suppressor_cleaning_logs ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'legacy-user';

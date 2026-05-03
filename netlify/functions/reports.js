@@ -1,9 +1,18 @@
 import { neon } from '@neondatabase/serverless';
+import { requireUser } from './auth.js';
 
 const sql = neon(process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL);
 const h = { 'Content-Type': 'application/json' };
 
-export const handler = async (event) => {
+export const handler = async (event, context) => {
+  let userId;
+  try {
+    const user = requireUser(event, context);
+    userId = user.sub;
+  } catch (authErr) {
+    return authErr;
+  }
+
   try {
     const q          = event.queryStringParameters || {};
     const gunId      = q.gunId      || null;
@@ -25,7 +34,8 @@ export const handler = async (event) => {
         MAX(s.session_date)       AS last_session_date
       FROM shooting_sessions s
       JOIN guns g ON s.gun_id = g.id
-      WHERE (${gunId}::UUID IS NULL         OR s.gun_id = ${gunId}::UUID)
+      WHERE s.user_id = ${userId}
+        AND (${gunId}::UUID IS NULL         OR s.gun_id = ${gunId}::UUID)
         AND (${caliber}::text    IS NULL   OR g.caliber = ${caliber}::text)
         AND (${rangeVal}::text   IS NULL   OR s.range_location = ${rangeVal}::text)
         AND (${startMonth}::text IS NULL   OR TO_CHAR(s.session_date, 'YYYY-MM') >= ${startMonth}::text)
@@ -42,7 +52,8 @@ export const handler = async (event) => {
         COUNT(DISTINCT s.range_location) FILTER (WHERE s.range_location IS NOT NULL)::int AS ranges_visited
       FROM shooting_sessions s
       JOIN guns g ON s.gun_id = g.id
-      WHERE (${gunId}::UUID IS NULL         OR s.gun_id = ${gunId}::UUID)
+      WHERE s.user_id = ${userId}
+        AND (${gunId}::UUID IS NULL         OR s.gun_id = ${gunId}::UUID)
         AND (${caliber}::text    IS NULL   OR g.caliber = ${caliber}::text)
         AND (${rangeVal}::text   IS NULL   OR s.range_location = ${rangeVal}::text)
         AND (${startMonth}::text IS NULL   OR TO_CHAR(s.session_date, 'YYYY-MM') >= ${startMonth}::text)
@@ -58,7 +69,8 @@ export const handler = async (event) => {
         MAX(s.session_date)         AS last_visited
       FROM shooting_sessions s
       JOIN guns g ON s.gun_id = g.id
-      WHERE s.range_location IS NOT NULL
+      WHERE s.user_id = ${userId}
+        AND s.range_location IS NOT NULL
         AND (${gunId}::UUID IS NULL         OR s.gun_id = ${gunId}::UUID)
         AND (${caliber}::text    IS NULL   OR g.caliber = ${caliber}::text)
         AND (${startMonth}::text IS NULL   OR TO_CHAR(s.session_date, 'YYYY-MM') >= ${startMonth}::text)
