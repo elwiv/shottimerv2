@@ -1669,6 +1669,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
     <div class="bd-group" id="bd-cal-group">
       <button class="bd-btn active" data-cal="5.56">5.56 NATO</button>
       <button class="bd-btn"        data-cal="9mm">9mm Luger</button>
+      <button class="bd-btn"        data-cal="22lr">.22 LR</button>
     </div>
   </div>
 
@@ -1704,6 +1705,28 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
     <div class="bd-subtext" id="bd-9mm-vel">1,350 fps · 124gr FMJ</div>
   </div>
 
+  <!-- .22 LR barrel length -->
+  <div class="bd-ctrl" id="bd-22lr-barrel-ctrl" style="display:none">
+    <div class="bd-label">Barrel Length</div>
+    <div class="bd-group" id="bd-22lr-barrel-group">
+      <button class="bd-btn"        data-barrel="0">4" Pistol</button>
+      <button class="bd-btn"        data-barrel="1">8"</button>
+      <button class="bd-btn active" data-barrel="2">16"</button>
+    </div>
+  </div>
+
+  <!-- .22 LR muzzle velocity -->
+  <div class="bd-ctrl" id="bd-22lr-vel-ctrl" style="display:none">
+    <div class="bd-label">Muzzle Velocity</div>
+    <div class="bd-group" id="bd-22lr-vel-group">
+      <button class="bd-btn"        data-vel="0">700</button>
+      <button class="bd-btn"        data-vel="1">850</button>
+      <button class="bd-btn active" data-vel="2">1000</button>
+      <button class="bd-btn"        data-vel="3">1150</button>
+    </div>
+    <div class="bd-subtext" id="bd-22lr-vel-sub">1,000 fps · 40gr RN</div>
+  </div>
+
   <!-- Zero – 5.56 -->
   <div class="bd-ctrl" id="bd-zero-556-ctrl">
     <div class="bd-label">Zero Distance</div>
@@ -1715,13 +1738,43 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
     </div>
   </div>
 
-  <!-- Zero – 9mm -->
+  <!-- Zero – 9mm carbine -->
   <div class="bd-ctrl" id="bd-zero-9mm-ctrl" style="display:none">
     <div class="bd-label">Zero Distance</div>
     <div class="bd-group" id="bd-zero-9mm-group">
       <button class="bd-btn"        data-zero="0">15y</button>
       <button class="bd-btn active" data-zero="1">25y</button>
       <button class="bd-btn"        data-zero="2">50y</button>
+    </div>
+  </div>
+
+  <!-- Zero – 9mm pistol -->
+  <div class="bd-ctrl" id="bd-zero-9mm-pistol-ctrl" style="display:none">
+    <div class="bd-label">Zero Distance</div>
+    <div class="bd-group" id="bd-zero-9mm-pistol-group">
+      <button class="bd-btn"        data-zero="0">7y</button>
+      <button class="bd-btn active" data-zero="1">15y</button>
+      <button class="bd-btn"        data-zero="2">25y</button>
+    </div>
+  </div>
+
+  <!-- Zero – .22 LR pistol (4") -->
+  <div class="bd-ctrl" id="bd-zero-22lr-pistol-ctrl" style="display:none">
+    <div class="bd-label">Zero Distance</div>
+    <div class="bd-group" id="bd-zero-22lr-pistol-group">
+      <button class="bd-btn"        data-zero="0">7y</button>
+      <button class="bd-btn active" data-zero="1">15y</button>
+      <button class="bd-btn"        data-zero="2">25y</button>
+    </div>
+  </div>
+
+  <!-- Zero – .22 LR rifle (8"/16") -->
+  <div class="bd-ctrl" id="bd-zero-22lr-rifle-ctrl" style="display:none">
+    <div class="bd-label">Zero Distance</div>
+    <div class="bd-group" id="bd-zero-22lr-rifle-group">
+      <button class="bd-btn active" data-zero="0">25y</button>
+      <button class="bd-btn"        data-zero="1">50y</button>
+      <button class="bd-btn"        data-zero="2">100y</button>
     </div>
   </div>
 
@@ -1736,6 +1789,11 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
   </div>
 
   <div class="bd-sep"></div>
+
+  <!-- Trajectory chart -->
+  <div id="bd-chart-wrap" style="padding:0 14px 8px;flex-shrink:0">
+    <svg id="bd-chart" width="100%" style="display:block;border-radius:12px;overflow:hidden"></svg>
+  </div>
 
   <!-- Results table -->
   <div class="bd-table-wrap">
@@ -2952,7 +3010,7 @@ const BD = {
     zeros:     [25, 36, 50, 100],
     defBarrel: 3,      // 16"
     defZero:   2,      // 50y
-    ranges:    [25, 36, 50, 75, 100, 125, 150, 200, 250, 300],
+    ranges:    [25, 50, 100, 200, 300],
     ammo:      'M855 62gr',
   },
   '9mm': {
@@ -2965,15 +3023,34 @@ const BD = {
         { vel: 1350 },  // 16"
       ],
       defBarrel: 2,     // 16"
+      zeros:    [15, 25, 50],
+      defZero:  1,      // 25y
+      ranges:   [25, 50, 75, 100, 150],
     },
     pistol: {
       vel:       1150,
       defSightH: 0.80,  // Osight SE on CZ P-09
+      zeros:    [7, 15, 25],
+      defZero:  1,      // 15y
+      ranges:   [7, 15, 25, 50],
     },
-    zeros:    [15, 25, 50],
-    defZero:  1,   // 25y
-    ranges:   [15, 25, 50, 75, 100, 150, 200, 250, 300],
     ammo:     '124gr FMJ',
+  },
+  '22lr': {
+    bc:   0.120,  // G1 BC, ~40gr round nose
+    barrels: [
+      { len: '4"',  defSightH: 0.80, isPistol: true  },  // pistol
+      { len: '8"',  defSightH: 1.20, isPistol: false },
+      { len: '16"', defSightH: 1.50, isPistol: false },
+    ],
+    vels:         [700, 850, 1000, 1150],  // user-selectable (ammo varies widely)
+    defBarrel:    2,   // 16"
+    defVel:       2,   // 1000 fps (standard velocity)
+    pistolZeros:  [7, 15, 25],    pistolDefZero:  1,  // 15y
+    rifleZeros:   [25, 50, 100],  rifleDefZero:   0,  // 25y
+    pistolRanges: [7, 15, 25, 50],
+    rifleRanges:  [25, 50, 75, 100, 150, 200],
+    ammo:         '40gr RN',
   },
 };
 
@@ -2984,6 +3061,9 @@ let bd9Platform  = 'carbine';             // 9mm: 'carbine' | 'pistol'
 let bd9BarrelIdx = BD['9mm'].carbine.defBarrel;
 let bdZeroI      = BD['5.56'].defZero;
 let bdSightH     = BD['5.56'].defSightH;  // adjustable sight height, inches
+let bd22BarrelIdx = BD['22lr'].defBarrel;  // 0=4" pistol, 1=8", 2=16"
+let bd22VelIdx    = BD['22lr'].defVel;     // index into BD['22lr'].vels
+let bdZeroI22     = BD['22lr'].rifleDefZero;
 
 // Numerical integration using simplified G1 drag model (sea level, standard atmosphere).
 // Returns { [rangeYd]: dropBelowBoreFeet } — positive = below bore.
@@ -3046,16 +3126,28 @@ function bdGetParams() {
       ranges: cfg.ranges,
       ammo:   cfg.ammo,
     };
-  } else {
-    const vel = bd9Platform === 'carbine'
+  } else if (bdCal === '9mm') {
+    const plat = cfg[bd9Platform];
+    const vel  = bd9Platform === 'carbine'
       ? cfg.carbine.barrels[bd9BarrelIdx].vel
       : cfg.pistol.vel;
     return {
       vel,
       bc:     cfg.bc,
       sightH: bdSightH,
-      zero:   cfg.zeros[bdZeroI],
-      ranges: cfg.ranges,
+      zero:   plat.zeros[bdZeroI],
+      ranges: plat.ranges,
+      ammo:   cfg.ammo,
+    };
+  } else {
+    const barrel   = cfg.barrels[bd22BarrelIdx];
+    const isPistol = barrel.isPistol;
+    return {
+      vel:    cfg.vels[bd22VelIdx],
+      bc:     cfg.bc,
+      sightH: bdSightH,
+      zero:   (isPistol ? cfg.pistolZeros : cfg.rifleZeros)[bdZeroI22],
+      ranges: isPistol ? cfg.pistolRanges : cfg.rifleRanges,
       ammo:   cfg.ammo,
     };
   }
@@ -3069,8 +3161,10 @@ function bdRender() {
   const velStr = vel.toLocaleString() + ' fps · ' + ammo;
   if (bdCal === '5.56') {
     document.getElementById('bd-barrel-vel').textContent = velStr;
-  } else {
+  } else if (bdCal === '9mm') {
     document.getElementById('bd-9mm-vel').textContent = velStr;
+  } else {
+    document.getElementById('bd-22lr-vel-sub').textContent = velStr;
   }
 
   // Update sight height display and info line
@@ -3108,6 +3202,121 @@ function bdRender() {
     tr.innerHTML = `<td>${r}y</td><td>${valStr}</td>`;
     tbody.appendChild(tr);
   });
+
+  // Draw trajectory chart
+  bdDrawChart(vel, bc, sightH, zero, ranges);
+}
+
+// ── Bullet Drop trajectory chart ───────────────────────────────────────────
+
+function bdDrawChart(v0Fps, bcG1, sightHIn, zeroYd, displayRanges) {
+  const svg = document.getElementById('bd-chart');
+  if (!svg) return;
+
+  const maxRange = Math.max(...displayRanges);
+
+  // Dense sampling for a smooth curve (every 1 yard from 0 to maxRange)
+  const denseRanges = [];
+  for (let i = 0; i <= maxRange; i++) denseRanges.push(i);
+
+  // Height above/below LoS at each yard
+  const heights1y = bdHeightFromZero(v0Fps, bcG1, sightHIn, zeroYd, denseRanges);
+  // Also need height at muzzle (range=0), which is -sightHIn (bullet starts at bore, sightH below LoS)
+  heights1y[0] = -sightHIn;
+
+  // Chart dimensions
+  const W = 320, H = 130;
+  const MT = 14, MB = 22, ML = 36, MR = 10;
+  const cW = W - ML - MR, cH = H - MT - MB;
+
+  // Y range — find min/max over the dense range, then add padding
+  let yMin = -sightHIn, yMax = -sightHIn;
+  for (let i = 0; i <= maxRange; i++) {
+    const h = heights1y[i] || 0;
+    if (h < yMin) yMin = h;
+    if (h > yMax) yMax = h;
+  }
+  const yPad = Math.max(Math.abs(yMax - yMin) * 0.15, 1);
+  yMin -= yPad; yMax += yPad;
+  const yRange = yMax - yMin || 1;
+
+  // Mapping helpers
+  const xPx = r => ML + (r / maxRange) * cW;
+  const yPx = h => MT + (1 - (h - yMin) / yRange) * cH;
+
+  // CSS variable colors (resolved at runtime via a temp element)
+  const style = getComputedStyle(document.documentElement);
+  const cBg       = style.getPropertyValue('--bg-card').trim()       || '#1a1a1a';
+  const cBgEl     = style.getPropertyValue('--bg-elevated').trim()   || '#222';
+  const cAccent   = style.getPropertyValue('--accent').trim()        || '#4a9eff';
+  const cAccentDk = style.getPropertyValue('--accent-dark').trim()   || '#1a3a5c';
+  const cMuted    = style.getPropertyValue('--text-muted').trim()    || '#666';
+  const cSec      = style.getPropertyValue('--text-secondary').trim()|| '#aaa';
+  const cPrimary  = style.getPropertyValue('--text-primary').trim()  || '#fff';
+
+  // ─── Build SVG ────────────────────────────────────────────────────────────
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.style.background    = cBg;
+  svg.style.borderRadius  = '12px';
+  svg.style.display       = 'block';
+  let out = '';
+
+  // LoS line (y=0)
+  const losY = yPx(0);
+  out += `<line x1="${ML}" y1="${losY}" x2="${ML+cW}" y2="${losY}" stroke="${cMuted}" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>`;
+
+  // Subtle y=0 label
+  out += `<text x="${ML-4}" y="${losY+3.5}" text-anchor="end" font-size="8" fill="${cMuted}" font-family="monospace">0"</text>`;
+
+  // Y-axis grid lines at round-inch increments
+  const gridStep = yRange > 80 ? 20 : yRange > 30 ? 10 : yRange > 10 ? 5 : 2;
+  const gridStart = Math.ceil(yMin / gridStep) * gridStep;
+  for (let g = gridStart; g <= yMax; g += gridStep) {
+    if (Math.abs(g) < 0.1) continue; // skip 0 (drawn as LoS)
+    const gy = yPx(g);
+    if (gy < MT || gy > MT + cH) continue;
+    out += `<line x1="${ML}" y1="${gy}" x2="${ML+cW}" y2="${gy}" stroke="${cBgEl}" stroke-width="1"/>`;
+    out += `<text x="${ML-4}" y="${gy+3.5}" text-anchor="end" font-size="8" fill="${cMuted}" font-family="monospace">${g > 0 ? '+' : ''}${g}"</text>`;
+  }
+
+  // Zero vertical dashed line
+  const zeroX = xPx(zeroYd);
+  out += `<line x1="${zeroX}" y1="${MT}" x2="${zeroX}" y2="${MT+cH}" stroke="${cAccent}" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>`;
+
+  // Trajectory polyline (dense)
+  const pts = denseRanges.map(r => `${xPx(r).toFixed(1)},${yPx(heights1y[r] || 0).toFixed(1)}`).join(' ');
+  out += `<polyline points="${pts}" fill="none" stroke="${cAccent}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+  // Markers at display ranges
+  displayRanges.forEach(r => {
+    const x = xPx(r), y = yPx(heights1y[r] || 0);
+    const isZero = r === zeroYd;
+    if (isZero) {
+      out += `<circle cx="${x}" cy="${y}" r="5" fill="${cAccentDk}" stroke="${cAccent}" stroke-width="1.5"/>`;
+      out += `<circle cx="${x}" cy="${y}" r="2" fill="${cAccent}"/>`;
+    } else {
+      out += `<circle cx="${x}" cy="${y}" r="3" fill="${cBg}" stroke="${cAccent}" stroke-width="1.5"/>`;
+    }
+    // Range label at bottom
+    const label = r >= 1000 ? (r/1000).toFixed(0)+'k' : r + 'y';
+    out += `<text x="${x}" y="${H-4}" text-anchor="middle" font-size="8" fill="${isZero ? cAccent : cMuted}" font-family="monospace" font-weight="${isZero ? 700 : 400}">${label}</text>`;
+  });
+
+  // Gun silhouette at muzzle (left edge)
+  const muzzleY = yPx(-sightHIn);  // bore axis
+  const sightY  = yPx(0);          // LoS origin at muzzle
+  // Barrel line
+  out += `<line x1="4" y1="${muzzleY}" x2="${ML}" y2="${muzzleY}" stroke="${cSec}" stroke-width="2.5" stroke-linecap="round"/>`;
+  // Receiver block (spans from sight level down to bore)
+  const recTop = Math.min(sightY, muzzleY) - 2;
+  const recH   = Math.max(4, Math.abs(muzzleY - sightY) + 4);
+  out += `<rect x="2" y="${recTop}" width="8" height="${recH}" rx="1" fill="${cBgEl}" stroke="${cSec}" stroke-width="1"/>`;
+  // Sight dot
+  out += `<circle cx="6" cy="${sightY}" r="2" fill="${cAccent}" opacity="0.8"/>`;
+  // Muzzle dot on trajectory
+  out += `<circle cx="${ML}" cy="${muzzleY}" r="2.5" fill="${cBg}" stroke="${cSec}" stroke-width="1.5"/>`;
+
+  svg.innerHTML = out;
 }
 
 // ── Bullet Drop control wiring ─────────────────────────────────────────────
@@ -3129,30 +3338,44 @@ document.getElementById('bd-cal-group').addEventListener('click', e => {
     b.classList.toggle('active', b === btn)
   );
 
+  // Hide all caliber-specific controls
+  ['bd-barrel-ctrl','bd-plat-ctrl','bd-9mm-barrel-ctrl',
+   'bd-zero-556-ctrl','bd-zero-9mm-ctrl','bd-zero-9mm-pistol-ctrl',
+   'bd-22lr-barrel-ctrl','bd-22lr-vel-ctrl',
+   'bd-zero-22lr-pistol-ctrl','bd-zero-22lr-rifle-ctrl'].forEach(id =>
+    document.getElementById(id).style.display = 'none'
+  );
+
   if (bdCal === '5.56') {
-    document.getElementById('bd-barrel-ctrl').style.display      = '';
-    document.getElementById('bd-plat-ctrl').style.display        = 'none';
-    document.getElementById('bd-9mm-barrel-ctrl').style.display  = 'none';
-    document.getElementById('bd-zero-556-ctrl').style.display    = '';
-    document.getElementById('bd-zero-9mm-ctrl').style.display    = 'none';
-    bdSel   = BD['5.56'].defBarrel;
-    bdZeroI = BD['5.56'].defZero;
+    document.getElementById('bd-barrel-ctrl').style.display   = '';
+    document.getElementById('bd-zero-556-ctrl').style.display = '';
+    bdSel    = BD['5.56'].defBarrel;
+    bdZeroI  = BD['5.56'].defZero;
     bdSightH = BD['5.56'].defSightH;
     bdSetActive('bd-barrel-group', bdSel, 'barrel');
     bdSetActive('bd-zero-556-group', bdZeroI, 'zero');
-  } else {
-    document.getElementById('bd-barrel-ctrl').style.display      = 'none';
-    document.getElementById('bd-plat-ctrl').style.display        = '';
-    document.getElementById('bd-zero-556-ctrl').style.display    = 'none';
-    document.getElementById('bd-zero-9mm-ctrl').style.display    = '';
+  } else if (bdCal === '9mm') {
+    document.getElementById('bd-plat-ctrl').style.display       = '';
+    document.getElementById('bd-9mm-barrel-ctrl').style.display = '';
+    document.getElementById('bd-zero-9mm-ctrl').style.display   = '';
     bd9Platform  = 'carbine';
     bd9BarrelIdx = BD['9mm'].carbine.defBarrel;
-    bdZeroI      = BD['9mm'].defZero;
+    bdZeroI      = BD['9mm'].carbine.defZero;
     bdSightH     = BD['9mm'].carbine.defSightH;
-    document.getElementById('bd-9mm-barrel-ctrl').style.display  = '';
     bdSetActive('bd-plat-group', 'carbine', 'plat');
     bdSetActive('bd-9mm-barrel-group', bd9BarrelIdx, 'barrel');
     bdSetActive('bd-zero-9mm-group', bdZeroI, 'zero');
+  } else {
+    document.getElementById('bd-22lr-barrel-ctrl').style.display     = '';
+    document.getElementById('bd-22lr-vel-ctrl').style.display        = '';
+    document.getElementById('bd-zero-22lr-rifle-ctrl').style.display = '';
+    bd22BarrelIdx = BD['22lr'].defBarrel;
+    bd22VelIdx    = BD['22lr'].defVel;
+    bdZeroI22     = BD['22lr'].rifleDefZero;
+    bdSightH      = BD['22lr'].barrels[bd22BarrelIdx].defSightH;
+    bdSetActive('bd-22lr-barrel-group', bd22BarrelIdx, 'barrel');
+    bdSetActive('bd-22lr-vel-group', bd22VelIdx, 'vel');
+    bdSetActive('bd-zero-22lr-rifle-group', bdZeroI22, 'zero');
   }
   bdRender();
 });
@@ -3179,11 +3402,19 @@ document.getElementById('bd-plat-group').addEventListener('click', e => {
   if (bd9Platform === 'carbine') {
     bd9BarrelIdx = BD['9mm'].carbine.defBarrel;
     bdSightH     = BD['9mm'].carbine.defSightH;
-    document.getElementById('bd-9mm-barrel-ctrl').style.display = '';
+    bdZeroI      = BD['9mm'].carbine.defZero;
+    document.getElementById('bd-9mm-barrel-ctrl').style.display      = '';
+    document.getElementById('bd-zero-9mm-ctrl').style.display        = '';
+    document.getElementById('bd-zero-9mm-pistol-ctrl').style.display = 'none';
     bdSetActive('bd-9mm-barrel-group', bd9BarrelIdx, 'barrel');
+    bdSetActive('bd-zero-9mm-group', bdZeroI, 'zero');
   } else {
     bdSightH = BD['9mm'].pistol.defSightH;
-    document.getElementById('bd-9mm-barrel-ctrl').style.display = 'none';
+    bdZeroI  = BD['9mm'].pistol.defZero;
+    document.getElementById('bd-9mm-barrel-ctrl').style.display      = 'none';
+    document.getElementById('bd-zero-9mm-ctrl').style.display        = 'none';
+    document.getElementById('bd-zero-9mm-pistol-ctrl').style.display = '';
+    bdSetActive('bd-zero-9mm-pistol-group', bdZeroI, 'zero');
   }
   bdRender();
 });
@@ -3210,12 +3441,73 @@ document.getElementById('bd-zero-556-group').addEventListener('click', e => {
   bdRender();
 });
 
-// Zero – 9mm
+// Zero – 9mm carbine
 document.getElementById('bd-zero-9mm-group').addEventListener('click', e => {
   const btn = e.target.closest('[data-zero]');
   if (!btn) return;
   bdZeroI = parseInt(btn.dataset.zero);
   document.querySelectorAll('#bd-zero-9mm-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+  bdRender();
+});
+
+// Zero – 9mm pistol
+document.getElementById('bd-zero-9mm-pistol-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-zero]');
+  if (!btn) return;
+  bdZeroI = parseInt(btn.dataset.zero);
+  document.querySelectorAll('#bd-zero-9mm-pistol-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+  bdRender();
+});
+
+// Barrel length – .22 LR
+document.getElementById('bd-22lr-barrel-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-barrel]');
+  if (!btn) return;
+  bd22BarrelIdx = parseInt(btn.dataset.barrel);
+  document.querySelectorAll('#bd-22lr-barrel-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+  const isPistol = BD['22lr'].barrels[bd22BarrelIdx].isPistol;
+  bdSightH  = BD['22lr'].barrels[bd22BarrelIdx].defSightH;
+  bdZeroI22 = isPistol ? BD['22lr'].pistolDefZero : BD['22lr'].rifleDefZero;
+  document.getElementById('bd-zero-22lr-pistol-ctrl').style.display = isPistol ? '' : 'none';
+  document.getElementById('bd-zero-22lr-rifle-ctrl').style.display  = isPistol ? 'none' : '';
+  bdSetActive(isPistol ? 'bd-zero-22lr-pistol-group' : 'bd-zero-22lr-rifle-group', bdZeroI22, 'zero');
+  bdRender();
+});
+
+// Muzzle velocity – .22 LR
+document.getElementById('bd-22lr-vel-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-vel]');
+  if (!btn) return;
+  bd22VelIdx = parseInt(btn.dataset.vel);
+  document.querySelectorAll('#bd-22lr-vel-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+  bdRender();
+});
+
+// Zero – .22 LR pistol (4")
+document.getElementById('bd-zero-22lr-pistol-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-zero]');
+  if (!btn) return;
+  bdZeroI22 = parseInt(btn.dataset.zero);
+  document.querySelectorAll('#bd-zero-22lr-pistol-group .bd-btn').forEach(b =>
+    b.classList.toggle('active', b === btn)
+  );
+  bdRender();
+});
+
+// Zero – .22 LR rifle (8"/16")
+document.getElementById('bd-zero-22lr-rifle-group').addEventListener('click', e => {
+  const btn = e.target.closest('[data-zero]');
+  if (!btn) return;
+  bdZeroI22 = parseInt(btn.dataset.zero);
+  document.querySelectorAll('#bd-zero-22lr-rifle-group .bd-btn').forEach(b =>
     b.classList.toggle('active', b === btn)
   );
   bdRender();
