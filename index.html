@@ -74,7 +74,7 @@ body {
 .nav-tab:active { opacity: 0.75; }
 
 /* ── Section wrappers ── */
-#section-timer, #section-drop {
+#section-timer, #section-drop, #section-suppressors, #section-guns {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -691,7 +691,7 @@ input, textarea, select {
 .nav-tab { flex: 0 0 auto; padding: 0 14px; min-width: 72px; }
 
 /* ── Shared section container ── */
-#section-guns, #section-log, #section-reports {
+#section-guns, #section-log, #section-reports, #section-suppressors {
   display: flex; flex-direction: column; flex: 1;
   overflow: hidden; min-height: 0;
 }
@@ -880,6 +880,46 @@ input, textarea, select {
   width: calc(100% - 28px); flex-shrink: 0;
 }
 .clean-btn:active { opacity: 0.7; }
+
+/* ── Suppressor cards ── */
+.suppressor-card {
+  background: #161616; border: 1px solid #1e1e1e;
+  border-radius: 16px; overflow: hidden; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.suppressor-card:active { opacity: 0.75; }
+.suppressor-card-icon {
+  width: 100%; background: #111;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; padding: 18px 0;
+}
+.suppressor-card-body { padding: 10px 12px 12px; }
+.suppressor-card-name {
+  font-size: 13px; font-weight: 600; color: #ddd; margin-bottom: 3px;
+}
+.suppressor-card-calibers {
+  font-size: 10px; font-weight: 600; color: #555;
+  letter-spacing: 0.3px; margin-bottom: 3px;
+}
+.suppressor-card-shots {
+  font-size: 10px; font-weight: 600; color: #4ade80; letter-spacing: 0.3px;
+}
+.suppressor-icon-lg {
+  width: 72px; height: 72px; border-radius: 14px;
+  background: #111; display: flex; align-items: center;
+  justify-content: center; font-size: 32px; flex-shrink: 0;
+}
+.sup-caliber-tag {
+  display: inline-block; background: #1a1a1a; border: 1px solid #2a2a2a;
+  border-radius: 8px; padding: 3px 8px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #888;
+  text-transform: uppercase; margin: 2px 2px 0 0;
+}
+.sup-row-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: #555; margin-bottom: 4px;
+}
+
 .row-del-btn {
   background: transparent; border: none; color: #555;
   font-size: 13px; cursor: pointer; padding: 2px 4px; border-radius: 4px;
@@ -990,14 +1030,25 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
   margin: 16px 0 8px;
 }
 .gun-row {
-  display: flex; gap: 8px; align-items: center;
-  margin-bottom: 8px;
+  display: flex; flex-direction: column; gap: 6px;
+  margin-bottom: 10px;
+  background: #111; border: 1px solid #1e1e1e;
+  border-radius: 12px; padding: 8px;
 }
-.gun-row .gun-row-select {
+.gun-row-top {
+  display: flex; gap: 8px; align-items: center;
+}
+.gun-row-top .gun-row-select {
   flex: 1; min-width: 0;
 }
-.gun-row .gun-row-rounds {
+.gun-row-top .gun-row-rounds {
   width: 90px; flex-shrink: 0;
+}
+.gun-row-suppressor {
+  display: flex; gap: 8px; align-items: center;
+}
+.gun-row-suppressor .gun-row-sup-select {
+  flex: 1; min-width: 0;
 }
 .btn-remove-gun-row {
   width: 34px; height: 44px; flex-shrink: 0;
@@ -1431,6 +1482,7 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
   <button class="nav-tab active" id="tab-dashboard">Dashboard</button>
   <button class="nav-tab"        id="tab-log">Log Session</button>
   <button class="nav-tab"        id="tab-guns">My Guns</button>
+  <button class="nav-tab"        id="tab-suppressors">Suppressors</button>
   <button class="nav-tab"        id="tab-reports">History</button>
   <button class="nav-tab"        id="tab-drop">Ballistics</button>
   <button id="beta-tab">Beta</button>
@@ -1660,6 +1712,127 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
   </div>
 
 </div><!-- /section-guns -->
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- Suppressors section                                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="section-suppressors" style="display:none">
+
+  <!-- Suppressor grid view -->
+  <div id="suppressors-grid-view" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0">
+    <div class="section-scroll">
+      <div id="suppressors-grid"></div>
+      <div id="suppressors-empty" class="empty-state" style="display:none">
+        <div class="empty-state-icon">🔇</div>
+        No suppressors added yet.<br>Tap <strong style="color:#ddd">Add Suppressor</strong> to get started.
+      </div>
+    </div>
+    <button id="btn-add-suppressor" class="fab-btn">+ Add Suppressor</button>
+  </div>
+
+  <!-- Per-suppressor detail view -->
+  <div id="suppressor-detail-view" style="display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0">
+    <div class="sec-header" style="flex-shrink:0">
+      <button id="btn-back-suppressors" class="back-btn">← Back</button>
+      <span id="suppressor-detail-heading" class="sec-title"></span>
+      <div style="display:flex;gap:6px">
+        <button id="btn-edit-suppressor" class="icon-btn" style="color:#4ade80;border-color:#2a4a2e">Edit</button>
+        <button id="btn-delete-suppressor" class="icon-btn">Delete</button>
+      </div>
+    </div>
+    <div class="section-scroll">
+      <div class="gun-detail-hero">
+        <div id="suppressor-detail-icon" class="suppressor-icon-lg">🔇</div>
+        <div>
+          <div id="suppressor-detail-name" class="gun-detail-name"></div>
+          <div id="suppressor-detail-calibers" class="gun-detail-caliber"></div>
+        </div>
+      </div>
+
+      <div class="stat-grid-2" id="suppressor-stats"></div>
+
+      <button id="btn-log-suppressor-cleaning" class="clean-btn" style="margin-top:4px">🧹 Log Cleaning</button>
+
+      <div class="section-label-small" style="margin-top:16px">Usage History</div>
+      <div id="suppressor-sessions-list" style="margin-bottom:4px"></div>
+
+      <div class="section-label-small" style="margin-top:12px">Cleaning History</div>
+      <div id="suppressor-cleanings-list" style="margin-bottom:14px"></div>
+    </div>
+  </div>
+
+</div><!-- /section-suppressors -->
+
+<!-- ── Add Suppressor Modal ── -->
+<div id="add-suppressor-backdrop" class="modal-back" style="display:none">
+  <div class="modal-sheet" style="max-width:480px">
+    <h2>Add Suppressor</h2>
+    <div class="form-field">
+      <label class="form-label">Name *</label>
+      <input type="text" id="sup-name-input" class="form-input" placeholder="e.g. Silencerco Omega 300">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Compatible Calibers *</label>
+      <div class="form-hint" style="margin-bottom:6px">Enter calibers separated by commas — used to match suppressors to guns when logging sessions</div>
+      <input type="text" id="sup-calibers-input" class="form-input" placeholder="e.g. 5.56 NATO, .300 BLK, 7.62x39">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Brand <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <input type="text" id="sup-brand-input" class="form-input" placeholder="e.g. Silencerco">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Base Shot Count <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <input type="number" id="sup-base-count-input" class="form-input" min="0" placeholder="0">
+      <div class="form-hint">Shots fired before using this app — included in lifetime total only</div>
+    </div>
+    <button id="btn-add-suppressor-submit" class="submit-btn">Add Suppressor</button>
+    <span id="btn-add-suppressor-cancel" class="cancel-link">Cancel</span>
+  </div>
+</div>
+
+<!-- ── Edit Suppressor Modal ── -->
+<div id="edit-suppressor-backdrop" class="modal-back" style="display:none">
+  <div class="modal-sheet" style="max-width:480px">
+    <h2>Edit Suppressor</h2>
+    <div class="form-field">
+      <label class="form-label">Name *</label>
+      <input type="text" id="edit-sup-name-input" class="form-input" placeholder="e.g. Silencerco Omega 300">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Compatible Calibers *</label>
+      <div class="form-hint" style="margin-bottom:6px">Enter calibers separated by commas</div>
+      <input type="text" id="edit-sup-calibers-input" class="form-input" placeholder="e.g. 5.56 NATO, .300 BLK">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Brand <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <input type="text" id="edit-sup-brand-input" class="form-input" placeholder="e.g. Silencerco">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Base Shot Count</label>
+      <input type="number" id="edit-sup-base-count-input" class="form-input" min="0" placeholder="0">
+      <div class="form-hint">Shots fired before using this app — included in lifetime total only</div>
+    </div>
+    <button id="btn-edit-suppressor-submit" class="submit-btn">Save Changes</button>
+    <span id="btn-edit-suppressor-cancel" class="cancel-link">Cancel</span>
+  </div>
+</div>
+
+<!-- ── Log Suppressor Cleaning Modal ── -->
+<div id="sup-clean-backdrop" class="modal-back" style="display:none">
+  <div class="modal-sheet" style="max-width:480px">
+    <h2>Log Cleaning</h2>
+    <div class="form-field">
+      <label class="form-label">Date</label>
+      <input type="date" id="sup-clean-date-input" class="form-input">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Notes (optional)</label>
+      <textarea id="sup-clean-notes-input" class="form-input" placeholder="Products used, condition, etc."></textarea>
+    </div>
+    <button id="btn-sup-clean-submit" class="submit-btn">Log Cleaning</button>
+    <span id="btn-sup-clean-cancel" class="cancel-link">Cancel</span>
+  </div>
+</div>
 
 <!-- ── Add Gun Modal ── -->
 <div id="add-gun-backdrop" class="modal-back" style="display:none">
@@ -2381,25 +2554,28 @@ wire(btnClearHistory, () => {
 
 // ── Tab navigation ────────────────────────────────────────────────────────
 const tabDashboard = document.getElementById('tab-dashboard');
-const tabDrop      = document.getElementById('tab-drop');
-const tabGuns      = document.getElementById('tab-guns');
-const tabLog       = document.getElementById('tab-log');
-const tabReports   = document.getElementById('tab-reports');
-const tabBeta      = document.getElementById('beta-tab');
-const secDashboard = document.getElementById('section-dashboard');
-const secTimer     = document.getElementById('section-timer');
-const secDrop      = document.getElementById('section-drop');
-const secGuns      = document.getElementById('section-guns');
-const secLog       = document.getElementById('section-log');
-const secReports   = document.getElementById('section-reports');
+const tabDrop        = document.getElementById('tab-drop');
+const tabGuns        = document.getElementById('tab-guns');
+const tabLog         = document.getElementById('tab-log');
+const tabReports     = document.getElementById('tab-reports');
+const tabSuppressors = document.getElementById('tab-suppressors');
+const tabBeta        = document.getElementById('beta-tab');
+const secDashboard   = document.getElementById('section-dashboard');
+const secTimer       = document.getElementById('section-timer');
+const secDrop        = document.getElementById('section-drop');
+const secGuns        = document.getElementById('section-guns');
+const secLog         = document.getElementById('section-log');
+const secReports     = document.getElementById('section-reports');
+const secSuppressors = document.getElementById('section-suppressors');
 
 const ALL_TABS = [
-  { tab: tabDashboard, sec: secDashboard, id: 'dashboard' },
-  { tab: tabLog,       sec: secLog,       id: 'log' },
-  { tab: tabGuns,      sec: secGuns,      id: 'guns' },
-  { tab: tabReports,   sec: secReports,   id: 'reports' },
-  { tab: tabDrop,      sec: secDrop,      id: 'drop' },
-  { tab: null,         sec: secTimer,     id: 'timer' },
+  { tab: tabDashboard,   sec: secDashboard,   id: 'dashboard' },
+  { tab: tabLog,         sec: secLog,         id: 'log' },
+  { tab: tabGuns,        sec: secGuns,        id: 'guns' },
+  { tab: tabSuppressors, sec: secSuppressors, id: 'suppressors' },
+  { tab: tabReports,     sec: secReports,     id: 'reports' },
+  { tab: tabDrop,        sec: secDrop,        id: 'drop' },
+  { tab: null,           sec: secTimer,       id: 'timer' },
 ];
 let currentTab = 'dashboard';
 
@@ -2412,18 +2588,20 @@ function showTab(id) {
   });
   tabBeta.classList.toggle('active', id === 'timer');
   btnHistory.style.display = id === 'timer' ? '' : 'none';
-  if (id === 'drop')      bdRender();
-  if (id === 'guns')      initGunsTab();
-  if (id === 'log')       initLogTab();
-  if (id === 'reports')   initReportsTab();
-  if (id === 'dashboard') initDashboardTab();
+  if (id === 'drop')        bdRender();
+  if (id === 'guns')        initGunsTab();
+  if (id === 'log')         initLogTab();
+  if (id === 'reports')     initReportsTab();
+  if (id === 'dashboard')   initDashboardTab();
+  if (id === 'suppressors') initSuppressorsTab();
 }
 
-wire(tabDashboard, () => showTab('dashboard'));
-wire(tabDrop,      () => showTab('drop'));
-wire(tabGuns,      () => showTab('guns'));
-wire(tabLog,       () => showTab('log'));
-wire(tabReports,   () => showTab('reports'));
+wire(tabDashboard,   () => showTab('dashboard'));
+wire(tabDrop,        () => showTab('drop'));
+wire(tabGuns,        () => showTab('guns'));
+wire(tabLog,         () => showTab('log'));
+wire(tabReports,     () => showTab('reports'));
+wire(tabSuppressors, () => showTab('suppressors'));
 
 // ── Beta Tools drawer ─────────────────────────────────────────────────────
 const betaBackdrop       = document.getElementById('beta-backdrop');
@@ -3017,10 +3195,14 @@ function processPhoto(file, maxDim = 800) {
 // ═══════════════════════════════════════════════════════════════════════════
 // MY GUNS TAB
 // ═══════════════════════════════════════════════════════════════════════════
-let gunsData     = [];
-let currentGunId = null;
-let gunChart     = null;
-let gunsLoaded   = false;
+let gunsData        = [];
+let currentGunId    = null;
+let gunChart        = null;
+let gunsLoaded      = false;
+let suppressorsData = [];
+let suppressorsLoaded = false;
+let currentSuppId   = null;
+let currentSuppData = null;
 
 // Manufacturer keyword → clearbit domain, most-specific entries first
 const BRAND_CATALOG = [
@@ -3598,7 +3780,7 @@ async function initLogTab() {
   document.getElementById('log-success').style.display = 'none';
   if (!logTabReady) {
     logTabReady = true;
-    await Promise.all([refreshLogGunsData(), refreshRangeDropdown()]);
+    await Promise.all([refreshLogGunsData(), refreshLogSuppressorsData(), refreshRangeDropdown()]);
     addGunRow(); // start with one empty gun row
   }
   loadLogSessionsList();
@@ -3642,6 +3824,13 @@ async function refreshLogGunsData() {
   } catch (e) { /* ignore */ }
 }
 
+async function refreshLogSuppressorsData() {
+  try {
+    const sups = await apiFetch('suppressors');
+    suppressorsData = sups;
+  } catch (e) { /* ignore */ }
+}
+
 function buildGunOptions() {
   let opts = '<option value="">— Select gun —</option>';
   (gunsData || []).forEach(g => {
@@ -3650,14 +3839,51 @@ function buildGunOptions() {
   return opts;
 }
 
+function buildSuppressorOptions(gunCaliber) {
+  let opts = '<option value="">— No suppressor —</option>';
+  const cal = (gunCaliber || '').trim().toLowerCase();
+  const matching = (suppressorsData || []).filter(s =>
+    !cal || (s.calibers || []).some(c => c.trim().toLowerCase() === cal)
+  );
+  if (matching.length) {
+    matching.forEach(s => {
+      opts += `<option value="${escHtml(s.id)}">${escHtml(s.name)}</option>`;
+    });
+  } else if ((suppressorsData || []).length) {
+    // Show all suppressors if none match this caliber
+    (suppressorsData || []).forEach(s => {
+      opts += `<option value="${escHtml(s.id)}">${escHtml(s.name)} (${escHtml((s.calibers || []).join(', '))})</option>`;
+    });
+  }
+  return opts;
+}
+
 function addGunRow() {
   const container = document.getElementById('log-gun-rows');
   const row = document.createElement('div');
   row.className = 'gun-row';
   row.innerHTML = `
-    <select class="gun-row-select form-input">${buildGunOptions()}</select>
-    <input type="number" class="gun-row-rounds form-input" min="1" placeholder="Rounds">
-    <button class="btn-remove-gun-row" type="button">✕</button>`;
+    <div class="gun-row-top">
+      <select class="gun-row-select form-input">${buildGunOptions()}</select>
+      <input type="number" class="gun-row-rounds form-input" min="1" placeholder="Rounds">
+      <button class="btn-remove-gun-row" type="button">✕</button>
+    </div>
+    <div class="gun-row-suppressor" ${suppressorsData && suppressorsData.length ? '' : 'style="display:none"'}>
+      <div class="sup-row-label" style="width:80px;flex-shrink:0">Suppressor</div>
+      <select class="gun-row-sup-select form-input">${buildSuppressorOptions('')}</select>
+    </div>`;
+
+  const gunSel = row.querySelector('.gun-row-select');
+  const supSel = row.querySelector('.gun-row-sup-select');
+  const supRow = row.querySelector('.gun-row-suppressor');
+
+  gunSel.addEventListener('change', () => {
+    const gun = (gunsData || []).find(g => g.id === gunSel.value);
+    const cal = gun ? gun.caliber : '';
+    supSel.innerHTML = buildSuppressorOptions(cal);
+    supRow.style.display = suppressorsData && suppressorsData.length ? '' : 'none';
+  });
+
   row.querySelector('.btn-remove-gun-row').addEventListener('click', () => {
     if (document.querySelectorAll('#log-gun-rows .gun-row').length > 1) {
       row.remove();
@@ -3706,6 +3932,7 @@ document.getElementById('btn-log-submit').addEventListener('click', async () => 
   const entries = gunRows.map(row => ({
     gun_id: row.querySelector('.gun-row-select').value,
     rounds_fired: parseInt(row.querySelector('.gun-row-rounds').value, 10),
+    suppressor_id: row.querySelector('.gun-row-sup-select')?.value || null,
   }));
 
   if (entries.length === 0) { alert('Add at least one gun.'); return; }
@@ -3721,7 +3948,7 @@ document.getElementById('btn-log-submit').addEventListener('click', async () => 
     for (const e of entries) {
       await apiFetch('sessions', {
         method: 'POST',
-        body: JSON.stringify({ gun_id: e.gun_id, session_date, rounds_fired: e.rounds_fired, range_location: range_location || null, notes }),
+        body: JSON.stringify({ gun_id: e.gun_id, session_date, rounds_fired: e.rounds_fired, range_location: range_location || null, notes, suppressor_id: e.suppressor_id || null }),
       });
     }
     // Reset form
@@ -3737,6 +3964,7 @@ document.getElementById('btn-log-submit').addEventListener('click', async () => 
     loadLogSessionsList();
     gunsLoaded = false;
     reportsLoaded = false;
+    suppressorsLoaded = false;
     setTimeout(() => { document.getElementById('log-success').style.display = 'none'; }, 3000);
   } catch (e) {
     alert('Error: ' + e.message);
@@ -3980,6 +4208,299 @@ function renderRangeBreakdown(rangeBreakdown) {
         </div>
       </div>
     </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SUPPRESSORS TAB
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function initSuppressorsTab() {
+  if (!suppressorsLoaded) await loadSuppressors();
+}
+
+async function loadSuppressors() {
+  suppressorsLoaded = true;
+  showSuppressorGrid();
+  try {
+    suppressorsData = await apiFetch('suppressors');
+    renderSuppressorGrid(suppressorsData);
+  } catch (e) {
+    document.getElementById('suppressors-empty').style.display = 'block';
+    document.getElementById('suppressors-empty').textContent = 'Error loading suppressors.';
+  }
+}
+
+function renderSuppressorGrid(suppressors) {
+  const grid  = document.getElementById('suppressors-grid');
+  const empty = document.getElementById('suppressors-empty');
+  grid.innerHTML = '';
+  if (!suppressors.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  const gridEl = document.createElement('div');
+  gridEl.style.cssText = 'display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px';
+
+  suppressors.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'suppressor-card';
+    const cals = (s.calibers || []).join(', ');
+    const shots = (s.total_shots || 0).toLocaleString();
+    card.innerHTML = `
+      <div class="suppressor-card-icon">🔇</div>
+      <div class="suppressor-card-body">
+        <div class="suppressor-card-name">${escHtml(s.name)}</div>
+        <div class="suppressor-card-calibers">${escHtml(cals || '—')}</div>
+        <div class="suppressor-card-shots">${shots} shots</div>
+      </div>`;
+    card.addEventListener('click', () => openSuppressorDetail(s.id));
+    gridEl.appendChild(card);
+  });
+  grid.appendChild(gridEl);
+}
+
+function showSuppressorGrid() {
+  document.getElementById('suppressors-grid-view').style.display   = 'flex';
+  document.getElementById('suppressor-detail-view').style.display  = 'none';
+}
+
+function showSuppressorDetail() {
+  document.getElementById('suppressors-grid-view').style.display  = 'none';
+  document.getElementById('suppressor-detail-view').style.display = 'flex';
+}
+
+async function openSuppressorDetail(supId) {
+  currentSuppId = supId;
+  showSuppressorDetail();
+  document.getElementById('suppressor-detail-heading').textContent = '…';
+  try {
+    const sup = await apiFetch(`suppressors/${supId}`);
+    renderSuppressorDetail(sup);
+  } catch (e) {
+    document.getElementById('suppressor-detail-heading').textContent = 'Error';
+  }
+}
+
+function renderSuppressorDetail(sup) {
+  currentSuppData = sup;
+  document.getElementById('suppressor-detail-heading').textContent = sup.name;
+  document.getElementById('suppressor-detail-name').textContent = sup.name;
+
+  const calTags = (sup.calibers || []).map(c =>
+    `<span class="sup-caliber-tag">${escHtml(c)}</span>`
+  ).join('');
+  document.getElementById('suppressor-detail-calibers').innerHTML = calTags || '<span style="color:#555">No calibers set</span>';
+
+  const s = sup.stats || {};
+  const baseCount = sup.base_shot_count || 0;
+  const lastCleaned = s.last_cleaned
+    ? new Date(s.last_cleaned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : 'Never';
+  const baseHint = baseCount > 0
+    ? `<div style="font-size:10px;color:#444;margin-top:3px">incl. ${baseCount.toLocaleString()} base</div>`
+    : '';
+
+  document.getElementById('suppressor-stats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-card-label">Total Shots</div>
+      <div class="stat-card-value">${(s.total_shots || 0).toLocaleString()}</div>
+      ${baseHint}
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Since Cleaning</div>
+      <div class="stat-card-value ${(s.shots_since_cleaning || 0) > 500 ? 'warn' : ''}">${(s.shots_since_cleaning || 0).toLocaleString()}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Total Sessions</div>
+      <div class="stat-card-value">${(s.total_sessions || 0).toLocaleString()}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Last Cleaned</div>
+      <div class="stat-card-value" style="font-size:clamp(11px,3.5vw,15px)">${lastCleaned}</div>
+    </div>`;
+
+  // Usage history
+  const sessList = document.getElementById('suppressor-sessions-list');
+  if (!sup.sessions || !sup.sessions.length) {
+    sessList.innerHTML = '<div style="color:#555;font-size:12px;padding:0 14px 8px">No sessions recorded yet.</div>';
+  } else {
+    let rows = '';
+    sup.sessions.forEach(s => {
+      rows += `<tr>
+        <td>${fmtDate(s.session_date)}</td>
+        <td>${escHtml(s.gun_name || '—')}</td>
+        <td style="text-align:right">${(s.rounds_fired || 0).toLocaleString()}</td>
+      </tr>`;
+    });
+    sessList.innerHTML = `
+      <div style="padding:0 14px 8px">
+        <table>
+          <thead><tr><th>Date</th><th>Gun</th><th style="text-align:right">Rounds</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
+  // Cleaning history
+  const cleanList = document.getElementById('suppressor-cleanings-list');
+  if (!sup.cleanings || !sup.cleanings.length) {
+    cleanList.innerHTML = '<div style="color:#555;font-size:12px;padding:0 14px 8px">No cleanings logged yet.</div>';
+  } else {
+    cleanList.innerHTML = '<div style="padding:0 14px 8px">' +
+      sup.cleanings.map(c => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1a1a1a">
+          <div>
+            <div style="font-size:13px;color:#ccc">${fmtDate(c.cleaned_at)}</div>
+            ${c.notes ? `<div style="font-size:11px;color:#555;margin-top:2px">${escHtml(c.notes)}</div>` : ''}
+          </div>
+          <button class="row-del-btn" data-cleaning-id="${escHtml(c.id)}" onclick="deleteSuppressorCleaning(this.dataset.cleaningId)">✕</button>
+        </div>`).join('') +
+      '</div>';
+  }
+}
+
+// ── Add Suppressor ───────────────────────────────────────────────────────────
+document.getElementById('btn-add-suppressor').addEventListener('click', () => {
+  document.getElementById('sup-name-input').value = '';
+  document.getElementById('sup-calibers-input').value = '';
+  document.getElementById('sup-brand-input').value = '';
+  document.getElementById('sup-base-count-input').value = '';
+  document.getElementById('add-suppressor-backdrop').style.display = 'flex';
+});
+
+document.getElementById('btn-add-suppressor-cancel').addEventListener('click', () => {
+  document.getElementById('add-suppressor-backdrop').style.display = 'none';
+});
+
+document.getElementById('btn-add-suppressor-submit').addEventListener('click', async () => {
+  const name   = document.getElementById('sup-name-input').value.trim();
+  const calRaw = document.getElementById('sup-calibers-input').value.trim();
+  const brand  = document.getElementById('sup-brand-input').value.trim();
+  const base   = document.getElementById('sup-base-count-input').value;
+
+  if (!name) { alert('Please enter a name.'); return; }
+  if (!calRaw) { alert('Please enter at least one caliber.'); return; }
+
+  const calibers = calRaw.split(',').map(c => c.trim()).filter(Boolean);
+
+  const btn = document.getElementById('btn-add-suppressor-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    await apiFetch('suppressors', {
+      method: 'POST',
+      body: JSON.stringify({ name, calibers, brand: brand || null, base_shot_count: parseInt(base) || 0 }),
+    });
+    document.getElementById('add-suppressor-backdrop').style.display = 'none';
+    suppressorsLoaded = false;
+    await loadSuppressors();
+    await refreshLogSuppressorsData();
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Add Suppressor';
+  }
+});
+
+// ── Back button ──────────────────────────────────────────────────────────────
+document.getElementById('btn-back-suppressors').addEventListener('click', () => {
+  suppressorsLoaded = false;
+  loadSuppressors();
+});
+
+// ── Edit Suppressor ──────────────────────────────────────────────────────────
+document.getElementById('btn-edit-suppressor').addEventListener('click', () => {
+  if (!currentSuppData) return;
+  document.getElementById('edit-sup-name-input').value       = currentSuppData.name || '';
+  document.getElementById('edit-sup-calibers-input').value   = (currentSuppData.calibers || []).join(', ');
+  document.getElementById('edit-sup-brand-input').value      = currentSuppData.brand || '';
+  document.getElementById('edit-sup-base-count-input').value = currentSuppData.base_shot_count || 0;
+  document.getElementById('edit-suppressor-backdrop').style.display = 'flex';
+});
+
+document.getElementById('btn-edit-suppressor-cancel').addEventListener('click', () => {
+  document.getElementById('edit-suppressor-backdrop').style.display = 'none';
+});
+
+document.getElementById('btn-edit-suppressor-submit').addEventListener('click', async () => {
+  const name   = document.getElementById('edit-sup-name-input').value.trim();
+  const calRaw = document.getElementById('edit-sup-calibers-input').value.trim();
+  const brand  = document.getElementById('edit-sup-brand-input').value.trim();
+  const base   = document.getElementById('edit-sup-base-count-input').value;
+
+  if (!name) { alert('Please enter a name.'); return; }
+  if (!calRaw) { alert('Please enter at least one caliber.'); return; }
+  const calibers = calRaw.split(',').map(c => c.trim()).filter(Boolean);
+
+  const btn = document.getElementById('btn-edit-suppressor-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    await apiFetch(`suppressors/${currentSuppId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name, calibers, brand: brand || null, base_shot_count: parseInt(base) || 0 }),
+    });
+    document.getElementById('edit-suppressor-backdrop').style.display = 'none';
+    await refreshLogSuppressorsData();
+    await openSuppressorDetail(currentSuppId);
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Changes';
+  }
+});
+
+// ── Delete Suppressor ────────────────────────────────────────────────────────
+document.getElementById('btn-delete-suppressor').addEventListener('click', async () => {
+  if (!currentSuppId) return;
+  if (!confirm('Delete this suppressor? All usage history will be unlinked.')) return;
+  try {
+    await apiFetch(`suppressors/${currentSuppId}`, { method: 'DELETE' });
+    suppressorsLoaded = false;
+    await loadSuppressors();
+    await refreshLogSuppressorsData();
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+});
+
+// ── Log Suppressor Cleaning ──────────────────────────────────────────────────
+document.getElementById('btn-log-suppressor-cleaning').addEventListener('click', () => {
+  document.getElementById('sup-clean-date-input').value = todayStr();
+  document.getElementById('sup-clean-notes-input').value = '';
+  document.getElementById('sup-clean-backdrop').style.display = 'flex';
+});
+
+document.getElementById('btn-sup-clean-cancel').addEventListener('click', () => {
+  document.getElementById('sup-clean-backdrop').style.display = 'none';
+});
+
+document.getElementById('btn-sup-clean-submit').addEventListener('click', async () => {
+  const cleaned_at = document.getElementById('sup-clean-date-input').value;
+  const notes      = document.getElementById('sup-clean-notes-input').value.trim();
+  if (!cleaned_at) { alert('Please select a date.'); return; }
+
+  const btn = document.getElementById('btn-sup-clean-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    await apiFetch('suppressor-cleanings', {
+      method: 'POST',
+      body: JSON.stringify({ suppressor_id: currentSuppId, cleaned_at, notes: notes || null }),
+    });
+    document.getElementById('sup-clean-backdrop').style.display = 'none';
+    await openSuppressorDetail(currentSuppId);
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Log Cleaning';
+  }
+});
+
+async function deleteSuppressorCleaning(cleaningId) {
+  if (!confirm('Delete this cleaning log entry?')) return;
+  try {
+    await apiFetch(`suppressor-cleanings?id=${cleaningId}`, { method: 'DELETE' });
+    await openSuppressorDetail(currentSuppId);
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

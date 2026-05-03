@@ -40,9 +40,31 @@ export const handler = async () => {
         name TEXT UNIQUE NOT NULL
       )
     `;
-    // Migration: add base_round_count column to existing guns tables
+    await sql`
+      CREATE TABLE IF NOT EXISTS suppressors (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name TEXT NOT NULL,
+        calibers TEXT[] NOT NULL DEFAULT '{}',
+        brand TEXT,
+        base_shot_count INTEGER NOT NULL DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS suppressor_cleaning_logs (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        suppressor_id UUID REFERENCES suppressors(id) ON DELETE CASCADE,
+        cleaned_at DATE NOT NULL,
+        notes TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+    // Migrations
     await sql`
       ALTER TABLE guns ADD COLUMN IF NOT EXISTS base_round_count INTEGER NOT NULL DEFAULT 0
+    `;
+    await sql`
+      ALTER TABLE shooting_sessions ADD COLUMN IF NOT EXISTS suppressor_id UUID REFERENCES suppressors(id) ON DELETE SET NULL
     `;
     return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
   } catch (err) {

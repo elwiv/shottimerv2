@@ -30,3 +30,23 @@ CREATE TABLE IF NOT EXISTS range_locations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT UNIQUE NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS suppressors (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  calibers TEXT[] NOT NULL DEFAULT '{}',
+  brand TEXT,
+  base_shot_count INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS suppressor_cleaning_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  suppressor_id UUID REFERENCES suppressors(id) ON DELETE CASCADE,
+  cleaned_at DATE NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Migration: add suppressor_id to existing shooting_sessions
+ALTER TABLE shooting_sessions ADD COLUMN IF NOT EXISTS suppressor_id UUID REFERENCES suppressors(id) ON DELETE SET NULL;
