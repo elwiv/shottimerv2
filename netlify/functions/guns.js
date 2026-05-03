@@ -8,7 +8,16 @@ export const handler = async (event) => {
     if (event.httpMethod === 'GET') {
       const guns = await sql`
         SELECT g.*,
-          COALESCE(SUM(s.rounds_fired), 0)::int + g.base_round_count AS total_rounds
+          COALESCE(SUM(s.rounds_fired), 0)::int + g.base_round_count AS total_rounds,
+          COALESCE((
+            SELECT SUM(s2.rounds_fired)::int
+            FROM shooting_sessions s2
+            WHERE s2.gun_id = g.id
+              AND s2.session_date > COALESCE(
+                (SELECT cl.cleaned_at FROM cleaning_logs cl WHERE cl.gun_id = g.id ORDER BY cl.cleaned_at DESC LIMIT 1),
+                '1900-01-01'::DATE
+              )
+          ), 0)::int AS rounds_since_cleaning
         FROM guns g
         LEFT JOIN shooting_sessions s ON s.gun_id = g.id
         GROUP BY g.id

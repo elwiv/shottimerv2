@@ -799,6 +799,34 @@ input, textarea, select {
   gap: 10px; padding: 0 14px 14px;
 }
 .caliber-body.collapsed { display: none; }
+/* Gun card since-cleaning stat */
+.gun-card-since-clean {
+  font-size: 10px; color: #555; margin-top: 1px;
+}
+/* Guns sort bar */
+#guns-sort-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px 2px; flex-shrink: 0;
+}
+.sort-label { font-size: 10px; color: #555; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.sort-btn {
+  height: 26px; padding: 0 10px; border-radius: 8px;
+  border: 1px solid #2a2a2a; background: #181818;
+  color: #555; font-size: 10px; font-weight: 600; cursor: pointer;
+  letter-spacing: 0.5px; -webkit-appearance: none;
+}
+.sort-btn.active { border-color: #4ade80; color: #4ade80; background: #0a1f0f; }
+/* Caliber pills for suppressor modals */
+.caliber-pills-row {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+}
+.caliber-pill {
+  height: 26px; padding: 0 10px; border-radius: 8px;
+  border: 1px solid #2a2a2a; background: #181818;
+  color: #666; font-size: 10px; font-weight: 600; cursor: pointer;
+  letter-spacing: 0.5px; -webkit-appearance: none;
+}
+.caliber-pill.active { border-color: #4ade80; color: #4ade80; background: #0a1f0f; }
 /* Manufacturer logo in gun detail hero */
 .gun-detail-logo-wrap {
   width: 72px; height: 72px; border-radius: 14px;
@@ -1662,6 +1690,12 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
 
   <!-- Gun grid view -->
   <div id="guns-grid-view" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0">
+    <div id="guns-sort-bar">
+      <span class="sort-label">Sort:</span>
+      <button class="sort-btn active" data-sort="caliber">Caliber</button>
+      <button class="sort-btn" data-sort="total_rounds">Total Rds</button>
+      <button class="sort-btn" data-sort="since_cleaning">Since Cleaning</button>
+    </div>
     <div class="section-scroll">
       <div id="guns-grid"></div>
       <div id="guns-empty" class="empty-state" style="display:none">
@@ -1773,7 +1807,8 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
     </div>
     <div class="form-field">
       <label class="form-label">Compatible Calibers *</label>
-      <div class="form-hint" style="margin-bottom:6px">Enter calibers separated by commas — used to match suppressors to guns when logging sessions</div>
+      <div class="form-hint" style="margin-bottom:6px">Tap existing calibers to add, or type manually — used to match suppressors to guns when logging sessions</div>
+      <div id="sup-caliber-pills" class="caliber-pills-row" style="display:none"></div>
       <input type="text" id="sup-calibers-input" class="form-input" placeholder="e.g. 5.56 NATO, .300 BLK, 7.62x39">
     </div>
     <div class="form-field">
@@ -1800,7 +1835,8 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
     </div>
     <div class="form-field">
       <label class="form-label">Compatible Calibers *</label>
-      <div class="form-hint" style="margin-bottom:6px">Enter calibers separated by commas</div>
+      <div class="form-hint" style="margin-bottom:6px">Tap existing calibers to toggle, or type manually</div>
+      <div id="edit-sup-caliber-pills" class="caliber-pills-row" style="display:none"></div>
       <input type="text" id="edit-sup-calibers-input" class="form-input" placeholder="e.g. 5.56 NATO, .300 BLK">
     </div>
     <div class="form-field">
@@ -1844,7 +1880,8 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
     </div>
     <div class="form-field">
       <label class="form-label">Caliber *</label>
-      <input type="text" id="gun-caliber-input" class="form-input" placeholder="e.g. 5.56 NATO">
+      <select id="gun-caliber-select" class="form-input"></select>
+      <input type="text" id="gun-caliber-custom" class="form-input" placeholder="Enter caliber (e.g. 5.56 NATO)" style="display:none;margin-top:8px">
     </div>
     <div class="form-field">
       <label class="form-label">Brand <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
@@ -1895,7 +1932,8 @@ select.form-input { cursor: pointer; background-color: #1a1a1a; }
     </div>
     <div class="form-field">
       <label class="form-label">Caliber *</label>
-      <input type="text" id="edit-gun-caliber-input" class="form-input" placeholder="e.g. 5.56 NATO">
+      <select id="edit-gun-caliber-select" class="form-input"></select>
+      <input type="text" id="edit-gun-caliber-custom" class="form-input" placeholder="Enter caliber (e.g. 5.56 NATO)" style="display:none;margin-top:8px">
     </div>
     <div class="form-field">
       <label class="form-label">Brand <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
@@ -3313,6 +3351,8 @@ async function loadGuns() {
   }
 }
 
+let currentGunSort = 'caliber';
+
 function renderGunGrid(guns) {
   const grid  = document.getElementById('guns-grid');
   const empty = document.getElementById('guns-empty');
@@ -3328,9 +3368,34 @@ function renderGunGrid(guns) {
     groups[cal].push(g);
   });
 
-  const sortedCalibers = Object.keys(groups).sort((a, b) =>
-    a.toLowerCase().localeCompare(b.toLowerCase())
-  );
+  // Sort guns within each group by selected sort
+  Object.values(groups).forEach(group => {
+    if (currentGunSort === 'total_rounds') {
+      group.sort((a, b) => (b.total_rounds || 0) - (a.total_rounds || 0));
+    } else if (currentGunSort === 'since_cleaning') {
+      group.sort((a, b) => (b.rounds_since_cleaning || 0) - (a.rounds_since_cleaning || 0));
+    } else {
+      group.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+    }
+  });
+
+  // Sort caliber groups
+  let sortedCalibers = Object.keys(groups);
+  if (currentGunSort === 'total_rounds') {
+    sortedCalibers.sort((a, b) => {
+      const sumA = groups[a].reduce((s, g) => s + (g.total_rounds || 0), 0);
+      const sumB = groups[b].reduce((s, g) => s + (g.total_rounds || 0), 0);
+      return sumB - sumA;
+    });
+  } else if (currentGunSort === 'since_cleaning') {
+    sortedCalibers.sort((a, b) => {
+      const sumA = groups[a].reduce((s, g) => s + (g.rounds_since_cleaning || 0), 0);
+      const sumB = groups[b].reduce((s, g) => s + (g.rounds_since_cleaning || 0), 0);
+      return sumB - sumA;
+    });
+  } else {
+    sortedCalibers.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+  }
 
   sortedCalibers.forEach(caliber => {
     const gunsInGroup = groups[caliber];
@@ -3356,11 +3421,13 @@ function renderGunGrid(guns) {
       const card = document.createElement('div');
       card.className = 'gun-card';
       const totalRounds = (g.total_rounds || 0).toLocaleString();
+      const sinceCleaning = (g.rounds_since_cleaning || 0).toLocaleString();
       card.innerHTML = `
         ${gunLogoHtml(g, 'gun-card-logo-wrap', 'gun-card-logo', 'gun-card-logo-fallback')}
         <div class="gun-card-body">
           <div class="gun-card-name">${escHtml(g.name)}</div>
-          <div class="gun-card-rounds">${totalRounds} rds</div>
+          <div class="gun-card-rounds">${totalRounds} rds total</div>
+          <div class="gun-card-since-clean">${sinceCleaning} since clean</div>
         </div>`;
       card.addEventListener('click', () => openGunDetail(g.id));
       body.appendChild(card);
@@ -3598,10 +3665,83 @@ document.getElementById('gun-photo-file').addEventListener('change', async e => 
   document.getElementById('gun-photo-placeholder').style.display = 'none';
 });
 
+// ── Caliber helpers ──────────────────────────────────────────────────────────
+function getUniqueCalibersFromData() {
+  return [...new Set((gunsData || []).map(g => (g.caliber || '').trim()))].filter(Boolean).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+}
+
+function populateCaliberSelect(selectId, customId, currentValue) {
+  const sel = document.getElementById(selectId);
+  const custom = document.getElementById(customId);
+  if (!sel || !custom) return;
+  const calibers = getUniqueCalibersFromData();
+  sel.innerHTML = '<option value="">— Select caliber —</option>';
+  calibers.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    sel.appendChild(o);
+  });
+  const otherOpt = document.createElement('option');
+  otherOpt.value = '__other__'; otherOpt.textContent = 'Other (enter manually)…';
+  sel.appendChild(otherOpt);
+
+  const inList = calibers.includes(currentValue);
+  if (currentValue && inList) {
+    sel.value = currentValue;
+    custom.style.display = 'none'; custom.value = '';
+  } else if (currentValue && !inList) {
+    sel.value = '__other__';
+    custom.value = currentValue; custom.style.display = '';
+  } else {
+    sel.value = '';
+    custom.style.display = 'none'; custom.value = '';
+  }
+}
+
+function getCaliberFromField(selectId, customId) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return '';
+  if (sel.value === '__other__') return (document.getElementById(customId)?.value || '').trim();
+  return sel.value;
+}
+
+function populateCaliberPills(pillsId, inputId) {
+  const container = document.getElementById(pillsId);
+  const input = document.getElementById(inputId);
+  if (!container || !input) return;
+  const calibers = getUniqueCalibersFromData();
+  if (!calibers.length) { container.style.display = 'none'; return; }
+  container.style.display = 'flex';
+  container.innerHTML = '';
+  calibers.forEach(cal => {
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'caliber-pill'; btn.textContent = cal;
+    btn.addEventListener('click', () => {
+      const current = input.value.split(',').map(c => c.trim()).filter(Boolean);
+      const idx = current.findIndex(c => c.toLowerCase() === cal.toLowerCase());
+      if (idx >= 0) current.splice(idx, 1); else current.push(cal);
+      input.value = current.join(', ');
+      syncCaliberPills(pillsId, inputId);
+    });
+    container.appendChild(btn);
+  });
+  syncCaliberPills(pillsId, inputId);
+}
+
+function syncCaliberPills(pillsId, inputId) {
+  const container = document.getElementById(pillsId);
+  const input = document.getElementById(inputId);
+  if (!container || !input) return;
+  const current = input.value.split(',').map(c => c.trim().toLowerCase()).filter(Boolean);
+  container.querySelectorAll('.caliber-pill').forEach(btn => {
+    btn.classList.toggle('active', current.includes(btn.textContent.toLowerCase()));
+  });
+}
+
 function openAddGunModal() {
   pendingPhotoDataUrl = null;
   document.getElementById('gun-name-input').value       = '';
-  document.getElementById('gun-caliber-input').value    = '';
+  populateCaliberSelect('gun-caliber-select', 'gun-caliber-custom', '');
   document.getElementById('gun-brand-input').value      = '';
   document.getElementById('gun-base-count-input').value = '';
   document.getElementById('gun-photo-file').value       = '';
@@ -3617,10 +3757,15 @@ document.getElementById('btn-add-gun-cancel').addEventListener('click', closeAdd
 document.getElementById('add-gun-backdrop').addEventListener('click', e => {
   if (e.target === document.getElementById('add-gun-backdrop')) closeAddGunModal();
 });
+document.getElementById('gun-caliber-select').addEventListener('change', e => {
+  const custom = document.getElementById('gun-caliber-custom');
+  custom.style.display = e.target.value === '__other__' ? '' : 'none';
+  if (e.target.value !== '__other__') custom.value = '';
+});
 
 document.getElementById('btn-add-gun-submit').addEventListener('click', async () => {
   const name       = document.getElementById('gun-name-input').value.trim();
-  const caliber    = document.getElementById('gun-caliber-input').value.trim();
+  const caliber    = getCaliberFromField('gun-caliber-select', 'gun-caliber-custom');
   const brand      = document.getElementById('gun-brand-input').value || null;
   const baseCount  = parseInt(document.getElementById('gun-base-count-input').value) || 0;
   if (!name || !caliber) { alert('Name and caliber are required.'); return; }
@@ -3707,7 +3852,7 @@ document.getElementById('btn-edit-gun').addEventListener('click', () => {
   const g = currentGunData;
   editPendingPhotoDataUrl = g.photo_url || null;
   document.getElementById('edit-gun-name-input').value        = g.name || '';
-  document.getElementById('edit-gun-caliber-input').value     = g.caliber || '';
+  populateCaliberSelect('edit-gun-caliber-select', 'edit-gun-caliber-custom', g.caliber || '');
   document.getElementById('edit-gun-brand-input').value       = g.brand || '';
   document.getElementById('edit-gun-base-count-input').value  = g.base_round_count || 0;
   document.getElementById('edit-gun-photo-file').value        = '';
@@ -3740,11 +3885,16 @@ document.getElementById('btn-edit-gun-cancel').addEventListener('click', closeEd
 document.getElementById('edit-gun-backdrop').addEventListener('click', e => {
   if (e.target === document.getElementById('edit-gun-backdrop')) closeEditGunModal();
 });
+document.getElementById('edit-gun-caliber-select').addEventListener('change', e => {
+  const custom = document.getElementById('edit-gun-caliber-custom');
+  custom.style.display = e.target.value === '__other__' ? '' : 'none';
+  if (e.target.value !== '__other__') custom.value = '';
+});
 
 document.getElementById('btn-edit-gun-submit').addEventListener('click', async () => {
   if (!currentGunId) return;
   const name      = document.getElementById('edit-gun-name-input').value.trim();
-  const caliber   = document.getElementById('edit-gun-caliber-input').value.trim();
+  const caliber   = getCaliberFromField('edit-gun-caliber-select', 'edit-gun-caliber-custom');
   const brand     = document.getElementById('edit-gun-brand-input').value || null;
   const baseCount = parseInt(document.getElementById('edit-gun-base-count-input').value) || 0;
   if (!name || !caliber) { alert('Name and caliber are required.'); return; }
@@ -4364,11 +4514,26 @@ document.getElementById('btn-add-suppressor').addEventListener('click', () => {
   document.getElementById('sup-calibers-input').value = '';
   document.getElementById('sup-brand-input').value = '';
   document.getElementById('sup-base-count-input').value = '';
+  populateCaliberPills('sup-caliber-pills', 'sup-calibers-input');
   document.getElementById('add-suppressor-backdrop').style.display = 'flex';
 });
 
 document.getElementById('btn-add-suppressor-cancel').addEventListener('click', () => {
   document.getElementById('add-suppressor-backdrop').style.display = 'none';
+});
+
+// Keep pills in sync as user types in the caliber text inputs
+document.getElementById('sup-calibers-input').addEventListener('input', () => syncCaliberPills('sup-caliber-pills', 'sup-calibers-input'));
+document.getElementById('edit-sup-calibers-input').addEventListener('input', () => syncCaliberPills('edit-sup-caliber-pills', 'edit-sup-calibers-input'));
+
+// Sort buttons
+document.querySelectorAll('#guns-sort-bar .sort-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentGunSort = btn.dataset.sort;
+    document.querySelectorAll('#guns-sort-bar .sort-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (gunsData) renderGunGrid(gunsData);
+  });
 });
 
 document.getElementById('btn-add-suppressor-submit').addEventListener('click', async () => {
@@ -4413,6 +4578,7 @@ document.getElementById('btn-edit-suppressor').addEventListener('click', () => {
   document.getElementById('edit-sup-calibers-input').value   = (currentSuppData.calibers || []).join(', ');
   document.getElementById('edit-sup-brand-input').value      = currentSuppData.brand || '';
   document.getElementById('edit-sup-base-count-input').value = currentSuppData.base_shot_count || 0;
+  populateCaliberPills('edit-sup-caliber-pills', 'edit-sup-calibers-input');
   document.getElementById('edit-suppressor-backdrop').style.display = 'flex';
 });
 
