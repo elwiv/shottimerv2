@@ -3360,7 +3360,36 @@ function renderGunGrid(guns) {
   if (!guns.length) { empty.style.display = 'block'; return; }
   empty.style.display = 'none';
 
-  // Group by caliber
+  // Flat list for rounds-based sorts
+  if (currentGunSort === 'total_rounds' || currentGunSort === 'since_cleaning') {
+    const sorted = [...guns].sort((a, b) =>
+      currentGunSort === 'total_rounds'
+        ? (b.total_rounds || 0) - (a.total_rounds || 0)
+        : (b.rounds_since_cleaning || 0) - (a.rounds_since_cleaning || 0)
+    );
+    const body = document.createElement('div');
+    body.className = 'caliber-body';
+    body.style.paddingTop = '10px';
+    sorted.forEach(g => {
+      const card = document.createElement('div');
+      card.className = 'gun-card';
+      const totalRounds = (g.total_rounds || 0).toLocaleString();
+      const sinceCleaning = (g.rounds_since_cleaning || 0).toLocaleString();
+      card.innerHTML = `
+        ${gunLogoHtml(g, 'gun-card-logo-wrap', 'gun-card-logo', 'gun-card-logo-fallback')}
+        <div class="gun-card-body">
+          <div class="gun-card-name">${escHtml(g.name)}</div>
+          <div class="gun-card-rounds">${totalRounds} rds total</div>
+          <div class="gun-card-since-clean">${sinceCleaning} since clean</div>
+        </div>`;
+      card.addEventListener('click', () => openGunDetail(g.id));
+      body.appendChild(card);
+    });
+    grid.appendChild(body);
+    return;
+  }
+
+  // Caliber-grouped view (default)
   const groups = {};
   guns.forEach(g => {
     const cal = (g.caliber || 'Unknown').trim();
@@ -3368,34 +3397,11 @@ function renderGunGrid(guns) {
     groups[cal].push(g);
   });
 
-  // Sort guns within each group by selected sort
-  Object.values(groups).forEach(group => {
-    if (currentGunSort === 'total_rounds') {
-      group.sort((a, b) => (b.total_rounds || 0) - (a.total_rounds || 0));
-    } else if (currentGunSort === 'since_cleaning') {
-      group.sort((a, b) => (b.rounds_since_cleaning || 0) - (a.rounds_since_cleaning || 0));
-    } else {
-      group.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-    }
-  });
+  Object.values(groups).forEach(group =>
+    group.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+  );
 
-  // Sort caliber groups
-  let sortedCalibers = Object.keys(groups);
-  if (currentGunSort === 'total_rounds') {
-    sortedCalibers.sort((a, b) => {
-      const sumA = groups[a].reduce((s, g) => s + (g.total_rounds || 0), 0);
-      const sumB = groups[b].reduce((s, g) => s + (g.total_rounds || 0), 0);
-      return sumB - sumA;
-    });
-  } else if (currentGunSort === 'since_cleaning') {
-    sortedCalibers.sort((a, b) => {
-      const sumA = groups[a].reduce((s, g) => s + (g.rounds_since_cleaning || 0), 0);
-      const sumB = groups[b].reduce((s, g) => s + (g.rounds_since_cleaning || 0), 0);
-      return sumB - sumA;
-    });
-  } else {
-    sortedCalibers.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-  }
+  const sortedCalibers = Object.keys(groups).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
   sortedCalibers.forEach(caliber => {
     const gunsInGroup = groups[caliber];
