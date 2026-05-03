@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "db:migrate": "node db/migrate.js"
+  },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4"
   }
