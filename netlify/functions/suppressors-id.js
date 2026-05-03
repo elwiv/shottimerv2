@@ -1,9 +1,19 @@
 import { neon } from '@neondatabase/serverless';
+import { requireUser } from './auth.js';
 
 const sql = neon(process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL);
 const h = { 'Content-Type': 'application/json' };
 
-export const handler = async (event) => {
+export const handler = async (event, context) => {
+  let userId, isDemo;
+  try {
+    const user = requireUser(event, context);
+    userId = user.sub;
+    isDemo = userId === 'demo-user';
+  } catch (authErr) {
+    return authErr;
+  }
+
   let id = event.queryStringParameters?.id;
   if (!id) {
     try {
@@ -17,7 +27,7 @@ export const handler = async (event) => {
 
   try {
     if (event.httpMethod === 'GET') {
-      const [sup] = await sql`SELECT * FROM suppressors WHERE id = ${id}`;
+      const [sup] = await sql`SELECT * FROM suppressors WHERE id = ${id} AND user_id = ${userId}`;
       if (!sup) return { statusCode: 404, headers: h, body: JSON.stringify({ error: 'Not found' }) };
 
       const [totals] = await sql`
@@ -75,6 +85,7 @@ export const handler = async (event) => {
     }
 
     if (event.httpMethod === 'PUT') {
+      if (isDemo) return { statusCode: 403, headers: h, body: JSON.stringify({ error: 'Demo mode is read-only' }) };
       const { name, calibers, brand, base_shot_count } = JSON.parse(event.body || '{}');
       if (!name || !calibers || !calibers.length) {
         return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'name and calibers required' }) };
@@ -82,14 +93,15 @@ export const handler = async (event) => {
       const [sup] = await sql`
         UPDATE suppressors SET name = ${name}, calibers = ${calibers},
           brand = ${brand || null}, base_shot_count = ${parseInt(base_shot_count) || 0}
-        WHERE id = ${id} RETURNING *
+        WHERE id = ${id} AND user_id = ${userId} RETURNING *
       `;
       if (!sup) return { statusCode: 404, headers: h, body: JSON.stringify({ error: 'Not found' }) };
       return { statusCode: 200, headers: h, body: JSON.stringify(sup) };
     }
 
     if (event.httpMethod === 'DELETE') {
-      await sql`DELETE FROM suppressors WHERE id = ${id}`;
+      if (isDemo) return { statusCode: 403, headers: h, body: JSON.stringify({ error: 'Demo mode is read-only' }) };
+      await sql`DELETE FROM suppressors WHERE id = ${id} AND user_id = ${userId}`;
       return { statusCode: 204, headers: h, body: '' };
     }
 

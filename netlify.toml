@@ -12,6 +12,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/claim-legacy-data"
+  to = "/.netlify/functions/claim-legacy-data"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200

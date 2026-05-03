@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
 :root {
   /* Backgrounds */
@@ -644,45 +645,58 @@ input, textarea, select {
   -webkit-user-select: text;
 }
 
-/* ── Lock Screen ── */
-#lock-screen {
+/* ── Login Screen ── */
+#login-screen {
   position: fixed; inset: 0; z-index: 999;
   background: var(--bg-base);
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   padding: 40px 24px;
 }
-#lock-logo {
+#login-logo {
   text-align: center; margin-bottom: 36px;
 }
-#lock-logo-title {
+#login-logo-title {
   font-size: 14px; font-weight: 700; letter-spacing: 1.5px;
   color: var(--text-secondary); text-transform: uppercase; margin-bottom: 14px;
 }
-#lock-icon {
+#login-icon {
   font-size: 40px; line-height: 1;
 }
-#lock-input {
-  width: 100%; max-width: 280px; height: 54px;
-  background: var(--bg-card); border: 1.5px solid var(--border-default);
-  border-radius: 16px; color: var(--text-primary); font-size: 20px;
-  font-family: inherit; text-align: center;
-  letter-spacing: 6px; outline: none; margin-bottom: 12px;
-  -webkit-appearance: none;
-}
-#lock-input:focus { border-color: var(--accent); }
-#lock-btn {
+#login-google-btn {
   width: 100%; max-width: 280px; height: 54px;
   background: var(--accent); border: none; border-radius: 16px;
   color: #000; font-size: 14px; font-weight: 800;
   letter-spacing: 1px; text-transform: uppercase;
-  cursor: pointer; -webkit-appearance: none;
+  cursor: pointer; -webkit-appearance: none; margin-bottom: 12px;
 }
-#lock-btn:active { opacity: 0.8; }
-#lock-error {
+#login-google-btn:active { opacity: 0.8; }
+#login-demo-btn {
+  width: 100%; max-width: 280px; height: 46px;
+  background: none; border: 1.5px solid var(--border-strong); border-radius: 16px;
+  color: var(--text-secondary); font-size: 13px; font-weight: 600;
+  letter-spacing: 0.5px; cursor: pointer; -webkit-appearance: none;
+}
+#login-demo-btn:active { opacity: 0.7; }
+#login-error {
   margin-top: 14px; font-size: 12px; color: var(--red);
   letter-spacing: 0.5px; text-transform: uppercase;
   min-height: 18px; text-align: center;
+}
+/* ── Sign Out button in header ── */
+#btn-signout {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text-muted);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+  text-transform: uppercase; cursor: pointer; display: none;
+  font-family: inherit;
+}
+/* ── Claim Legacy Data button ── */
+#btn-claim-data {
+  display: none; width: 100%; padding: 14px 16px;
+  background: var(--bg-elevated); border: none; border-radius: 12px;
+  color: var(--accent); font-size: 14px; font-weight: 600;
+  font-family: inherit; text-align: left; cursor: pointer; margin-top: 8px;
 }
 
 /* nav-tabs removed — using bottom nav */
@@ -1550,15 +1564,15 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
 </head>
 <body>
 
-<!-- ── Lock Screen ── -->
-<div id="lock-screen">
-  <div id="lock-logo">
-    <div id="lock-logo-title">Shooting Tool</div>
-    <div id="lock-icon">🔒</div>
+<!-- ── Login Screen ── -->
+<div id="login-screen">
+  <div id="login-logo">
+    <div id="login-logo-title">Shooting Tool</div>
+    <div id="login-icon">🎯</div>
   </div>
-  <input type="password" id="lock-input" placeholder="••••••" autocomplete="current-password">
-  <button id="lock-btn">Unlock</button>
-  <div id="lock-error"></div>
+  <button id="login-google-btn">Sign in with Google</button>
+  <button id="login-demo-btn">Try Demo</button>
+  <div id="login-error"></div>
 </div>
 
 <!-- ── History modal ── -->
@@ -1575,8 +1589,9 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
 
 
 <!-- ── Header ── -->
-<div id="header">
+<div id="header" style="position:relative;">
   <span>Shooting Tool</span>
+  <button id="btn-signout">Sign Out</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ -->
@@ -2202,6 +2217,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
       <div class="beta-tool-chevron">›</div>
     </div>
     <div id="beta-close-wrap">
+      <button id="btn-claim-data">Claim My Legacy Data</button>
       <button id="btn-beta-close-bottom">Done</button>
     </div>
   </div>
@@ -3589,37 +3605,97 @@ document.getElementById('bd-sh-plus').addEventListener('click', () => {
 enterIdle();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PASSWORD GATE
+// AUTH
 // ═══════════════════════════════════════════════════════════════════════════
-const lockScreen = document.getElementById('lock-screen');
-const lockInput  = document.getElementById('lock-input');
-const lockBtn    = document.getElementById('lock-btn');
-const lockError  = document.getElementById('lock-error');
+let demoMode = false;
 
-function unlock() {
-  if (lockInput.value === 'elwiv') {
-    lockScreen.style.display = 'none';
-    // Bootstrap DB schema (idempotent — runs CREATE TABLE IF NOT EXISTS)
-    fetch('/api/setup').catch(() => {});
-    initDashboardTab();
-  } else {
-    lockError.textContent = 'Incorrect password';
-    lockInput.value = '';
-    lockInput.focus();
-    setTimeout(() => { lockError.textContent = ''; }, 2000);
-  }
+const loginScreen    = document.getElementById('login-screen');
+const loginGoogleBtn = document.getElementById('login-google-btn');
+const loginDemoBtn   = document.getElementById('login-demo-btn');
+const btnSignOut     = document.getElementById('btn-signout');
+const btnClaimData   = document.getElementById('btn-claim-data');
+
+function onLoggedIn() {
+  loginScreen.style.display = 'none';
+  btnSignOut.style.display = 'block';
+  fetch('/api/setup').catch(() => {});
+  initDashboardTab();
 }
 
-lockBtn.addEventListener('click', unlock);
-lockInput.addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+netlifyIdentity.on('init', user => {
+  if (user) onLoggedIn();
+});
+
+netlifyIdentity.on('login', () => {
+  netlifyIdentity.close();
+  demoMode = false;
+  // Show claim button if user hasn't already claimed
+  if (!localStorage.getItem('legacyDataClaimed')) {
+    btnClaimData.style.display = 'block';
+  }
+  onLoggedIn();
+});
+
+netlifyIdentity.on('logout', () => {
+  demoMode = false;
+  btnSignOut.style.display = 'none';
+  loginScreen.style.display = 'flex';
+});
+
+loginGoogleBtn.addEventListener('click', () => {
+  netlifyIdentity.open('login');
+});
+
+loginDemoBtn.addEventListener('click', () => {
+  demoMode = true;
+  onLoggedIn();
+});
+
+btnSignOut.addEventListener('click', () => {
+  if (demoMode) {
+    demoMode = false;
+    btnSignOut.style.display = 'none';
+    loginScreen.style.display = 'flex';
+  } else {
+    netlifyIdentity.logout();
+  }
+});
+
+btnClaimData.addEventListener('click', async () => {
+  btnClaimData.textContent = 'Claiming…';
+  btnClaimData.disabled = true;
+  try {
+    const result = await apiFetch('claim-legacy-data', { method: 'POST' });
+    const total = Object.values(result.migrated || {}).reduce((a, b) => a + b, 0);
+    localStorage.setItem('legacyDataClaimed', '1');
+    btnClaimData.style.display = 'none';
+    alert(`Done! Claimed ${total} records.`);
+    initDashboardTab();
+  } catch (e) {
+    btnClaimData.textContent = 'Claim My Legacy Data';
+    btnClaimData.disabled = false;
+    alert('Error: ' + e.message);
+  }
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 // API HELPER
 // ═══════════════════════════════════════════════════════════════════════════
 async function apiFetch(path, options = {}) {
+  let token = null;
+  if (demoMode) {
+    token = 'demo';
+  } else {
+    const user = netlifyIdentity.currentUser();
+    if (user) token = await user.jwt().catch(() => user.token?.access_token);
+  }
   const res = await fetch('/api/' + path, {
     ...options,
-    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));

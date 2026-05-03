@@ -1,9 +1,19 @@
 import { neon } from '@neondatabase/serverless';
+import { requireUser } from './auth.js';
 
 const sql = neon(process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL);
 const h = { 'Content-Type': 'application/json' };
 
-export const handler = async (event) => {
+export const handler = async (event, context) => {
+  let userId, isDemo;
+  try {
+    const user = requireUser(event, context);
+    userId = user.sub;
+    isDemo = userId === 'demo-user';
+  } catch (authErr) {
+    return authErr;
+  }
+
   try {
     if (event.httpMethod === 'GET') {
       const guns = await sql`
@@ -20,6 +30,7 @@ export const handler = async (event) => {
           ), 0)::int AS rounds_since_cleaning
         FROM guns g
         LEFT JOIN shooting_sessions s ON s.gun_id = g.id
+        WHERE g.user_id = ${userId}
         GROUP BY g.id
         ORDER BY g.created_at DESC
       `;
@@ -27,13 +38,14 @@ export const handler = async (event) => {
     }
 
     if (event.httpMethod === 'POST') {
+      if (isDemo) return { statusCode: 403, headers: h, body: JSON.stringify({ error: 'Demo mode is read-only' }) };
       const { name, caliber, brand, photo_url, base_round_count } = JSON.parse(event.body || '{}');
       if (!name || !caliber) {
         return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'name and caliber required' }) };
       }
       const [gun] = await sql`
-        INSERT INTO guns (name, caliber, brand, photo_url, base_round_count)
-        VALUES (${name}, ${caliber}, ${brand || null}, ${photo_url || null}, ${parseInt(base_round_count) || 0})
+        INSERT INTO guns (name, caliber, brand, photo_url, base_round_count, user_id)
+        VALUES (${name}, ${caliber}, ${brand || null}, ${photo_url || null}, ${parseInt(base_round_count) || 0}, ${userId})
         RETURNING *
       `;
       return { statusCode: 201, headers: h, body: JSON.stringify(gun) };
