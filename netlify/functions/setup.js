@@ -44,6 +44,10 @@ export const handler = async () => {
     await sql`
       ALTER TABLE guns ADD COLUMN IF NOT EXISTS base_round_count INTEGER NOT NULL DEFAULT 0
     `;
+    // Migration: add brand column to existing guns tables
+    await sql`
+      ALTER TABLE guns ADD COLUMN IF NOT EXISTS brand TEXT
+    `;
     return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
   } catch (err) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
