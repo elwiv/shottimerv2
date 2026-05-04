@@ -691,13 +691,6 @@ input, textarea, select {
   text-transform: uppercase; cursor: pointer; display: none;
   font-family: inherit;
 }
-/* ── Claim Legacy Data button ── */
-#btn-claim-data {
-  display: none; width: 100%; padding: 14px 16px;
-  background: var(--bg-elevated); border: none; border-radius: 12px;
-  color: var(--accent); font-size: 14px; font-weight: 600;
-  font-family: inherit; text-align: left; cursor: pointer; margin-top: 8px;
-}
 
 /* nav-tabs removed — using bottom nav */
 
@@ -2217,8 +2210,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
       <div class="beta-tool-chevron">›</div>
     </div>
     <div id="beta-close-wrap">
-      <button id="btn-claim-data">Claim My Legacy Data</button>
-      <button id="btn-beta-close-bottom">Done</button>
+<button id="btn-beta-close-bottom">Done</button>
     </div>
   </div>
 </div>
@@ -3613,7 +3605,6 @@ const loginScreen    = document.getElementById('login-screen');
 const loginGoogleBtn = document.getElementById('login-google-btn');
 const loginDemoBtn   = document.getElementById('login-demo-btn');
 const btnSignOut     = document.getElementById('btn-signout');
-const btnClaimData   = document.getElementById('btn-claim-data');
 
 function onLoggedIn() {
   loginScreen.style.display = 'none';
@@ -3630,10 +3621,6 @@ netlifyIdentity.on('login', () => {
   netlifyIdentity.close();
   demoMode = false;
   const u = netlifyIdentity.currentUser();
-  const uid = u?.id || '';
-  if (!localStorage.getItem(`legacyDataClaimed_${uid}`)) {
-    btnClaimData.style.display = 'block';
-  }
   onLoggedIn();
 });
 
@@ -3662,23 +3649,6 @@ btnSignOut.addEventListener('click', () => {
   }
 });
 
-btnClaimData.addEventListener('click', async () => {
-  btnClaimData.textContent = 'Claiming…';
-  btnClaimData.disabled = true;
-  try {
-    const result = await apiFetch('claim-legacy-data', { method: 'POST' });
-    const total = Object.values(result.migrated || {}).reduce((a, b) => a + b, 0);
-    const cu = netlifyIdentity.currentUser();
-    localStorage.setItem(`legacyDataClaimed_${cu?.id || ''}`, '1');
-    btnClaimData.style.display = 'none';
-    alert(`Done! Claimed ${total} records.`);
-    initDashboardTab();
-  } catch (e) {
-    btnClaimData.textContent = 'Claim My Legacy Data';
-    btnClaimData.disabled = false;
-    alert('Error: ' + e.message);
-  }
-});
 
 // ═══════════════════════════════════════════════════════════════════════════
 // API HELPER
