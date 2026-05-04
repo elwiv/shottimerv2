@@ -60,6 +60,7 @@ export const handler = async () => {
       )
     `;
     // Migrations
+    await sql`ALTER TABLE guns ADD COLUMN IF NOT EXISTS brand TEXT`;
     await sql`
       ALTER TABLE guns ADD COLUMN IF NOT EXISTS base_round_count INTEGER NOT NULL DEFAULT 0
     `;

@@ -24,24 +24,19 @@ export const handler = async (event, context) => {
   try {
     const LEGACY = 'legacy-user';
 
-    const [{ count: guns }] = await sql`
-      UPDATE guns SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING COUNT(*)::int AS count
-    `;
-    const [{ count: sessions }] = await sql`
-      UPDATE shooting_sessions SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING COUNT(*)::int AS count
-    `;
-    const [{ count: cleanings }] = await sql`
-      UPDATE cleaning_logs SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING COUNT(*)::int AS count
-    `;
-    const [{ count: ranges }] = await sql`
-      UPDATE range_locations SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING COUNT(*)::int AS count
-    `;
-    const [{ count: suppressors }] = await sql`
-      UPDATE suppressors SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING COUNT(*)::int AS count
-    `;
-    const [{ count: suppressorCleanings }] = await sql`
-      UPDATE suppressor_cleaning_logs SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING COUNT(*)::int AS count
-    `;
+    const gunsRows = await sql`UPDATE guns SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING id`;
+    const sessionsRows = await sql`UPDATE shooting_sessions SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING id`;
+    const cleaningsRows = await sql`UPDATE cleaning_logs SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING id`;
+    const rangesRows = await sql`UPDATE range_locations SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING id`;
+    const suppressorsRows = await sql`UPDATE suppressors SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING id`;
+    const suppressorCleaningsRows = await sql`UPDATE suppressor_cleaning_logs SET user_id = ${userId} WHERE user_id = ${LEGACY} RETURNING id`;
+
+    const guns = gunsRows.length;
+    const sessions = sessionsRows.length;
+    const cleanings = cleaningsRows.length;
+    const ranges = rangesRows.length;
+    const suppressors = suppressorsRows.length;
+    const suppressorCleanings = suppressorCleaningsRows.length;
 
     return {
       statusCode: 200, headers: h,
