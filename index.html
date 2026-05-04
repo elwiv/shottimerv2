@@ -686,6 +686,51 @@ input, textarea, select {
 }
 #login-email-btn:active { opacity: 0.8; }
 #login-demo-btn:active { opacity: 0.7; }
+#login-google-alt {
+  display: block; color: var(--text-muted); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase; text-decoration: none;
+  margin-bottom: 16px; text-align: center;
+}
+#login-google-alt:active { opacity: 0.7; }
+#login-email-form {
+  display: none; flex-direction: column; align-items: center;
+  width: 100%; max-width: 280px;
+}
+#login-email-input, #login-pw-input {
+  width: 100%; height: 48px; background: var(--bg-elevated);
+  border: 1.5px solid var(--border-default); border-radius: 16px;
+  color: var(--text-primary); font-size: 14px; font-weight: 500;
+  font-family: inherit; padding: 0 16px; margin-bottom: 10px; -webkit-appearance: none;
+  box-sizing: border-box;
+}
+#login-email-input::placeholder, #login-pw-input::placeholder { color: var(--text-muted); }
+#login-email-input:focus, #login-pw-input:focus { outline: none; border-color: var(--accent); }
+#login-email-submit-btn {
+  width: 100%; height: 54px; background: var(--accent); border: none; border-radius: 16px;
+  color: #000; font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; -webkit-appearance: none; margin-bottom: 12px; font-family: inherit;
+}
+#login-email-submit-btn:active { opacity: 0.8; }
+#login-email-actions { display: flex; gap: 12px; width: 100%; margin-bottom: 12px; }
+#login-email-signup-btn, #login-email-forgot-btn {
+  flex: 1; height: 40px; background: none; border: 1.5px solid var(--border-strong);
+  border-radius: 16px; color: var(--text-secondary); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;
+  -webkit-appearance: none; font-family: inherit;
+}
+#login-email-signup-btn:active, #login-email-forgot-btn:active { opacity: 0.7; }
+#login-email-back-btn {
+  background: none; border: none; color: var(--text-muted); font-size: 11px;
+  font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+  cursor: pointer; font-family: inherit; margin-bottom: 10px;
+}
+#login-email-back-btn:active { opacity: 0.7; }
+#login-email-message {
+  font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase;
+  min-height: 18px; text-align: center;
+}
+#login-email-message.error  { color: var(--red); }
+#login-email-message.success { color: var(--accent); }
 #login-error {
   margin-top: 14px; font-size: 12px; color: var(--red);
   letter-spacing: 0.5px; text-transform: uppercase;
@@ -1572,9 +1617,21 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
     <div id="login-icon">🎯</div>
   </div>
   <button id="login-google-btn">Sign in with Google</button>
+  <a id="login-google-alt" href="#">Use a different account</a>
   <button id="login-email-btn">Sign in with Email</button>
   <button id="login-demo-btn">Try Demo</button>
   <div id="login-error"></div>
+  <div id="login-email-form">
+    <input id="login-email-input" type="email" placeholder="Email" autocomplete="email" />
+    <input id="login-pw-input" type="password" placeholder="Password" autocomplete="current-password" />
+    <button id="login-email-submit-btn">Sign In</button>
+    <div id="login-email-actions">
+      <button id="login-email-signup-btn">Create Account</button>
+      <button id="login-email-forgot-btn">Forgot Password</button>
+    </div>
+    <button id="login-email-back-btn">← Back</button>
+    <div id="login-email-message"></div>
+  </div>
 </div>
 
 <!-- ── History modal ── -->
@@ -3612,9 +3669,43 @@ let demoMode = false;
 
 const loginScreen    = document.getElementById('login-screen');
 const loginGoogleBtn = document.getElementById('login-google-btn');
+const loginGoogleAlt = document.getElementById('login-google-alt');
 const loginEmailBtn  = document.getElementById('login-email-btn');
 const loginDemoBtn   = document.getElementById('login-demo-btn');
 const btnSignOut     = document.getElementById('btn-signout');
+
+const loginEmailForm      = document.getElementById('login-email-form');
+const loginEmailInput     = document.getElementById('login-email-input');
+const loginPwInput        = document.getElementById('login-pw-input');
+const loginEmailSubmitBtn = document.getElementById('login-email-submit-btn');
+const loginEmailSignupBtn = document.getElementById('login-email-signup-btn');
+const loginEmailForgotBtn = document.getElementById('login-email-forgot-btn');
+const loginEmailBackBtn   = document.getElementById('login-email-back-btn');
+const loginEmailMessage   = document.getElementById('login-email-message');
+
+function showEmailForm() {
+  loginGoogleBtn.style.display  = 'none';
+  loginGoogleAlt.style.display  = 'none';
+  loginEmailBtn.style.display   = 'none';
+  loginDemoBtn.style.display    = 'none';
+  loginEmailForm.style.display  = 'flex';
+  loginEmailMessage.textContent = '';
+  loginEmailMessage.className   = '';
+  loginEmailInput.value = '';
+  loginPwInput.value    = '';
+  loginEmailInput.focus();
+}
+function hideEmailForm() {
+  loginEmailForm.style.display  = 'none';
+  loginGoogleBtn.style.display  = '';
+  loginGoogleAlt.style.display  = '';
+  loginEmailBtn.style.display   = '';
+  loginDemoBtn.style.display    = '';
+}
+function setEmailMsg(text, isError = true) {
+  loginEmailMessage.textContent = text;
+  loginEmailMessage.className   = isError ? 'error' : 'success';
+}
 
 function onLoggedIn() {
   loginScreen.style.display = 'none';
@@ -3641,10 +3732,64 @@ netlifyIdentity.on('logout', () => {
 });
 
 loginGoogleBtn.addEventListener('click', () => {
-  window.location.href = '/.netlify/identity/authorize?provider=google&prompt=select_account';
+  window.location.href = '/.netlify/identity/authorize?provider=google';
 });
-loginEmailBtn.addEventListener('click', () => {
-  netlifyIdentity.open('login');
+loginGoogleAlt.addEventListener('click', e => {
+  e.preventDefault();
+  const authUrl = encodeURIComponent('/.netlify/identity/authorize?provider=google');
+  window.location.href = 'https://accounts.google.com/AccountChooser?continue=' + authUrl;
+});
+loginEmailBtn.addEventListener('click', () => { showEmailForm(); });
+loginEmailBackBtn.addEventListener('click', () => { hideEmailForm(); });
+
+loginEmailSubmitBtn.addEventListener('click', async () => {
+  const email = loginEmailInput.value.trim();
+  const pw    = loginPwInput.value;
+  if (!email || !pw) { setEmailMsg('Enter email and password'); return; }
+  loginEmailSubmitBtn.disabled = true;
+  setEmailMsg('');
+  try {
+    await netlifyIdentity.gotrue.login(email, pw);
+    hideEmailForm();
+    demoMode = false;
+    onLoggedIn();
+  } catch (err) {
+    setEmailMsg(err.message || 'Sign in failed');
+  } finally {
+    loginEmailSubmitBtn.disabled = false;
+  }
+});
+
+loginEmailSignupBtn.addEventListener('click', async () => {
+  const email = loginEmailInput.value.trim();
+  const pw    = loginPwInput.value;
+  if (!email || !pw) { setEmailMsg('Enter email and password'); return; }
+  loginEmailSignupBtn.disabled = true;
+  setEmailMsg('');
+  try {
+    await netlifyIdentity.gotrue.signup(email, pw, {});
+    setEmailMsg('Check your email to confirm your account.', false);
+    loginPwInput.value = '';
+  } catch (err) {
+    setEmailMsg(err.message || 'Sign up failed');
+  } finally {
+    loginEmailSignupBtn.disabled = false;
+  }
+});
+
+loginEmailForgotBtn.addEventListener('click', async () => {
+  const email = loginEmailInput.value.trim();
+  if (!email) { setEmailMsg('Enter your email first'); return; }
+  loginEmailForgotBtn.disabled = true;
+  setEmailMsg('');
+  try {
+    await netlifyIdentity.gotrue.requestPasswordRecovery(email);
+    setEmailMsg('Recovery email sent.', false);
+  } catch (err) {
+    setEmailMsg(err.message || 'Request failed');
+  } finally {
+    loginEmailForgotBtn.disabled = false;
+  }
 });
 
 loginDemoBtn.addEventListener('click', () => {
