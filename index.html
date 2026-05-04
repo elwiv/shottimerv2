@@ -69,7 +69,7 @@ body {
   align-items: center;
   justify-content: center;
   padding-top: max(env(safe-area-inset-top), 14px);
-  padding-bottom: 6px;
+  padding-bottom: 14px;
   flex-shrink: 0;
   position: relative;
   border-bottom: 1px solid var(--border-faint);
@@ -507,6 +507,64 @@ body {
   flex-shrink: 0;
 }
 #btn-history-close:active { opacity: 0.7; }
+
+/* ── Session/Cleaning History Cards ── */
+.history-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-faint);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.history-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.history-card-date {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.history-card-actions { display: flex; gap: 6px; }
+.card-action-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-faint);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 4px 9px;
+  cursor: pointer;
+  line-height: 1.4;
+  -webkit-appearance: none;
+}
+.card-action-btn:active { opacity: 0.65; }
+.card-action-btn.delete { color: #c44; border-color: rgba(204,68,68,0.28); }
+.history-card-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+.history-card-stat { display: flex; flex-direction: column; gap: 1px; }
+.history-card-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.history-card-stat-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.history-card-notes {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-faint);
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
 
 /* ── Help modal ── */
 
@@ -2309,6 +2367,68 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
     </div>
     <button id="btn-edit-gun-submit" class="submit-btn">Save Changes</button>
     <span id="btn-edit-gun-cancel" class="cancel-link">Cancel</span>
+  </div>
+</div>
+
+<!-- ── Edit Session Modal ── -->
+<div id="edit-session-backdrop" class="modal-back" style="display:none">
+  <div class="modal-sheet" style="max-width:480px">
+    <h2>Edit Session</h2>
+    <input type="hidden" id="edit-session-id">
+    <div class="form-field">
+      <label class="form-label">Date *</label>
+      <input type="date" id="edit-session-date" class="form-input">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Rounds Fired *</label>
+      <input type="number" id="edit-session-rounds" class="form-input" min="1" placeholder="e.g. 50">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Range Location</label>
+      <input type="text" id="edit-session-range" class="form-input" placeholder="e.g. Local Range">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Notes</label>
+      <textarea id="edit-session-notes" class="form-input" placeholder="Drills, conditions, ammo, etc." style="height:80px;resize:none;padding-top:12px"></textarea>
+    </div>
+    <button id="btn-edit-session-submit" class="submit-btn">Save Changes</button>
+    <span id="btn-edit-session-cancel" class="cancel-link">Cancel</span>
+  </div>
+</div>
+
+<!-- ── Edit Gun Cleaning Modal ── -->
+<div id="edit-cleaning-backdrop" class="modal-back" style="display:none">
+  <div class="modal-sheet" style="max-width:480px">
+    <h2>Edit Cleaning</h2>
+    <input type="hidden" id="edit-cleaning-id">
+    <div class="form-field">
+      <label class="form-label">Date *</label>
+      <input type="date" id="edit-cleaning-date" class="form-input">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Notes</label>
+      <textarea id="edit-cleaning-notes" class="form-input" placeholder="Products used, details, etc." style="height:80px;resize:none;padding-top:12px"></textarea>
+    </div>
+    <button id="btn-edit-cleaning-submit" class="submit-btn">Save Changes</button>
+    <span id="btn-edit-cleaning-cancel" class="cancel-link">Cancel</span>
+  </div>
+</div>
+
+<!-- ── Edit Suppressor Cleaning Modal ── -->
+<div id="edit-sup-cleaning-backdrop" class="modal-back" style="display:none">
+  <div class="modal-sheet" style="max-width:480px">
+    <h2>Edit Cleaning</h2>
+    <input type="hidden" id="edit-sup-cleaning-id">
+    <div class="form-field">
+      <label class="form-label">Date *</label>
+      <input type="date" id="edit-sup-cleaning-date" class="form-input">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Notes</label>
+      <textarea id="edit-sup-cleaning-notes" class="form-input" placeholder="Products used, details, etc." style="height:80px;resize:none;padding-top:12px"></textarea>
+    </div>
+    <button id="btn-edit-sup-cleaning-submit" class="submit-btn">Save Changes</button>
+    <span id="btn-edit-sup-cleaning-cancel" class="cancel-link">Cancel</span>
   </div>
 </div>
 
@@ -4649,23 +4769,35 @@ function renderSessionsList(sessions) {
     wrap.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:6px 0">No sessions logged yet.</div>';
     return;
   }
-  let rows = '';
-  sessions.forEach(s => {
-    const date  = fmtDate(s.session_date);
-    const range = s.range_location ? escHtml(s.range_location) : '—';
-    const notes = s.notes ? `<div style="color:var(--text-muted);font-size:12px;margin-top:2px">${escHtml(s.notes)}</div>` : '';
-    rows += `<tr>
-      <td>${date}</td>
-      <td style="text-align:right">${s.rounds_fired.toLocaleString()}</td>
-      <td>${range}</td>
-      <td style="text-align:right"><button class="row-del-btn" onclick="deleteSession('${escHtml(s.id)}')">✕</button></td>
-    </tr>${notes ? `<tr><td colspan="4" style="padding-top:0">${notes}</td></tr>` : ''}`;
-  });
-  wrap.innerHTML = `
-    <table>
-      <thead><tr><th>Date</th><th style="text-align:right">Rounds</th><th>Range</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  wrap.innerHTML = sessions.map(s => {
+    const range = s.range_location ? escHtml(s.range_location) : null;
+    const notesHtml = s.notes ? `<div class="history-card-notes">${escHtml(s.notes)}</div>` : '';
+    const sid = escHtml(s.id);
+    const sData = escHtml(JSON.stringify({
+      id: s.id, session_date: s.session_date, rounds_fired: s.rounds_fired,
+      range_location: s.range_location || '', notes: s.notes || ''
+    }));
+    return `<div class="history-card">
+      <div class="history-card-header">
+        <span class="history-card-date">${fmtDate(s.session_date)}</span>
+        <div class="history-card-actions">
+          <button class="card-action-btn" onclick='editGunSession(${JSON.stringify(s.id)})'>Edit</button>
+          <button class="card-action-btn delete" onclick="deleteSession('${sid}')">Delete</button>
+        </div>
+      </div>
+      <div class="history-card-stats">
+        <div class="history-card-stat">
+          <span class="history-card-stat-label">Rounds</span>
+          <span class="history-card-stat-value">${s.rounds_fired.toLocaleString()}</span>
+        </div>
+        ${range ? `<div class="history-card-stat">
+          <span class="history-card-stat-label">Range</span>
+          <span class="history-card-stat-value">${range}</span>
+        </div>` : ''}
+      </div>
+      ${notesHtml}
+    </div>`;
+  }).join('');
 }
 
 function renderCleaningsList(cleanings) {
@@ -4674,20 +4806,20 @@ function renderCleaningsList(cleanings) {
     wrap.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:6px 0">No cleanings logged yet.</div>';
     return;
   }
-  let rows = '';
-  cleanings.forEach(c => {
-    const notes = c.notes ? escHtml(c.notes) : '—';
-    rows += `<tr>
-      <td>${fmtDate(c.cleaned_at)}</td>
-      <td>${notes}</td>
-      <td style="text-align:right"><button class="row-del-btn" onclick="deleteCleaning('${escHtml(c.id)}')">✕</button></td>
-    </tr>`;
-  });
-  wrap.innerHTML = `
-    <table>
-      <thead><tr><th>Date</th><th>Notes</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  wrap.innerHTML = cleanings.map(c => {
+    const notesHtml = c.notes ? `<div class="history-card-notes">${escHtml(c.notes)}</div>` : '';
+    const cid = escHtml(c.id);
+    return `<div class="history-card">
+      <div class="history-card-header">
+        <span class="history-card-date">${fmtDate(c.cleaned_at)}</span>
+        <div class="history-card-actions">
+          <button class="card-action-btn" onclick='editGunCleaning(${JSON.stringify(c.id)})'>Edit</button>
+          <button class="card-action-btn delete" onclick="deleteCleaning('${cid}')">Delete</button>
+        </div>
+      </div>
+      ${notesHtml}
+    </div>`;
+  }).join('');
 }
 
 async function deleteSession(id) {
@@ -4710,6 +4842,139 @@ async function deleteCleaning(id) {
     await openGunDetail(currentGunId);
   } catch (e) {
     alert('Error: ' + e.message);
+  }
+}
+
+async function deleteLogSession(id) {
+  if (!confirm('Delete this session?')) return;
+  try {
+    await apiFetch(`sessions?id=${id}`, { method: 'DELETE' });
+    gunsLoaded = false;
+    reportsLoaded = false;
+    await loadLogSessionsList();
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+async function deleteSuppressorSession(id) {
+  if (!confirm('Delete this session?')) return;
+  try {
+    await apiFetch(`sessions?id=${id}`, { method: 'DELETE' });
+    gunsLoaded = false;
+    reportsLoaded = false;
+    suppressorsLoaded = false;
+    await openSuppressorDetail(currentSuppId);
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+// ── Edit session / cleaning callbacks ────────────────────
+let sessionEditCallback = null;
+let cleaningEditCallback = null;
+let supCleaningEditCallback = null;
+
+function editGunSession(id) {
+  const s = currentGunData && currentGunData.sessions && currentGunData.sessions.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('edit-session-id').value = s.id;
+  document.getElementById('edit-session-date').value = s.session_date;
+  document.getElementById('edit-session-rounds').value = s.rounds_fired;
+  document.getElementById('edit-session-range').value = s.range_location || '';
+  document.getElementById('edit-session-notes').value = s.notes || '';
+  sessionEditCallback = () => openGunDetail(currentGunId);
+  document.getElementById('edit-session-backdrop').style.display = 'flex';
+}
+
+function editSuppressorSession(id) {
+  const s = currentSuppData && currentSuppData.sessions && currentSuppData.sessions.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('edit-session-id').value = s.id;
+  document.getElementById('edit-session-date').value = s.session_date;
+  document.getElementById('edit-session-rounds').value = s.rounds_fired;
+  document.getElementById('edit-session-range').value = s.range_location || '';
+  document.getElementById('edit-session-notes').value = s.notes || '';
+  sessionEditCallback = () => openSuppressorDetail(currentSuppId);
+  document.getElementById('edit-session-backdrop').style.display = 'flex';
+}
+
+async function saveEditSession() {
+  const id = document.getElementById('edit-session-id').value;
+  const session_date = document.getElementById('edit-session-date').value;
+  const rounds_fired = parseInt(document.getElementById('edit-session-rounds').value, 10);
+  const range_location = document.getElementById('edit-session-range').value.trim() || null;
+  const notes = document.getElementById('edit-session-notes').value.trim() || null;
+  if (!session_date || !rounds_fired) { alert('Date and rounds are required.'); return; }
+  const btn = document.getElementById('btn-edit-session-submit');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+  try {
+    await apiFetch(`sessions?id=${id}`, { method: 'PUT', body: JSON.stringify({ session_date, rounds_fired, range_location, notes }) });
+    gunsLoaded = false; reportsLoaded = false;
+    document.getElementById('edit-session-backdrop').style.display = 'none';
+    if (sessionEditCallback) { await sessionEditCallback(); sessionEditCallback = null; }
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.textContent = 'Save Changes'; btn.disabled = false;
+  }
+}
+
+function editGunCleaning(id) {
+  const c = currentGunData && currentGunData.cleanings && currentGunData.cleanings.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('edit-cleaning-id').value = c.id;
+  document.getElementById('edit-cleaning-date').value = c.cleaned_at;
+  document.getElementById('edit-cleaning-notes').value = c.notes || '';
+  cleaningEditCallback = () => openGunDetail(currentGunId);
+  document.getElementById('edit-cleaning-backdrop').style.display = 'flex';
+}
+
+async function saveEditCleaning() {
+  const id = document.getElementById('edit-cleaning-id').value;
+  const cleaned_at = document.getElementById('edit-cleaning-date').value;
+  const notes = document.getElementById('edit-cleaning-notes').value.trim() || null;
+  if (!cleaned_at) { alert('Date is required.'); return; }
+  const btn = document.getElementById('btn-edit-cleaning-submit');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+  try {
+    await apiFetch(`cleanings?id=${id}`, { method: 'PUT', body: JSON.stringify({ cleaned_at, notes }) });
+    gunsLoaded = false;
+    document.getElementById('edit-cleaning-backdrop').style.display = 'none';
+    if (cleaningEditCallback) { await cleaningEditCallback(); cleaningEditCallback = null; }
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.textContent = 'Save Changes'; btn.disabled = false;
+  }
+}
+
+function editSuppressorCleaning(id) {
+  const c = currentSuppData && currentSuppData.cleanings && currentSuppData.cleanings.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('edit-sup-cleaning-id').value = c.id;
+  document.getElementById('edit-sup-cleaning-date').value = c.cleaned_at;
+  document.getElementById('edit-sup-cleaning-notes').value = c.notes || '';
+  supCleaningEditCallback = () => openSuppressorDetail(currentSuppId);
+  document.getElementById('edit-sup-cleaning-backdrop').style.display = 'flex';
+}
+
+async function saveEditSuppressorCleaning() {
+  const id = document.getElementById('edit-sup-cleaning-id').value;
+  const cleaned_at = document.getElementById('edit-sup-cleaning-date').value;
+  const notes = document.getElementById('edit-sup-cleaning-notes').value.trim() || null;
+  if (!cleaned_at) { alert('Date is required.'); return; }
+  const btn = document.getElementById('btn-edit-sup-cleaning-submit');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+  try {
+    await apiFetch(`suppressor-cleanings?id=${id}`, { method: 'PUT', body: JSON.stringify({ cleaned_at, notes }) });
+    suppressorsLoaded = false;
+    document.getElementById('edit-sup-cleaning-backdrop').style.display = 'none';
+    if (supCleaningEditCallback) { await supCleaningEditCallback(); supCleaningEditCallback = null; }
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.textContent = 'Save Changes'; btn.disabled = false;
   }
 }
 
@@ -5044,23 +5309,33 @@ async function loadLogSessionsList() {
       wrap.innerHTML = '<div style="color:var(--text-muted);font-size:12px">No sessions logged yet.</div>';
       return;
     }
-    let rows = '';
-    sessions.forEach(s => {
-      const gun  = s.gun_name ? escHtml(s.gun_name) : '—';
-      const date = fmtDate(s.session_date);
-      const range = s.range_location ? escHtml(s.range_location) : '—';
-      rows += `<tr>
-        <td>${date}</td>
-        <td>${gun}</td>
-        <td style="text-align:right">${s.rounds_fired.toLocaleString()}</td>
-        <td>${range}</td>
-      </tr>`;
-    });
-    wrap.innerHTML = `
-      <table>
-        <thead><tr><th>Date</th><th>Gun</th><th style="text-align:right">Rounds</th><th>Range</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`;
+    wrap.innerHTML = sessions.map(s => {
+      const gun = s.gun_name ? escHtml(s.gun_name) : null;
+      const range = s.range_location ? escHtml(s.range_location) : null;
+      const notesHtml = s.notes ? `<div class="history-card-notes">${escHtml(s.notes)}</div>` : '';
+      const sid = escHtml(s.id);
+      return `<div class="history-card">
+        <div class="history-card-header">
+          <span class="history-card-date">${fmtDate(s.session_date)}</span>
+          <button class="card-action-btn delete" onclick="deleteLogSession('${sid}')">Delete</button>
+        </div>
+        <div class="history-card-stats">
+          ${gun ? `<div class="history-card-stat">
+            <span class="history-card-stat-label">Gun</span>
+            <span class="history-card-stat-value">${gun}</span>
+          </div>` : ''}
+          <div class="history-card-stat">
+            <span class="history-card-stat-label">Rounds</span>
+            <span class="history-card-stat-value">${s.rounds_fired.toLocaleString()}</span>
+          </div>
+          ${range ? `<div class="history-card-stat">
+            <span class="history-card-stat-label">Range</span>
+            <span class="history-card-stat-value">${range}</span>
+          </div>` : ''}
+        </div>
+        ${notesHtml}
+      </div>`;
+    }).join('');
   } catch (e) {
     wrap.innerHTML = `<div style="color:#c44;font-size:12px">Error loading sessions: ${escHtml(e.message)}</div>`;
   }
@@ -5580,21 +5855,30 @@ function renderSuppressorDetail(sup) {
   if (!sup.sessions || !sup.sessions.length) {
     sessList.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:0 14px 8px">No sessions recorded yet.</div>';
   } else {
-    let rows = '';
-    sup.sessions.forEach(s => {
-      rows += `<tr>
-        <td>${fmtDate(s.session_date)}</td>
-        <td>${escHtml(s.gun_name || '—')}</td>
-        <td style="text-align:right">${(s.rounds_fired || 0).toLocaleString()}</td>
-      </tr>`;
-    });
-    sessList.innerHTML = `
-      <div style="padding:0 14px 8px">
-        <table>
-          <thead><tr><th>Date</th><th>Gun</th><th style="text-align:right">Rounds</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>`;
+    sessList.innerHTML = '<div style="padding:0 14px 8px">' +
+      sup.sessions.map(s => {
+        const sid = escHtml(s.id);
+        return `<div class="history-card">
+          <div class="history-card-header">
+            <span class="history-card-date">${fmtDate(s.session_date)}</span>
+            <div class="history-card-actions">
+              <button class="card-action-btn" onclick='editSuppressorSession(${JSON.stringify(s.id)})'>Edit</button>
+              <button class="card-action-btn delete" onclick="deleteSuppressorSession('${sid}')">Delete</button>
+            </div>
+          </div>
+          <div class="history-card-stats">
+            <div class="history-card-stat">
+              <span class="history-card-stat-label">Gun</span>
+              <span class="history-card-stat-value">${escHtml(s.gun_name || '—')}</span>
+            </div>
+            <div class="history-card-stat">
+              <span class="history-card-stat-label">Rounds</span>
+              <span class="history-card-stat-value">${(s.rounds_fired || 0).toLocaleString()}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('') +
+      '</div>';
   }
 
   // Cleaning history
@@ -5603,14 +5887,20 @@ function renderSuppressorDetail(sup) {
     cleanList.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:0 14px 8px">No cleanings logged yet.</div>';
   } else {
     cleanList.innerHTML = '<div style="padding:0 14px 8px">' +
-      sup.cleanings.map(c => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1a1a1a">
-          <div>
-            <div style="font-size:13px;color:#ccc">${fmtDate(c.cleaned_at)}</div>
-            ${c.notes ? `<div style="font-size:12px;color:var(--text-muted);margin-top:2px">${escHtml(c.notes)}</div>` : ''}
+      sup.cleanings.map(c => {
+        const cid = escHtml(c.id);
+        const notesHtml = c.notes ? `<div class="history-card-notes">${escHtml(c.notes)}</div>` : '';
+        return `<div class="history-card">
+          <div class="history-card-header">
+            <span class="history-card-date">${fmtDate(c.cleaned_at)}</span>
+            <div class="history-card-actions">
+              <button class="card-action-btn" onclick='editSuppressorCleaning(${JSON.stringify(c.id)})'>Edit</button>
+              <button class="card-action-btn delete" onclick="deleteSuppressorCleaning('${cid}')">Delete</button>
+            </div>
           </div>
-          <button class="row-del-btn" data-cleaning-id="${escHtml(c.id)}" onclick="deleteSuppressorCleaning(this.dataset.cleaningId)">✕</button>
-        </div>`).join('') +
+          ${notesHtml}
+        </div>`;
+      }).join('') +
       '</div>';
   }
 }
@@ -5775,6 +6065,33 @@ async function deleteSuppressorCleaning(cleaningId) {
     alert('Error: ' + e.message);
   }
 }
+
+// ── Edit session modal wiring ────────────────────────────────────────────────
+document.getElementById('btn-edit-session-cancel').addEventListener('click', () => {
+  document.getElementById('edit-session-backdrop').style.display = 'none';
+});
+document.getElementById('edit-session-backdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.style.display = 'none';
+});
+document.getElementById('btn-edit-session-submit').addEventListener('click', saveEditSession);
+
+// ── Edit gun cleaning modal wiring ───────────────────────────────────────────
+document.getElementById('btn-edit-cleaning-cancel').addEventListener('click', () => {
+  document.getElementById('edit-cleaning-backdrop').style.display = 'none';
+});
+document.getElementById('edit-cleaning-backdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.style.display = 'none';
+});
+document.getElementById('btn-edit-cleaning-submit').addEventListener('click', saveEditCleaning);
+
+// ── Edit suppressor cleaning modal wiring ────────────────────────────────────
+document.getElementById('btn-edit-sup-cleaning-cancel').addEventListener('click', () => {
+  document.getElementById('edit-sup-cleaning-backdrop').style.display = 'none';
+});
+document.getElementById('edit-sup-cleaning-backdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.style.display = 'none';
+});
+document.getElementById('btn-edit-sup-cleaning-submit').addEventListener('click', saveEditSuppressorCleaning);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // UTILITIES

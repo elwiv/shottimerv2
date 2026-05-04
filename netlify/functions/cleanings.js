@@ -40,6 +40,25 @@ export const handler = async (event, context) => {
       return { statusCode: 201, headers: h, body: JSON.stringify(log) };
     }
 
+    if (event.httpMethod === 'PUT') {
+      if (isDemo) return { statusCode: 403, headers: h, body: JSON.stringify({ error: 'Demo mode is read-only' }) };
+      const cleaningId = event.queryStringParameters?.id;
+      if (!cleaningId) {
+        return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'Missing id' }) };
+      }
+      const { cleaned_at, notes } = JSON.parse(event.body || '{}');
+      if (!cleaned_at) {
+        return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'cleaned_at is required' }) };
+      }
+      const [log] = await sql`
+        UPDATE cleaning_logs
+        SET cleaned_at = ${cleaned_at}, notes = ${notes || null}
+        WHERE id = ${cleaningId}::uuid AND user_id = ${userId}
+        RETURNING *
+      `;
+      return { statusCode: 200, headers: h, body: JSON.stringify(log) };
+    }
+
     if (event.httpMethod === 'DELETE') {
       if (isDemo) return { statusCode: 403, headers: h, body: JSON.stringify({ error: 'Demo mode is read-only' }) };
       const cleaningId = event.queryStringParameters?.id;

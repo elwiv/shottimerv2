@@ -63,6 +63,34 @@ export const handler = async (event, context) => {
       return { statusCode: 201, headers: h, body: JSON.stringify(session) };
     }
 
+    if (event.httpMethod === 'PUT') {
+      if (isDemo) return { statusCode: 403, headers: h, body: JSON.stringify({ error: 'Demo mode is read-only' }) };
+      const sessionId = event.queryStringParameters?.id;
+      if (!sessionId) {
+        return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'Missing id' }) };
+      }
+      const { session_date, rounds_fired, range_location, notes } = JSON.parse(event.body || '{}');
+      if (!session_date || !rounds_fired) {
+        return { statusCode: 400, headers: h, body: JSON.stringify({ error: 'session_date and rounds_fired are required' }) };
+      }
+      if (range_location) {
+        await sql`
+          INSERT INTO range_locations (name, user_id) VALUES (${range_location}, ${userId})
+          ON CONFLICT (name, user_id) DO NOTHING
+        `;
+      }
+      const [session] = await sql`
+        UPDATE shooting_sessions
+        SET session_date = ${session_date},
+            rounds_fired = ${rounds_fired},
+            range_location = ${range_location || null},
+            notes = ${notes || null}
+        WHERE id = ${sessionId}::uuid AND user_id = ${userId}
+        RETURNING *
+      `;
+      return { statusCode: 200, headers: h, body: JSON.stringify(session) };
+    }
+
     if (event.httpMethod === 'DELETE') {
       if (isDemo) return { statusCode: 403, headers: h, body: JSON.stringify({ error: 'Demo mode is read-only' }) };
       const sessionId = event.queryStringParameters?.id;
