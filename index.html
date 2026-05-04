@@ -4390,55 +4390,55 @@ let currentSuppData = null;
 
 // Manufacturer keyword → clearbit domain, most-specific entries first
 const BRAND_CATALOG = [
-  { name: 'Aero Precision',      domain: 'aeroprecisionusa.com',   keys: ['aero precision'] },
-  { name: 'Benelli',             domain: 'benelli.com',            keys: ['benelli'] },
-  { name: 'Beretta',             domain: 'beretta.com',            keys: ['beretta'] },
-  { name: 'Bravo Company (BCM)', domain: 'bravocompanymfg.com',    keys: ['bravo company', 'bcm'] },
-  { name: 'Browning',            domain: 'browning.com',           keys: ['browning'] },
-  { name: 'Colt',                domain: 'coltsmfg.com',           keys: ['colt'] },
-  { name: 'CZ',                  domain: 'cz-usa.com',             keys: ['cz-usa', ' cz '] },
-  { name: 'Daniel Defense',      domain: 'danieldefense.com',      keys: ['daniel defense'] },
-  { name: 'FN America',          domain: 'fnamerica.com',          keys: ['fn america', 'fn her', 'fn scar', 'fn 509'] },
-  { name: 'Glock',               domain: 'glock.com',              keys: ['glock'] },
-  { name: 'Heckler & Koch',      domain: 'heckler-koch.com',       keys: ['heckler & koch', 'heckler and koch', 'h&k', ' hk '] },
-  { name: 'Kel-Tec',             domain: 'keltecweapons.com',      keys: ['kel-tec', 'keltec'] },
-  { name: 'Kimber',              domain: 'kimberamerica.com',      keys: ['kimber'] },
-  { name: 'Mossberg',            domain: 'mossberg.com',           keys: ['mossberg'] },
-  { name: 'Remington',           domain: 'remington.com',          keys: ['remington'] },
-  { name: 'Ruger',               domain: 'ruger.com',              keys: ['ruger'] },
-  { name: 'Savage Arms',         domain: 'savagearms.com',         keys: ['savage'] },
-  { name: 'Sig Sauer',           domain: 'sigsauer.com',           keys: ['sig sauer', 'sig p', 'sig m'] },
-  { name: 'Smith & Wesson',      domain: 'smith-wesson.com',       keys: ['smith & wesson', 'smith and wesson', 's&w', 's & w'] },
-  { name: 'Springfield Armory',  domain: 'springfield-armory.com', keys: ['springfield armory', 'springfield'] },
-  { name: 'Taurus',              domain: 'taurususa.com',          keys: ['taurus'] },
-  { name: 'Tikka',               domain: 'tikka.fi',               keys: ['tikka'] },
-  { name: 'Walther',             domain: 'waltherarms.com',        keys: ['walther'] },
-  { name: 'Wilson Combat',           domain: 'wilsoncombat.com',           keys: ['wilson combat'] },
-  { name: 'Winchester',              domain: 'winchesterguns.com',         keys: ['winchester'] },
+  { name: 'Aero Precision',          domain: 'aeroprecisionusa.com',       keys: ['aero precision'] },
   { name: 'Anderson Manufacturing',  domain: 'andersonmfg.com',            keys: ['anderson manufacturing', 'anderson mfg'] },
   { name: 'Armalite',                domain: 'armalite.com',               keys: ['armalite'] },
   { name: 'Barrett Firearms',        domain: 'barrett.net',                keys: ['barrett'] },
+  { name: 'Benelli',                 domain: 'benelli.com',                keys: ['benelli'] },
+  { name: 'Beretta',                 domain: 'beretta.com',                keys: ['beretta'] },
   { name: 'Bergara',                 domain: 'bergara.online',             keys: ['bergara'] },
+  { name: 'Bravo Company (BCM)',     domain: 'bravocompanymfg.com',        keys: ['bravo company', 'bcm'] },
+  { name: 'Browning',                domain: 'browning.com',               keys: ['browning'] },
   { name: 'Canik',                   domain: 'canikusa.com',               keys: ['canik'] },
   { name: 'Century Arms',            domain: 'centuryarms.com',            keys: ['century arms', 'ras47', 'wasr', 'draco'] },
   { name: 'Christensen Arms',        domain: 'christensenarms.com',        keys: ['christensen arms'] },
   { name: 'CMMG',                    domain: 'cmmginc.com',                keys: ['cmmg'] },
+  { name: 'Colt',                    domain: 'coltsmfg.com',               keys: ['colt'] },
+  { name: 'CZ',                      domain: 'cz-usa.com',                 keys: ['cz-usa', ' cz '] },
+  { name: 'Daniel Defense',          domain: 'danieldefense.com',          keys: ['daniel defense'] },
   { name: 'Diamondback Firearms',    domain: 'diamondbackfirearms.com',    keys: ['diamondback'] },
+  { name: 'FN America',              domain: 'fnamerica.com',              keys: ['fn america', 'fn her', 'fn scar', 'fn 509'] },
+  { name: 'Glock',                   domain: 'glock.com',                  keys: ['glock'] },
   { name: 'Grand Power',             domain: 'grandpower.eu',              keys: ['grand power'] },
+  { name: 'Heckler & Koch',          domain: 'heckler-koch.com',           keys: ['heckler & koch', 'heckler and koch', 'h&k', ' hk '] },
   { name: 'IWI US',                  domain: 'iwi.us',                     keys: ['iwi', 'galil', 'tavor', 'jericho', 'masada'] },
   { name: 'Kahr Arms',               domain: 'kahr.com',                   keys: ['kahr'] },
+  { name: 'Kel-Tec',                 domain: 'keltecweapons.com',          keys: ['kel-tec', 'keltec'] },
+  { name: 'Kimber',                  domain: 'kimberamerica.com',          keys: ['kimber'] },
   { name: 'Les Baer Custom',         domain: 'lesbear.com',                keys: ['les baer'] },
   { name: 'Magnum Research',         domain: 'magnumresearch.com',         keys: ['magnum research', 'desert eagle'] },
+  { name: 'Mossberg',                domain: 'mossberg.com',               keys: ['mossberg'] },
   { name: 'Nighthawk Custom',        domain: 'nighthawkcustom.com',        keys: ['nighthawk'] },
   { name: 'Palmetto State Armory',   domain: 'palmettostatearmory.com',    keys: ['palmetto state', ' psa '] },
   { name: 'Primary Weapons Systems', domain: 'primaryweapons.com',         keys: ['primary weapons', ' pws '] },
+  { name: 'Remington',               domain: 'remington.com',              keys: ['remington'] },
   { name: 'Rock Island Armory',      domain: 'rockislandarmory.com',       keys: ['rock island armory'] },
   { name: 'Rossi',                   domain: 'rossiusa.com',               keys: ['rossi'] },
+  { name: 'Ruger',                   domain: 'ruger.com',                  keys: ['ruger'] },
   { name: 'Sako',                    domain: 'sako.fi',                    keys: ['sako'] },
+  { name: 'Savage Arms',             domain: 'savagearms.com',             keys: ['savage'] },
+  { name: 'Sig Sauer',               domain: 'sigsauer.com',               keys: ['sig sauer', 'sig p', 'sig m'] },
+  { name: 'Smith & Wesson',          domain: 'smith-wesson.com',           keys: ['smith & wesson', 'smith and wesson', 's&w', 's & w'] },
+  { name: 'Springfield Armory',      domain: 'springfield-armory.com',     keys: ['springfield armory', 'springfield'] },
   { name: 'Staccato',                domain: 'staccato2011.com',           keys: ['staccato', ' sti '] },
   { name: 'Steyr Arms',              domain: 'steyr-arms.com',             keys: ['steyr'] },
+  { name: 'Taurus',                  domain: 'taurususa.com',              keys: ['taurus'] },
+  { name: 'Tikka',                   domain: 'tikka.fi',                   keys: ['tikka'] },
   { name: 'TriStar Arms',            domain: 'tristararms.com',            keys: ['tristar'] },
+  { name: 'Walther',                 domain: 'waltherarms.com',            keys: ['walther'] },
   { name: 'Weatherby',               domain: 'weatherby.com',              keys: ['weatherby'] },
+  { name: 'Wilson Combat',           domain: 'wilsoncombat.com',           keys: ['wilson combat'] },
+  { name: 'Winchester',              domain: 'winchesterguns.com',         keys: ['winchester'] },
   { name: 'Windham Weaponry',        domain: 'windhamweaponry.com',        keys: ['windham'] },
 ];
 
@@ -4823,6 +4823,7 @@ function renderCleaningsList(cleanings) {
 }
 
 async function deleteSession(id) {
+  if (demoMode) return;
   if (!confirm('Delete this session?')) return;
   try {
     await apiFetch(`sessions?id=${id}`, { method: 'DELETE' });
@@ -4835,6 +4836,7 @@ async function deleteSession(id) {
 }
 
 async function deleteCleaning(id) {
+  if (demoMode) return;
   if (!confirm('Delete this cleaning log?')) return;
   try {
     await apiFetch(`cleanings?id=${id}`, { method: 'DELETE' });
@@ -4846,6 +4848,7 @@ async function deleteCleaning(id) {
 }
 
 async function deleteLogSession(id) {
+  if (demoMode) return;
   if (!confirm('Delete this session?')) return;
   try {
     await apiFetch(`sessions?id=${id}`, { method: 'DELETE' });
@@ -4858,6 +4861,7 @@ async function deleteLogSession(id) {
 }
 
 async function deleteSuppressorSession(id) {
+  if (demoMode) return;
   if (!confirm('Delete this session?')) return;
   try {
     await apiFetch(`sessions?id=${id}`, { method: 'DELETE' });
@@ -4874,12 +4878,14 @@ async function deleteSuppressorSession(id) {
 let sessionEditCallback = null;
 let cleaningEditCallback = null;
 let supCleaningEditCallback = null;
+let logSessionsData = null;
 
 function editGunSession(id) {
+  if (demoMode) return;
   const s = currentGunData && currentGunData.sessions && currentGunData.sessions.find(x => x.id === id);
   if (!s) return;
   document.getElementById('edit-session-id').value = s.id;
-  document.getElementById('edit-session-date').value = s.session_date;
+  document.getElementById('edit-session-date').value = (s.session_date || '').slice(0, 10);
   document.getElementById('edit-session-rounds').value = s.rounds_fired;
   document.getElementById('edit-session-range').value = s.range_location || '';
   document.getElementById('edit-session-notes').value = s.notes || '';
@@ -4888,14 +4894,28 @@ function editGunSession(id) {
 }
 
 function editSuppressorSession(id) {
+  if (demoMode) return;
   const s = currentSuppData && currentSuppData.sessions && currentSuppData.sessions.find(x => x.id === id);
   if (!s) return;
   document.getElementById('edit-session-id').value = s.id;
-  document.getElementById('edit-session-date').value = s.session_date;
+  document.getElementById('edit-session-date').value = (s.session_date || '').slice(0, 10);
   document.getElementById('edit-session-rounds').value = s.rounds_fired;
   document.getElementById('edit-session-range').value = s.range_location || '';
   document.getElementById('edit-session-notes').value = s.notes || '';
   sessionEditCallback = () => openSuppressorDetail(currentSuppId);
+  document.getElementById('edit-session-backdrop').style.display = 'flex';
+}
+
+function editLogSession(id) {
+  if (demoMode) return;
+  const s = logSessionsData && logSessionsData.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('edit-session-id').value = s.id;
+  document.getElementById('edit-session-date').value = (s.session_date || '').slice(0, 10);
+  document.getElementById('edit-session-rounds').value = s.rounds_fired;
+  document.getElementById('edit-session-range').value = s.range_location || '';
+  document.getElementById('edit-session-notes').value = s.notes || '';
+  sessionEditCallback = () => loadLogSessionsList();
   document.getElementById('edit-session-backdrop').style.display = 'flex';
 }
 
@@ -4921,10 +4941,11 @@ async function saveEditSession() {
 }
 
 function editGunCleaning(id) {
+  if (demoMode) return;
   const c = currentGunData && currentGunData.cleanings && currentGunData.cleanings.find(x => x.id === id);
   if (!c) return;
   document.getElementById('edit-cleaning-id').value = c.id;
-  document.getElementById('edit-cleaning-date').value = c.cleaned_at;
+  document.getElementById('edit-cleaning-date').value = (c.cleaned_at || '').slice(0, 10);
   document.getElementById('edit-cleaning-notes').value = c.notes || '';
   cleaningEditCallback = () => openGunDetail(currentGunId);
   document.getElementById('edit-cleaning-backdrop').style.display = 'flex';
@@ -4950,10 +4971,11 @@ async function saveEditCleaning() {
 }
 
 function editSuppressorCleaning(id) {
+  if (demoMode) return;
   const c = currentSuppData && currentSuppData.cleanings && currentSuppData.cleanings.find(x => x.id === id);
   if (!c) return;
   document.getElementById('edit-sup-cleaning-id').value = c.id;
-  document.getElementById('edit-sup-cleaning-date').value = c.cleaned_at;
+  document.getElementById('edit-sup-cleaning-date').value = (c.cleaned_at || '').slice(0, 10);
   document.getElementById('edit-sup-cleaning-notes').value = c.notes || '';
   supCleaningEditCallback = () => openSuppressorDetail(currentSuppId);
   document.getElementById('edit-sup-cleaning-backdrop').style.display = 'flex';
@@ -5126,6 +5148,7 @@ document.getElementById('btn-back-guns').addEventListener('click', () => {
 });
 
 document.getElementById('btn-delete-gun').addEventListener('click', async () => {
+  if (demoMode) return;
   if (!currentGunId) return;
   const gun = gunsData.find(g => g.id === currentGunId);
   if (!confirm(`Delete "${gun?.name || 'this gun'}"? All sessions and cleaning logs will be deleted.`)) return;
@@ -5179,6 +5202,7 @@ document.getElementById('btn-clean-submit').addEventListener('click', async () =
 
 // ── Edit Gun modal ────────────────────────────────────────
 document.getElementById('btn-edit-gun').addEventListener('click', () => {
+  if (demoMode) return;
   if (!currentGunData) return;
   const g = currentGunData;
   editPendingPhotoDataUrl = g.photo_url || null;
@@ -5305,6 +5329,7 @@ async function loadLogSessionsList() {
   wrap.innerHTML = '<div style="color:var(--text-muted);font-size:12px">Loading…</div>';
   try {
     const sessions = await apiFetch('sessions');
+    logSessionsData = sessions;
     if (!sessions.length) {
       wrap.innerHTML = '<div style="color:var(--text-muted);font-size:12px">No sessions logged yet.</div>';
       return;
@@ -5317,7 +5342,10 @@ async function loadLogSessionsList() {
       return `<div class="history-card">
         <div class="history-card-header">
           <span class="history-card-date">${fmtDate(s.session_date)}</span>
-          <button class="card-action-btn delete" onclick="deleteLogSession('${sid}')">Delete</button>
+          <div class="history-card-actions">
+            <button class="card-action-btn" onclick="editLogSession('${sid}')">Edit</button>
+            <button class="card-action-btn delete" onclick="deleteLogSession('${sid}')">Delete</button>
+          </div>
         </div>
         <div class="history-card-stats">
           ${gun ? `<div class="history-card-stat">
@@ -5970,6 +5998,7 @@ document.getElementById('btn-back-suppressors').addEventListener('click', () => 
 
 // ── Edit Suppressor ──────────────────────────────────────────────────────────
 document.getElementById('btn-edit-suppressor').addEventListener('click', () => {
+  if (demoMode) return;
   if (!currentSuppData) return;
   document.getElementById('edit-sup-name-input').value       = currentSuppData.name || '';
   document.getElementById('edit-sup-calibers-input').value   = (currentSuppData.calibers || []).join(', ');
@@ -6012,6 +6041,7 @@ document.getElementById('btn-edit-suppressor-submit').addEventListener('click', 
 
 // ── Delete Suppressor ────────────────────────────────────────────────────────
 document.getElementById('btn-delete-suppressor').addEventListener('click', async () => {
+  if (demoMode) return;
   if (!currentSuppId) return;
   if (!confirm('Delete this suppressor? All usage history will be unlinked.')) return;
   try {
@@ -6057,6 +6087,7 @@ document.getElementById('btn-sup-clean-submit').addEventListener('click', async 
 });
 
 async function deleteSuppressorCleaning(cleaningId) {
+  if (demoMode) return;
   if (!confirm('Delete this cleaning log entry?')) return;
   try {
     await apiFetch(`suppressor-cleanings?id=${cleaningId}`, { method: 'DELETE' });
