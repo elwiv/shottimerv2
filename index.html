@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Chambered">
 <meta name="theme-color" content="#080808">
 <title>Chambered</title>
+<link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -31,9 +32,9 @@
   --text-muted:     #888888;
 
   /* Accent */
-  --accent:      #4ade80;
-  --accent-dark: #0d1f14;
-  --accent-dim:  rgba(74, 222, 128, 0.12);
+  --accent:      #c9a96e;
+  --accent-dark: #1a1208;
+  --accent-dim:  rgba(201, 169, 110, 0.12);
 
   /* Status */
   --amber:    #f59e0b;
@@ -348,7 +349,7 @@ body {
   flex: 1;
 }
 .btn:active { opacity: 0.75; transform: scale(0.97); }
-#btn-start  { background: #16a34a; color: #fff; }
+#btn-start  { background: #8a6830; color: #fff; }
 #btn-stop   { background: var(--red-dark); color: #fff; }
 #btn-cancel { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border-default); font-size: 15px; font-weight: 700; letter-spacing: 0.5px; flex: 0 0 88px; }
 #btn-reset  { background: var(--bg-elevated); color: var(--red); border: 1px solid var(--border-default); font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
@@ -985,7 +986,7 @@ input, textarea, select {
   position: absolute;
   top: 0; left: 20%; right: 20%;
   height: 1px;
-  background: rgba(74,222,128,0.28);
+  background: rgba(201,169,110,0.28);
 }
 .stat-card-icon {
   font-size: 16px; margin-bottom: 5px; display: block; line-height: 1;
@@ -1342,7 +1343,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(74,222,128,0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(201,169,110,0.4), transparent);
 }
 .dash-hero-label {
   font-size: 11px;
@@ -1387,7 +1388,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
   position: absolute;
   top: 0; left: 16px; right: 16px;
   height: 1px;
-  background: rgba(74,222,128,0.28);
+  background: rgba(201,169,110,0.28);
 }
 .dash-stat-label {
   font-size: 12px;
@@ -1435,7 +1436,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
   color: var(--accent);
   text-transform: uppercase;
   background: var(--accent-dim);
-  border: 1px solid rgba(74,222,128,0.25);
+  border: 1px solid rgba(201,169,110,0.25);
   border-radius: 8px;
   padding: 4px 10px;
   flex-shrink: 0;
@@ -1611,7 +1612,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
 .beta-tool-desc  { font-size: 12px; color: var(--text-secondary); letter-spacing: 0px; }
 .beta-tool-chevron { color: var(--border-strong); font-size: 18px; font-weight: 300; flex-shrink: 0; }
 .beta-badge {
-  padding: 3px 8px; background: var(--accent-dark); border: 1px solid rgba(74,222,128,0.3);
+  padding: 3px 8px; background: var(--accent-dark); border: 1px solid rgba(201,169,110,0.3);
   border-radius: 6px; font-size: 10px; font-weight: 700;
   letter-spacing: 0.3px; color: var(--accent); text-transform: uppercase; flex-shrink: 0;
 }
@@ -1641,6 +1642,56 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
 .section-enter {
   animation: sectionFadeIn 0.15s ease-out;
 }
+
+/* ── PWA Install Banner ──────────────────────────────────────────────────── */
+#pwa-banner {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9999;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  background: #1a1a1a;
+  border-top: 1px solid rgba(201,169,110,0.2);
+}
+#pwa-banner-text {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+#pwa-banner-text strong { color: var(--text-primary); }
+#pwa-banner-text svg { vertical-align: -3px; margin: 0 2px; }
+#pwa-install-btn {
+  flex-shrink: 0;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+#pwa-install-btn:active { opacity: 0.75; }
+#pwa-dismiss-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  -webkit-appearance: none;
+}
+#pwa-dismiss-btn:active { opacity: 0.6; }
 </style>
 </head>
 <body>
@@ -2016,7 +2067,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
       <button id="btn-back-guns" class="back-btn">← Back</button>
       <span id="gun-detail-heading" class="sec-title"></span>
       <div style="display:flex;gap:6px">
-        <button id="btn-edit-gun" class="icon-btn" style="color:#4ade80;border-color:#2a4a2e">Edit</button>
+        <button id="btn-edit-gun" class="icon-btn" style="color:#c9a96e;border-color:#3a2e10">Edit</button>
         <button id="btn-delete-gun" class="icon-btn">Delete</button>
       </div>
     </div>
@@ -2074,7 +2125,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
       <button id="btn-back-suppressors" class="back-btn">← Back</button>
       <span id="suppressor-detail-heading" class="sec-title"></span>
       <div style="display:flex;gap:6px">
-        <button id="btn-edit-suppressor" class="icon-btn" style="color:#4ade80;border-color:#2a4a2e">Edit</button>
+        <button id="btn-edit-suppressor" class="icon-btn" style="color:#c9a96e;border-color:#3a2e10">Edit</button>
         <button id="btn-delete-suppressor" class="icon-btn">Delete</button>
       </div>
     </div>
@@ -2561,7 +2612,7 @@ function pollMic() {
   }
   const pct = Math.min(100, (peak / 128) * 100);
   elMicBar.style.width = pct + '%';
-  elMicBar.style.background = pct > 60 ? '#ef4444' : pct > 30 ? '#f59e0b' : '#4ade80';
+  elMicBar.style.background = pct > 60 ? '#ef4444' : pct > 30 ? '#f59e0b' : '#c9a96e';
 
   const threshold = sensitivityToThreshold(parseInt(elSensSlide.value));
   const now = performance.now();
@@ -2740,7 +2791,7 @@ function pollCal() {
   }
   const pct = Math.min(100, (peak / 128) * 100);
   elMicBar.style.width = pct + '%';
-  elMicBar.style.background = pct > 60 ? '#ef4444' : pct > 30 ? '#f59e0b' : '#4ade80';
+  elMicBar.style.background = pct > 60 ? '#ef4444' : pct > 30 ? '#f59e0b' : '#c9a96e';
   if (peak > calPeak) calPeak = peak;
   calRafId = requestAnimationFrame(pollCal);
 }
@@ -3702,66 +3753,134 @@ document.getElementById('bd-sh-plus').addEventListener('click', () => {
   bdRender();
 });
 
-// ── PWA icon (canvas-generated) ────────────────────────────────────────────
+// ── PWA icon (canvas-generated bolt-face logo) ────────────────────────────
 (function () {
-  const S = 180, cx = 90, cy = 90;
-  const cv = document.createElement('canvas');
-  cv.width = S; cv.height = S;
-  const c = cv.getContext('2d');
+  function drawBoltFace(size) {
+    const cv = document.createElement('canvas');
+    cv.width = size; cv.height = size;
+    const c = cv.getContext('2d');
+    const cx = size / 2, cy = size / 2;
+    const s = size / 120; // scale factor relative to 120px SVG viewBox
 
-  // Background
-  c.fillStyle = '#0d0d0d';
-  c.fillRect(0, 0, S, S);
+    // Rounded-square clip
+    const r = 26.4 * s;
+    c.beginPath();
+    c.moveTo(r, 0); c.lineTo(size - r, 0);
+    c.arcTo(size, 0, size, r, r);
+    c.lineTo(size, size - r);
+    c.arcTo(size, size, size - r, size, r);
+    c.lineTo(r, size);
+    c.arcTo(0, size, 0, size - r, r);
+    c.lineTo(0, r);
+    c.arcTo(0, 0, r, 0, r);
+    c.closePath();
+    c.save(); c.clip();
 
-  // Outer ring
-  c.strokeStyle = '#4ade80'; c.lineWidth = 5;
-  c.beginPath(); c.arc(cx, cy, 72, 0, Math.PI * 2); c.stroke();
+    // Background gradient
+    const bg = c.createLinearGradient(0, 0, size, size);
+    bg.addColorStop(0, '#2a2a2a'); bg.addColorStop(1, '#111111');
+    c.fillStyle = bg; c.fillRect(0, 0, size, size);
 
-  // Mid ring (dark)
-  c.strokeStyle = '#2d2d2d'; c.lineWidth = 4;
-  c.beginPath(); c.arc(cx, cy, 50, 0, Math.PI * 2); c.stroke();
+    // Outer circle (body)
+    c.beginPath(); c.arc(cx, cy, 50 * s, 0, Math.PI * 2);
+    c.fillStyle = '#222222'; c.fill();
+    c.strokeStyle = '#3a3a3a'; c.lineWidth = s; c.stroke();
 
-  // Inner ring
-  c.strokeStyle = '#4ade80'; c.lineWidth = 4;
-  c.beginPath(); c.arc(cx, cy, 28, 0, Math.PI * 2); c.stroke();
-
-  // Crosshair lines
-  c.strokeStyle = '#4ade80'; c.lineWidth = 3;
-  [[0, -72, 0, -33], [0, 33, 0, 72], [-72, 0, -33, 0], [33, 0, 72, 0]]
-    .forEach(([dx1, dy1, dx2, dy2]) => {
-      c.beginPath(); c.moveTo(cx + dx1, cy + dy1); c.lineTo(cx + dx2, cy + dy2); c.stroke();
+    // 7 lug protrusions
+    const lugs = [0, 51.4, 102.8, 154.2, 205.7, 257.1, 308.5];
+    lugs.forEach(deg => {
+      c.save();
+      c.translate(cx, cy);
+      c.rotate(deg * Math.PI / 180);
+      const lw = 16 * s, lh = 26 * s, lx = -lw / 2, ly = -60 * s;
+      c.beginPath();
+      const lr = 4 * s;
+      c.moveTo(lx + lr, ly); c.lineTo(lx + lw - lr, ly);
+      c.arcTo(lx + lw, ly, lx + lw, ly + lr, lr);
+      c.lineTo(lx + lw, ly + lh - lr);
+      c.arcTo(lx + lw, ly + lh, lx + lw - lr, ly + lh, lr);
+      c.lineTo(lx + lr, ly + lh);
+      c.arcTo(lx, ly + lh, lx, ly + lh - lr, lr);
+      c.lineTo(lx, ly + lr);
+      c.arcTo(lx, ly, lx + lr, ly, lr);
+      c.closePath();
+      c.fillStyle = '#d8d8d8'; c.fill();
+      c.restore();
     });
 
-  // Center dot
-  c.fillStyle = '#4ade80';
-  c.beginPath(); c.arc(cx, cy, 7, 0, Math.PI * 2); c.fill();
+    // Brass face
+    c.beginPath(); c.arc(cx, cy, 36 * s, 0, Math.PI * 2);
+    c.fillStyle = '#e0ddd8'; c.fill();
+    c.beginPath(); c.arc(cx, cy, 30 * s, 0, Math.PI * 2);
+    c.strokeStyle = 'rgba(0,0,0,0.15)'; c.lineWidth = 1.5 * s; c.stroke();
 
-  // Small trajectory arc hint (top-right quadrant, subtle)
-  c.strokeStyle = 'rgba(74,222,128,0.35)'; c.lineWidth = 2;
-  c.beginPath();
-  c.moveTo(cx - 20, cy - 55);
-  c.quadraticCurveTo(cx + 40, cy - 62, cx + 60, cy - 30);
-  c.stroke();
+    // Extractor notch
+    c.fillStyle = '#1a1a1a';
+    const nr = 2.5 * s, nx = cx + 87 * s - cx, ny = cy + 52 * s - cy;
+    c.beginPath();
+    c.roundRect(cx + (87-60) * s - 10*s/2, cy + (52-60) * s, 10 * s, 16 * s, 2.5 * s);
+    c.fill();
 
-  const dataUrl = cv.toDataURL('image/png');
+    // Extractor groove arc
+    c.beginPath();
+    c.moveTo(cx + (87-60)*s, cy + (55.5-60)*s);
+    c.lineTo(cx + (81-60)*s, cy + (55.5-60)*s);
+    c.bezierCurveTo(cx + (75.5-60)*s, cy + (55.5-60)*s, cx + (75.5-60)*s, cy + (64.5-60)*s, cx + (81-60)*s, cy + (64.5-60)*s);
+    c.lineTo(cx + (87-60)*s, cy + (64.5-60)*s);
+    c.strokeStyle = '#333333'; c.lineWidth = 1.5 * s; c.stroke();
 
+    // Primer recess
+    c.beginPath(); c.arc(cx, cy, 19 * s, 0, Math.PI * 2);
+    c.fillStyle = '#141414'; c.fill();
+    c.strokeStyle = '#333333'; c.lineWidth = s; c.stroke();
+
+    // Copper primer
+    const copper = c.createRadialGradient(cx - 2.4*s, cy - 2.4*s, 0, cx, cy, 9*s);
+    copper.addColorStop(0, '#f0b84a'); copper.addColorStop(1, '#8a4e10');
+    c.beginPath(); c.arc(cx, cy, 9 * s, 0, Math.PI * 2);
+    c.fillStyle = copper; c.fill();
+
+    // Highlight dot
+    c.beginPath(); c.arc(cx - 3*s, cy - 3*s, 2.5*s, 0, Math.PI * 2);
+    c.fillStyle = 'rgba(255,230,160,0.4)'; c.fill();
+
+    c.restore();
+    return cv;
+  }
+
+  const cv192 = drawBoltFace(192);
+  const cv512 = drawBoltFace(512);
+
+  // Apple-touch-icon (iOS home screen)
   const iconLink = document.createElement('link');
   iconLink.rel  = 'apple-touch-icon';
-  iconLink.href = dataUrl;
+  iconLink.href = cv192.toDataURL('image/png');
   document.head.appendChild(iconLink);
 
-  const manifest = JSON.stringify({
-    name: 'Chambered',
-    short_name: 'Chambered',
-    display: 'standalone',
-    background_color: '#0d0d0d',
-    theme_color: '#0d0d0d',
-    icons: [{ src: dataUrl, sizes: '180x180', type: 'image/png' }]
-  });
-  const mLink = document.createElement('link');
-  mLink.rel  = 'manifest';
-  mLink.href = 'data:application/manifest+json,' + encodeURIComponent(manifest);
-  document.head.appendChild(mLink);
+  // Replace the static manifest href with a blob URL containing real icon blob URLs
+  cv192.toBlob(blob192 => {
+    const url192 = URL.createObjectURL(blob192);
+    cv512.toBlob(blob512 => {
+      const url512 = URL.createObjectURL(blob512);
+      const manifest = JSON.stringify({
+        name: 'Chambered',
+        short_name: 'Chambered',
+        start_url: '/',
+        display: 'standalone',
+        background_color: '#1a1a1a',
+        theme_color: '#1a1a1a',
+        icons: [
+          { src: url192, sizes: '192x192', type: 'image/png' },
+          { src: url512, sizes: '512x512', type: 'image/png' }
+        ]
+      });
+      const manifestBlob = new Blob([manifest], { type: 'application/manifest+json' });
+      const mLink = document.querySelector('link[rel="manifest"]') || document.createElement('link');
+      mLink.rel  = 'manifest';
+      mLink.href = URL.createObjectURL(manifestBlob);
+      if (!mLink.parentNode) document.head.appendChild(mLink);
+    }, 'image/png');
+  }, 'image/png');
 })();
 
 // ── Init ──────────────────────────────────────────────────────────────────
@@ -3841,8 +3960,7 @@ loginGoogleBtn.addEventListener('click', () => {
 });
 loginGoogleAlt.addEventListener('click', e => {
   e.preventDefault();
-  const authUrl = encodeURIComponent('/.netlify/identity/authorize?provider=google');
-  window.location.href = 'https://accounts.google.com/AccountChooser?continue=' + authUrl;
+  window.location.href = '/.netlify/identity/authorize?provider=google&prompt=select_account';
 });
 loginEmailBtn.addEventListener('click', () => { showEmailForm(); });
 loginEmailBackBtn.addEventListener('click', () => { hideEmailForm(); });
@@ -4108,7 +4226,7 @@ function applyChartDefaults() {
 applyChartDefaults();
 
 const CHART_COLORS = [
-  '#4ade80','#60a5fa','#f59e0b','#ef4444',
+  '#c9a96e','#60a5fa','#f59e0b','#ef4444',
   '#a78bfa','#f97316','#ec4899','#14b8a6',
   '#facc15','#38bdf8',
 ];
@@ -4480,7 +4598,7 @@ function renderGunChart(monthly) {
     type: 'bar',
     data: {
       labels,
-      datasets: [{ data, backgroundColor: '#4ade80', borderRadius: 4, borderSkipped: false }],
+      datasets: [{ data, backgroundColor: '#c9a96e', borderRadius: 4, borderSkipped: false }],
     },
     options: {
       responsive: true, maintainAspectRatio: false,
@@ -5685,6 +5803,67 @@ function fmtDate(dateStr) {
 }
 </script>
 
+<!-- PWA Install Banner -->
+<div id="pwa-banner">
+  <span id="pwa-banner-text"></span>
+  <button id="pwa-install-btn" style="display:none">Install</button>
+  <button id="pwa-dismiss-btn">✕</button>
+</div>
+
+<script>
+(function () {
+  const DISMISS_KEY = 'pwa_banner_dismissed';
+  const SEVEN_DAYS  = 7 * 24 * 60 * 60 * 1000;
+
+  // Already installed — skip
+  if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) return;
+
+  // Dismissed recently — skip
+  const ts = localStorage.getItem(DISMISS_KEY);
+  if (ts && Date.now() - parseInt(ts, 10) < SEVEN_DAYS) return;
+
+  const banner     = document.getElementById('pwa-banner');
+  const textEl     = document.getElementById('pwa-banner-text');
+  const installBtn = document.getElementById('pwa-install-btn');
+  const dismissBtn = document.getElementById('pwa-dismiss-btn');
+
+  const shareIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (isIOS) {
+    textEl.innerHTML = 'Tap ' + shareIcon + ' then <strong>Add to Home Screen</strong>';
+    banner.style.display = 'flex';
+  }
+
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    textEl.textContent = 'Add Chambered to your home screen for the best experience';
+    installBtn.style.display = 'inline-block';
+    banner.style.display = 'flex';
+  });
+
+  installBtn.addEventListener('click', async function () {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const result = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    if (result.outcome === 'accepted') banner.style.display = 'none';
+  });
+
+  dismissBtn.addEventListener('click', function () {
+    localStorage.setItem(DISMISS_KEY, Date.now().toString());
+    banner.style.display = 'none';
+  });
+
+  window.addEventListener('appinstalled', function () {
+    banner.style.display = 'none';
+  });
+})();
+</script>
 
 </body>
 </html>
