@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Shooting Tool">
+<meta name="apple-mobile-web-app-title" content="Chambered">
 <meta name="theme-color" content="#080808">
-<title>Shooting Tool</title>
+<title>Chambered</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
 :root {
@@ -28,7 +28,7 @@
   /* Text */
   --text-primary:   #f0f0f0;
   --text-secondary: #909090;
-  --text-muted:     #585858;
+  --text-muted:     #888888;
 
   /* Accent */
   --accent:      #4ade80;
@@ -64,17 +64,34 @@ body {
 
 /* ── Header ── */
 #header {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding-top: max(env(safe-area-inset-top), 14px);
   padding-bottom: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: var(--text-muted);
-  text-transform: uppercase;
   flex-shrink: 0;
   position: relative;
   border-bottom: 1px solid var(--border-faint);
+}
+#header-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+#header-wordmark {
+  font-family: 'Bebas Neue', 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+#header-bolt {
+  flex-shrink: 0;
+  opacity: 0.9;
 }
 
 /* ── Nav tabs (replaced by bottom nav — kept for graceful removal) ── */
@@ -208,10 +225,10 @@ body {
 
 #status-line {
   margin-top: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 2px;
-  color: #444;
+  color: var(--text-muted);
   text-transform: uppercase;
   min-height: 16px;
   text-align: center;
@@ -299,7 +316,7 @@ body {
 /* ── Hint ── */
 #tap-hint {
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.5px;
   color: var(--text-muted);
   padding: 5px 0 2px;
@@ -656,12 +673,30 @@ input, textarea, select {
 #login-logo {
   text-align: center; margin-bottom: 36px;
 }
-#login-logo-title {
-  font-size: 14px; font-weight: 700; letter-spacing: 1.5px;
-  color: var(--text-secondary); text-transform: uppercase; margin-bottom: 14px;
+#login-bolt-icon {
+  margin: 0 auto 16px;
+  width: 120px; height: 120px;
+  display: flex; align-items: center; justify-content: center;
 }
-#login-icon {
-  font-size: 40px; line-height: 1;
+#login-bolt-icon svg { width: 100%; height: 100%; }
+#login-logo-title {
+  font-family: 'Bebas Neue', 'Inter', sans-serif;
+  font-size: 48px;
+  font-weight: 400;
+  letter-spacing: 5px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+#login-tagline {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+  max-width: 260px;
+  margin: 0 auto 28px;
 }
 #login-google-btn {
   width: 100%; max-width: 280px; height: 54px;
@@ -808,8 +843,8 @@ input, textarea, select {
 .gun-item-icon {
   width: 48px; height: 48px;
   border-radius: 11px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
+  background: #F5F5F5;
+  border: 1px solid #E0E0E0;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   overflow: hidden;
@@ -817,7 +852,7 @@ input, textarea, select {
 .gun-item-icon img {
   max-width: 30px; max-height: 30px;
   object-fit: contain;
-  filter: brightness(0.85) contrast(1.1);
+  filter: none;
 }
 .gun-item-icon-emoji { font-size: 22px; }
 
@@ -829,7 +864,7 @@ input, textarea, select {
   margin-bottom: 2px;
 }
 .gun-item-meta {
-  font-size: 12px; color: var(--text-secondary);
+  font-size: 13px; color: var(--text-secondary);
   margin-bottom: 2px;
 }
 .gun-item-stats {
@@ -894,14 +929,14 @@ input, textarea, select {
 /* Manufacturer logo in gun detail hero */
 .gun-detail-logo-wrap {
   width: 72px; height: 72px; border-radius: 14px;
-  background: var(--bg-elevated); border: 1px solid var(--border-default);
+  background: #F5F5F5; border: 1px solid #E0E0E0;
   display: flex; align-items: center;
   justify-content: center; padding: 10px; box-sizing: border-box;
   flex-shrink: 0; overflow: hidden;
 }
 .gun-detail-logo {
   max-width: 100%; max-height: 100%; object-fit: contain;
-  filter: brightness(0.85) contrast(1.1);
+  filter: none;
 }
 .gun-detail-logo-fallback {
   font-size: 30px;
@@ -956,7 +991,7 @@ input, textarea, select {
   font-size: 16px; margin-bottom: 5px; display: block; line-height: 1;
 }
 .stat-card-label {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.3px;
   color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px;
 }
 .stat-card-value {
@@ -966,7 +1001,7 @@ input, textarea, select {
 .stat-card-value.green { color: var(--accent); }
 .stat-card-value.warn  { color: var(--amber); }
 .form-hint {
-  font-size: 11px; color: var(--text-muted); letter-spacing: 0px;
+  font-size: 12px; color: var(--text-muted); letter-spacing: 0px;
   margin-top: 5px; line-height: 1.5;
 }
 .clean-btn {
@@ -1045,7 +1080,7 @@ input, textarea, select {
   height: 200px; position: relative; padding: 0 14px; margin-bottom: 14px;
 }
 .section-label-small {
-  font-size: 12px; font-weight: 600; letter-spacing: 0.3px;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.3px;
   color: var(--text-muted); text-transform: uppercase;
   padding: 0 14px; margin-bottom: 8px;
 }
@@ -1355,7 +1390,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
   background: rgba(74,222,128,0.28);
 }
 .dash-stat-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.3px;
   color: var(--text-secondary);
@@ -1517,8 +1552,8 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: 0px;
   cursor: pointer;
   padding: 8px 4px 4px;
@@ -1613,8 +1648,43 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
 <!-- ── Login Screen ── -->
 <div id="login-screen">
   <div id="login-logo">
-    <div id="login-logo-title">Shooting Tool</div>
-    <div id="login-icon">🎯</div>
+    <div id="login-bolt-icon">
+      <svg width="1024" height="1024" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="iconClip-login"><rect width="120" height="120" rx="26.4"/></clipPath>
+          <linearGradient id="bgC-login" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#2a2a2a"/>
+            <stop offset="100%" stop-color="#111111"/>
+          </linearGradient>
+          <radialGradient id="copperC-login" cx="40%" cy="36%" r="62%">
+            <stop offset="0%" stop-color="#f0b84a"/>
+            <stop offset="100%" stop-color="#8a4e10"/>
+          </radialGradient>
+        </defs>
+        <g clip-path="url(#iconClip-login)">
+          <rect width="120" height="120" fill="url(#bgC-login)"/>
+          <circle cx="60" cy="60" r="50" fill="#222222" stroke="#3a3a3a" stroke-width="1"/>
+          <g fill="#d8d8d8">
+            <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(0 60 60)"/>
+            <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(51.4 60 60)"/>
+            <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(102.8 60 60)"/>
+            <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(154.2 60 60)"/>
+            <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(205.7 60 60)"/>
+            <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(257.1 60 60)"/>
+            <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(308.5 60 60)"/>
+          </g>
+          <circle cx="60" cy="60" r="36" fill="#e0ddd8"/>
+          <circle cx="60" cy="60" r="30" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="1.5"/>
+          <rect x="87" y="52" width="10" height="16" rx="2.5" fill="#1a1a1a"/>
+          <path d="M87 55.5 L81 55.5 Q75.5 55.5 75.5 60 Q75.5 64.5 81 64.5 L87 64.5" fill="none" stroke="#333333" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="60" cy="60" r="19" fill="#141414" stroke="#333333" stroke-width="1"/>
+          <circle cx="60" cy="60" r="9" fill="url(#copperC-login)"/>
+          <circle cx="57" cy="57" r="2.5" fill="rgba(255,230,160,0.4)"/>
+        </g>
+      </svg>
+    </div>
+    <div id="login-logo-title">CHAMBERED</div>
+    <div id="login-tagline">Track your collection. Log your range sessions. Plan your next buy.</div>
   </div>
   <button id="login-google-btn">Sign in with Google</button>
   <a id="login-google-alt" href="#">Use a different account</a>
@@ -1649,7 +1719,42 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
 
 <!-- ── Header ── -->
 <div id="header" style="position:relative;">
-  <span>Shooting Tool</span>
+  <div id="header-brand">
+    <svg id="header-bolt" width="20" height="20" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="iconClip-hdr"><rect width="120" height="120" rx="26.4"/></clipPath>
+        <linearGradient id="bgC-hdr" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#2a2a2a"/>
+          <stop offset="100%" stop-color="#111111"/>
+        </linearGradient>
+        <radialGradient id="copperC-hdr" cx="40%" cy="36%" r="62%">
+          <stop offset="0%" stop-color="#f0b84a"/>
+          <stop offset="100%" stop-color="#8a4e10"/>
+        </radialGradient>
+      </defs>
+      <g clip-path="url(#iconClip-hdr)">
+        <rect width="120" height="120" fill="url(#bgC-hdr)"/>
+        <circle cx="60" cy="60" r="50" fill="#222222" stroke="#3a3a3a" stroke-width="1"/>
+        <g fill="#d8d8d8">
+          <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(0 60 60)"/>
+          <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(51.4 60 60)"/>
+          <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(102.8 60 60)"/>
+          <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(154.2 60 60)"/>
+          <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(205.7 60 60)"/>
+          <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(257.1 60 60)"/>
+          <rect x="52" y="7" width="16" height="26" rx="4" transform="rotate(308.5 60 60)"/>
+        </g>
+        <circle cx="60" cy="60" r="36" fill="#e0ddd8"/>
+        <circle cx="60" cy="60" r="30" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="1.5"/>
+        <rect x="87" y="52" width="10" height="16" rx="2.5" fill="#1a1a1a"/>
+        <path d="M87 55.5 L81 55.5 Q75.5 55.5 75.5 60 Q75.5 64.5 81 64.5 L87 64.5" fill="none" stroke="#333333" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="60" cy="60" r="19" fill="#141414" stroke="#333333" stroke-width="1"/>
+        <circle cx="60" cy="60" r="9" fill="url(#copperC-hdr)"/>
+        <circle cx="57" cy="57" r="2.5" fill="rgba(255,230,160,0.4)"/>
+      </g>
+    </svg>
+    <span id="header-wordmark">CHAMBERED</span>
+  </div>
   <button id="btn-signout">Sign Out</button>
 </div>
 
@@ -2011,11 +2116,11 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
       <input type="text" id="sup-calibers-input" class="form-input" placeholder="e.g. 5.56 NATO, .300 BLK, 7.62x39">
     </div>
     <div class="form-field">
-      <label class="form-label">Brand <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <label class="form-label">Brand <span style="color:var(--text-muted);font-weight:normal;font-size:11px">(optional)</span></label>
       <input type="text" id="sup-brand-input" class="form-input" placeholder="e.g. Silencerco">
     </div>
     <div class="form-field">
-      <label class="form-label">Base Shot Count <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <label class="form-label">Base Shot Count <span style="color:var(--text-muted);font-weight:normal;font-size:11px">(optional)</span></label>
       <input type="number" id="sup-base-count-input" class="form-input" min="0" placeholder="0">
       <div class="form-hint">Shots fired before using this app — included in lifetime total only</div>
     </div>
@@ -2039,7 +2144,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
       <input type="text" id="edit-sup-calibers-input" class="form-input" placeholder="e.g. 5.56 NATO, .300 BLK">
     </div>
     <div class="form-field">
-      <label class="form-label">Brand <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <label class="form-label">Brand <span style="color:var(--text-muted);font-weight:normal;font-size:11px">(optional)</span></label>
       <input type="text" id="edit-sup-brand-input" class="form-input" placeholder="e.g. Silencerco">
     </div>
     <div class="form-field">
@@ -2083,11 +2188,11 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
       <input type="text" id="gun-caliber-custom" class="form-input" placeholder="Enter caliber (e.g. 5.56 NATO)" style="display:none;margin-top:8px">
     </div>
     <div class="form-field">
-      <label class="form-label">Brand <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <label class="form-label">Brand <span style="color:var(--text-muted);font-weight:normal;font-size:11px">(optional)</span></label>
       <select id="gun-brand-input" class="form-input"></select>
     </div>
     <div class="form-field">
-      <label class="form-label">Base Round Count <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <label class="form-label">Base Round Count <span style="color:var(--text-muted);font-weight:normal;font-size:11px">(optional)</span></label>
       <input type="number" id="gun-base-count-input" class="form-input" min="0" placeholder="0">
       <div class="form-hint">Rounds fired before using this app — included in lifetime total only, not in session or monthly reports</div>
     </div>
@@ -2135,7 +2240,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
       <input type="text" id="edit-gun-caliber-custom" class="form-input" placeholder="Enter caliber (e.g. 5.56 NATO)" style="display:none;margin-top:8px">
     </div>
     <div class="form-field">
-      <label class="form-label">Brand <span style="color:#555;font-weight:normal;font-size:10px">(optional)</span></label>
+      <label class="form-label">Brand <span style="color:var(--text-muted);font-weight:normal;font-size:11px">(optional)</span></label>
       <select id="edit-gun-brand-input" class="form-input"></select>
     </div>
     <div class="form-field">
@@ -3646,8 +3751,8 @@ document.getElementById('bd-sh-plus').addEventListener('click', () => {
   document.head.appendChild(iconLink);
 
   const manifest = JSON.stringify({
-    name: 'Shooting Tool',
-    short_name: 'Shooting Tool',
+    name: 'Chambered',
+    short_name: 'Chambered',
     display: 'standalone',
     background_color: '#0d0d0d',
     theme_color: '#0d0d0d',
@@ -3811,7 +3916,165 @@ btnSignOut.addEventListener('click', () => {
 // ═══════════════════════════════════════════════════════════════════════════
 // API HELPER
 // ═══════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+// DEMO DATA — never touches Neon DB
+// ═══════════════════════════════════════════════════════════════════════════
+const DEMO_GUNS = [
+  { id:'demo-gun-001', name:'Glock 19',               caliber:'9mm',         brand:'Glock',          base_round_count:0, photo_url:null, created_at:'2024-01-15' },
+  { id:'demo-gun-002', name:'Glock 17',               caliber:'9mm',         brand:'Glock',          base_round_count:0, photo_url:null, created_at:'2024-03-01' },
+  { id:'demo-gun-003', name:'SIG P365',               caliber:'9mm',         brand:'Sig Sauer',      base_round_count:0, photo_url:null, created_at:'2024-06-10' },
+  { id:'demo-gun-004', name:'S&W M&P Shield',         caliber:'9mm',         brand:'Smith & Wesson', base_round_count:0, photo_url:null, created_at:'2024-02-20' },
+  { id:'demo-gun-005', name:'Ruger 10/22',            caliber:'.22 LR',      brand:'Ruger',          base_round_count:0, photo_url:null, created_at:'2023-11-05' },
+  { id:'demo-gun-006', name:'Daniel Defense DDM4 V7', caliber:'5.56 NATO',   brand:'Daniel Defense', base_round_count:0, photo_url:null, created_at:'2024-04-18' },
+  { id:'demo-gun-007', name:'S&W Model 686',          caliber:'.357 Magnum', brand:'Smith & Wesson', base_round_count:0, photo_url:null, created_at:'2023-09-12' },
+  { id:'demo-gun-008', name:'CZ 75 SP-01',            caliber:'9mm',         brand:'CZ',             base_round_count:0, photo_url:null, created_at:'2024-07-30' },
+  { id:'demo-gun-009', name:'Remington 870',          caliber:'12 Gauge',    brand:'Remington',      base_round_count:0, photo_url:null, created_at:'2023-05-22' },
+  { id:'demo-gun-010', name:'Tikka T3x Lite',         caliber:'.308 Win',    brand:'Tikka',          base_round_count:0, photo_url:null, created_at:'2024-08-14' },
+];
+const DEMO_SUPPRESSORS = [
+  { id:'demo-sup-001', name:'Otter Creek Labs Striker 22',    calibers:['.22 LR'],                               brand:'Otter Creek Labs',        base_shot_count:0, created_at:'2024-01-15' },
+  { id:'demo-sup-002', name:'Huxwrx Flow 762',                calibers:['7.62 NATO','.308 Win','6.5 Creedmoor'], brand:'Huxwrx',                  base_shot_count:0, created_at:'2024-04-18' },
+  { id:'demo-sup-003', name:'Stealth Additive Works Ghost M', calibers:['9mm','.45 ACP'],                        brand:'Stealth Additive Works',  base_shot_count:0, created_at:'2024-06-01' },
+];
+const DEMO_SESSIONS = [
+  // November 2025 — 400 rounds
+  { id:'demo-ses-001', gun_id:'demo-gun-001', gun_name:'Glock 19',               gun_caliber:'9mm',         session_date:'2025-11-02', rounds_fired:100, range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:'demo-sup-003', created_at:'2025-11-02' },
+  { id:'demo-ses-002', gun_id:'demo-gun-003', gun_name:'SIG P365',               gun_caliber:'9mm',         session_date:'2025-11-02', rounds_fired:50,  range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:null,           created_at:'2025-11-02' },
+  { id:'demo-ses-003', gun_id:'demo-gun-002', gun_name:'Glock 17',               gun_caliber:'9mm',         session_date:'2025-11-09', rounds_fired:100, range_location:'Tactical Arms Training Center',     notes:'Zeroing new sights', suppressor_id:null,           created_at:'2025-11-09' },
+  { id:'demo-ses-004', gun_id:'demo-gun-005', gun_name:'Ruger 10/22',            gun_caliber:'.22 LR',      session_date:'2025-11-09', rounds_fired:150, range_location:'Tactical Arms Training Center',     notes:'',                   suppressor_id:'demo-sup-001', created_at:'2025-11-09' },
+  // December 2025 — 350 rounds
+  { id:'demo-ses-005', gun_id:'demo-gun-001', gun_name:'Glock 19',               gun_caliber:'9mm',         session_date:'2025-12-06', rounds_fired:100, range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:null,           created_at:'2025-12-06' },
+  { id:'demo-ses-006', gun_id:'demo-gun-006', gun_name:'Daniel Defense DDM4 V7', gun_caliber:'5.56 NATO',   session_date:'2025-12-06', rounds_fired:60,  range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:null,           created_at:'2025-12-06' },
+  { id:'demo-ses-007', gun_id:'demo-gun-004', gun_name:'S&W M&P Shield',         gun_caliber:'9mm',         session_date:'2025-12-14', rounds_fired:100, range_location:'Desert Precision Shooting Complex', notes:'',                   suppressor_id:null,           created_at:'2025-12-14' },
+  { id:'demo-ses-008', gun_id:'demo-gun-007', gun_name:'S&W Model 686',          gun_caliber:'.357 Magnum', session_date:'2025-12-21', rounds_fired:50,  range_location:'Iron Ridge Range',                  notes:'Slow fire practice', suppressor_id:null,           created_at:'2025-12-21' },
+  { id:'demo-ses-009', gun_id:'demo-gun-009', gun_name:'Remington 870',          gun_caliber:'12 Gauge',    session_date:'2025-12-21', rounds_fired:40,  range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:null,           created_at:'2025-12-21' },
+  // January 2026 — 710 rounds
+  { id:'demo-ses-010', gun_id:'demo-gun-001', gun_name:'Glock 19',               gun_caliber:'9mm',         session_date:'2026-01-04', rounds_fired:150, range_location:'Tactical Arms Training Center',     notes:'New year warmup',    suppressor_id:'demo-sup-003', created_at:'2026-01-04' },
+  { id:'demo-ses-011', gun_id:'demo-gun-008', gun_name:'CZ 75 SP-01',            gun_caliber:'9mm',         session_date:'2026-01-04', rounds_fired:100, range_location:'Tactical Arms Training Center',     notes:'',                   suppressor_id:null,           created_at:'2026-01-04' },
+  { id:'demo-ses-012', gun_id:'demo-gun-002', gun_name:'Glock 17',               gun_caliber:'9mm',         session_date:'2026-01-11', rounds_fired:100, range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:null,           created_at:'2026-01-11' },
+  { id:'demo-ses-013', gun_id:'demo-gun-006', gun_name:'Daniel Defense DDM4 V7', gun_caliber:'5.56 NATO',   session_date:'2026-01-11', rounds_fired:120, range_location:'Iron Ridge Range',                  notes:'Group work at 100yd',suppressor_id:null,           created_at:'2026-01-11' },
+  { id:'demo-ses-014', gun_id:'demo-gun-010', gun_name:'Tikka T3x Lite',         gun_caliber:'.308 Win',    session_date:'2026-01-18', rounds_fired:40,  range_location:'Desert Precision Shooting Complex', notes:'Long range session', suppressor_id:'demo-sup-002', created_at:'2026-01-18' },
+  { id:'demo-ses-015', gun_id:'demo-gun-005', gun_name:'Ruger 10/22',            gun_caliber:'.22 LR',      session_date:'2026-01-25', rounds_fired:200, range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:'demo-sup-001', created_at:'2026-01-25' },
+  // February 2026 — 490 rounds
+  { id:'demo-ses-016', gun_id:'demo-gun-001', gun_name:'Glock 19',               gun_caliber:'9mm',         session_date:'2026-02-01', rounds_fired:150, range_location:'Tactical Arms Training Center',     notes:'',                   suppressor_id:null,           created_at:'2026-02-01' },
+  { id:'demo-ses-017', gun_id:'demo-gun-003', gun_name:'SIG P365',               gun_caliber:'9mm',         session_date:'2026-02-08', rounds_fired:100, range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:null,           created_at:'2026-02-08' },
+  { id:'demo-ses-018', gun_id:'demo-gun-004', gun_name:'S&W M&P Shield',         gun_caliber:'9mm',         session_date:'2026-02-08', rounds_fired:100, range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:null,           created_at:'2026-02-08' },
+  { id:'demo-ses-019', gun_id:'demo-gun-006', gun_name:'Daniel Defense DDM4 V7', gun_caliber:'5.56 NATO',   session_date:'2026-02-15', rounds_fired:80,  range_location:'Desert Precision Shooting Complex', notes:'',                   suppressor_id:null,           created_at:'2026-02-15' },
+  { id:'demo-ses-020', gun_id:'demo-gun-007', gun_name:'S&W Model 686',          gun_caliber:'.357 Magnum', session_date:'2026-02-22', rounds_fired:60,  range_location:'Tactical Arms Training Center',     notes:'',                   suppressor_id:null,           created_at:'2026-02-22' },
+  // March 2026 — 700 rounds
+  { id:'demo-ses-021', gun_id:'demo-gun-001', gun_name:'Glock 19',               gun_caliber:'9mm',         session_date:'2026-03-01', rounds_fired:150, range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:'demo-sup-003', created_at:'2026-03-01' },
+  { id:'demo-ses-022', gun_id:'demo-gun-002', gun_name:'Glock 17',               gun_caliber:'9mm',         session_date:'2026-03-01', rounds_fired:100, range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:null,           created_at:'2026-03-01' },
+  { id:'demo-ses-023', gun_id:'demo-gun-008', gun_name:'CZ 75 SP-01',            gun_caliber:'9mm',         session_date:'2026-03-08', rounds_fired:120, range_location:'Tactical Arms Training Center',     notes:'DA/SA drills',       suppressor_id:null,           created_at:'2026-03-08' },
+  { id:'demo-ses-024', gun_id:'demo-gun-006', gun_name:'Daniel Defense DDM4 V7', gun_caliber:'5.56 NATO',   session_date:'2026-03-15', rounds_fired:120, range_location:'Desert Precision Shooting Complex', notes:'',                   suppressor_id:null,           created_at:'2026-03-15' },
+  { id:'demo-ses-025', gun_id:'demo-gun-010', gun_name:'Tikka T3x Lite',         gun_caliber:'.308 Win',    session_date:'2026-03-15', rounds_fired:30,  range_location:'Desert Precision Shooting Complex', notes:'PRS prep',           suppressor_id:'demo-sup-002', created_at:'2026-03-15' },
+  { id:'demo-ses-026', gun_id:'demo-gun-005', gun_name:'Ruger 10/22',            gun_caliber:'.22 LR',      session_date:'2026-03-22', rounds_fired:180, range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:'demo-sup-001', created_at:'2026-03-22' },
+  // April 2026 — 450 rounds
+  { id:'demo-ses-027', gun_id:'demo-gun-001', gun_name:'Glock 19',               gun_caliber:'9mm',         session_date:'2026-04-05', rounds_fired:100, range_location:'Tactical Arms Training Center',     notes:'',                   suppressor_id:null,           created_at:'2026-04-05' },
+  { id:'demo-ses-028', gun_id:'demo-gun-003', gun_name:'SIG P365',               gun_caliber:'9mm',         session_date:'2026-04-05', rounds_fired:80,  range_location:'Tactical Arms Training Center',     notes:'',                   suppressor_id:null,           created_at:'2026-04-05' },
+  { id:'demo-ses-029', gun_id:'demo-gun-004', gun_name:'S&W M&P Shield',         gun_caliber:'9mm',         session_date:'2026-04-13', rounds_fired:100, range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:null,           created_at:'2026-04-13' },
+  { id:'demo-ses-030', gun_id:'demo-gun-006', gun_name:'Daniel Defense DDM4 V7', gun_caliber:'5.56 NATO',   session_date:'2026-04-19', rounds_fired:80,  range_location:'Iron Ridge Range',                  notes:'',                   suppressor_id:null,           created_at:'2026-04-19' },
+  { id:'demo-ses-031', gun_id:'demo-gun-009', gun_name:'Remington 870',          gun_caliber:'12 Gauge',    session_date:'2026-04-26', rounds_fired:40,  range_location:'Desert Precision Shooting Complex', notes:'',                   suppressor_id:null,           created_at:'2026-04-26' },
+  { id:'demo-ses-032', gun_id:'demo-gun-007', gun_name:'S&W Model 686',          gun_caliber:'.357 Magnum', session_date:'2026-04-26', rounds_fired:50,  range_location:'Desert Precision Shooting Complex', notes:'Steel plate match',  suppressor_id:null,           created_at:'2026-04-26' },
+];
+
+function resolveDemoPath(path) {
+  // guns list
+  if (path === 'guns') {
+    return DEMO_GUNS.map(g => {
+      const sessionRounds = DEMO_SESSIONS.filter(s => s.gun_id === g.id).reduce((sum, s) => sum + s.rounds_fired, 0);
+      return { ...g, total_rounds: sessionRounds, rounds_since_cleaning: sessionRounds };
+    });
+  }
+  // gun detail
+  const gunMatch = path.match(/^guns\/([^?]+)/);
+  if (gunMatch) {
+    const gun = DEMO_GUNS.find(g => g.id === gunMatch[1]);
+    if (!gun) throw new Error('Not found');
+    const sessions = DEMO_SESSIONS.filter(s => s.gun_id === gun.id);
+    const totalRounds = sessions.reduce((sum, s) => sum + s.rounds_fired, 0);
+    const monthMap = {};
+    sessions.forEach(s => {
+      const m = s.session_date.slice(0, 7);
+      if (!monthMap[m]) monthMap[m] = { month: m, rounds: 0, sessions: 0, ranges: new Set() };
+      monthMap[m].rounds += s.rounds_fired;
+      monthMap[m].sessions++;
+      if (s.range_location) monthMap[m].ranges.add(s.range_location);
+    });
+    const monthly = Object.values(monthMap)
+      .sort((a, b) => b.month.localeCompare(a.month))
+      .map(m => ({ month: m.month, rounds: m.rounds, sessions: m.sessions, ranges: [...m.ranges].join(', ') }));
+    return {
+      ...gun, total_rounds: totalRounds, rounds_since_cleaning: totalRounds,
+      stats: { total_rounds: totalRounds, session_rounds: totalRounds, total_sessions: sessions.length, rounds_since_cleaning: totalRounds, last_cleaned: null },
+      monthly,
+      sessions: sessions.map(s => ({ id: s.id, session_date: s.session_date, rounds_fired: s.rounds_fired, range_location: s.range_location, notes: s.notes, suppressor_id: s.suppressor_id })),
+      cleanings: [],
+    };
+  }
+  // suppressors list
+  if (path === 'suppressors') {
+    return DEMO_SUPPRESSORS.map(sup => {
+      const total_shots = DEMO_SESSIONS.filter(s => s.suppressor_id === sup.id).reduce((sum, s) => sum + s.rounds_fired, 0);
+      return { ...sup, total_shots, shots_since_cleaning: total_shots };
+    });
+  }
+  // suppressor detail
+  const suppMatch = path.match(/^suppressors\/([^?]+)/);
+  if (suppMatch) {
+    const sup = DEMO_SUPPRESSORS.find(s => s.id === suppMatch[1]);
+    if (!sup) throw new Error('Not found');
+    const sessions = DEMO_SESSIONS.filter(s => s.suppressor_id === sup.id);
+    const totalShots = sessions.reduce((sum, s) => sum + s.rounds_fired, 0);
+    return {
+      ...sup, total_shots: totalShots, shots_since_cleaning: totalShots,
+      stats: { total_shots: totalShots, session_shots: totalShots, total_sessions: sessions.length, shots_since_cleaning: totalShots, last_cleaned: null },
+      sessions: sessions.map(s => ({ id: s.id, session_date: s.session_date, rounds_fired: s.rounds_fired, range_location: s.range_location, gun_name: s.gun_name, gun_caliber: s.gun_caliber })),
+      cleanings: [],
+    };
+  }
+  // sessions list
+  if (path === 'sessions' || path.startsWith('sessions?')) {
+    return DEMO_SESSIONS.slice().sort((a, b) => b.session_date.localeCompare(a.session_date));
+  }
+  // reports
+  if (path === 'reports' || path.startsWith('reports?')) {
+    const totalRounds = DEMO_SESSIONS.reduce((sum, s) => sum + s.rounds_fired, 0);
+    const byGunMap = {};
+    DEMO_SESSIONS.forEach(s => {
+      const key = `${s.gun_id}|${s.session_date.slice(0,7)}`;
+      if (!byGunMap[key]) byGunMap[key] = { gun_id: s.gun_id, gun_name: s.gun_name, caliber: s.gun_caliber, month: s.session_date.slice(0,7), rounds_fired: 0, session_count: 0 };
+      byGunMap[key].rounds_fired += s.rounds_fired;
+      byGunMap[key].session_count++;
+    });
+    const rangeMap = {};
+    DEMO_SESSIONS.forEach(s => {
+      if (!s.range_location) return;
+      if (!rangeMap[s.range_location]) rangeMap[s.range_location] = { range_location: s.range_location, total_visits: 0, total_rounds: 0, guns_used: new Set(), last_visited: s.session_date };
+      rangeMap[s.range_location].total_visits++;
+      rangeMap[s.range_location].total_rounds += s.rounds_fired;
+      rangeMap[s.range_location].guns_used.add(s.gun_id);
+      if (s.session_date > rangeMap[s.range_location].last_visited) rangeMap[s.range_location].last_visited = s.session_date;
+    });
+    return {
+      summary: { total_rounds: totalRounds, total_sessions: DEMO_SESSIONS.length, unique_guns: new Set(DEMO_SESSIONS.map(s => s.gun_id)).size, ranges_visited: Object.keys(rangeMap).length },
+      byGun: Object.values(byGunMap),
+      rangeBreakdown: Object.values(rangeMap).map(r => ({ ...r, guns_used: r.guns_used.size })),
+    };
+  }
+  // ranges
+  if (path === 'ranges' || path.startsWith('ranges?')) {
+    const seen = new Set();
+    return DEMO_SESSIONS.filter(s => s.range_location && !seen.has(s.range_location) && seen.add(s.range_location))
+      .map((s, i) => ({ id: `demo-range-00${i+1}`, name: s.range_location }));
+  }
+  return [];
+}
+
 async function apiFetch(path, options = {}) {
+  // Demo GET intercept — never touches Neon DB
+  if (demoMode && (!options.method || options.method === 'GET')) {
+    return resolveDemoPath(path);
+  }
   let token = null;
   if (demoMode) {
     token = 'demo';
@@ -3839,7 +4102,7 @@ async function apiFetch(path, options = {}) {
 // ═══════════════════════════════════════════════════════════════════════════
 function applyChartDefaults() {
   if (typeof Chart === 'undefined') return;
-  Chart.defaults.color        = '#555';
+  Chart.defaults.color        = '#888';
   Chart.defaults.borderColor  = '#1a1a1a';
 }
 applyChartDefaults();
@@ -3912,8 +4175,33 @@ const BRAND_CATALOG = [
   { name: 'Taurus',              domain: 'taurususa.com',          keys: ['taurus'] },
   { name: 'Tikka',               domain: 'tikka.fi',               keys: ['tikka'] },
   { name: 'Walther',             domain: 'waltherarms.com',        keys: ['walther'] },
-  { name: 'Wilson Combat',       domain: 'wilsoncombat.com',       keys: ['wilson combat'] },
-  { name: 'Winchester',          domain: 'winchesterguns.com',     keys: ['winchester'] },
+  { name: 'Wilson Combat',           domain: 'wilsoncombat.com',           keys: ['wilson combat'] },
+  { name: 'Winchester',              domain: 'winchesterguns.com',         keys: ['winchester'] },
+  { name: 'Anderson Manufacturing',  domain: 'andersonmfg.com',            keys: ['anderson manufacturing', 'anderson mfg'] },
+  { name: 'Armalite',                domain: 'armalite.com',               keys: ['armalite'] },
+  { name: 'Barrett Firearms',        domain: 'barrett.net',                keys: ['barrett'] },
+  { name: 'Bergara',                 domain: 'bergara.online',             keys: ['bergara'] },
+  { name: 'Canik',                   domain: 'canikusa.com',               keys: ['canik'] },
+  { name: 'Century Arms',            domain: 'centuryarms.com',            keys: ['century arms', 'ras47', 'wasr', 'draco'] },
+  { name: 'Christensen Arms',        domain: 'christensenarms.com',        keys: ['christensen arms'] },
+  { name: 'CMMG',                    domain: 'cmmginc.com',                keys: ['cmmg'] },
+  { name: 'Diamondback Firearms',    domain: 'diamondbackfirearms.com',    keys: ['diamondback'] },
+  { name: 'Grand Power',             domain: 'grandpower.eu',              keys: ['grand power'] },
+  { name: 'IWI US',                  domain: 'iwi.us',                     keys: ['iwi', 'galil', 'tavor', 'jericho', 'masada'] },
+  { name: 'Kahr Arms',               domain: 'kahr.com',                   keys: ['kahr'] },
+  { name: 'Les Baer Custom',         domain: 'lesbear.com',                keys: ['les baer'] },
+  { name: 'Magnum Research',         domain: 'magnumresearch.com',         keys: ['magnum research', 'desert eagle'] },
+  { name: 'Nighthawk Custom',        domain: 'nighthawkcustom.com',        keys: ['nighthawk'] },
+  { name: 'Palmetto State Armory',   domain: 'palmettostatearmory.com',    keys: ['palmetto state', ' psa '] },
+  { name: 'Primary Weapons Systems', domain: 'primaryweapons.com',         keys: ['primary weapons', ' pws '] },
+  { name: 'Rock Island Armory',      domain: 'rockislandarmory.com',       keys: ['rock island armory'] },
+  { name: 'Rossi',                   domain: 'rossiusa.com',               keys: ['rossi'] },
+  { name: 'Sako',                    domain: 'sako.fi',                    keys: ['sako'] },
+  { name: 'Staccato',                domain: 'staccato2011.com',           keys: ['staccato', ' sti '] },
+  { name: 'Steyr Arms',              domain: 'steyr-arms.com',             keys: ['steyr'] },
+  { name: 'TriStar Arms',            domain: 'tristararms.com',            keys: ['tristar'] },
+  { name: 'Weatherby',               domain: 'weatherby.com',              keys: ['weatherby'] },
+  { name: 'Windham Weaponry',        domain: 'windhamweaponry.com',        keys: ['windham'] },
 ];
 
 function populateBrandSelects() {
@@ -4143,7 +4431,7 @@ function renderGunDetail(gun) {
     ? new Date(s.last_cleaned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : 'Never';
   const baseHint = baseCount > 0
-    ? `<div style="font-size:10px;color:#444;margin-top:3px">incl. ${baseCount.toLocaleString()} base</div>`
+    ? `<div style="font-size:12px;color:var(--text-muted);margin-top:3px">incl. ${baseCount.toLocaleString()} base</div>`
     : '';
   document.getElementById('gun-stats').innerHTML = `
     <div class="stat-card">
@@ -4240,14 +4528,14 @@ function renderMonthlyTable(monthly) {
 function renderSessionsList(sessions) {
   const wrap = document.getElementById('gun-sessions-list');
   if (!sessions || !sessions.length) {
-    wrap.innerHTML = '<div style="color:#555;font-size:12px;padding:6px 0">No sessions logged yet.</div>';
+    wrap.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:6px 0">No sessions logged yet.</div>';
     return;
   }
   let rows = '';
   sessions.forEach(s => {
     const date  = fmtDate(s.session_date);
     const range = s.range_location ? escHtml(s.range_location) : '—';
-    const notes = s.notes ? `<div style="color:#555;font-size:11px;margin-top:2px">${escHtml(s.notes)}</div>` : '';
+    const notes = s.notes ? `<div style="color:var(--text-muted);font-size:12px;margin-top:2px">${escHtml(s.notes)}</div>` : '';
     rows += `<tr>
       <td>${date}</td>
       <td style="text-align:right">${s.rounds_fired.toLocaleString()}</td>
@@ -4265,7 +4553,7 @@ function renderSessionsList(sessions) {
 function renderCleaningsList(cleanings) {
   const wrap = document.getElementById('gun-cleanings-list');
   if (!cleanings || !cleanings.length) {
-    wrap.innerHTML = '<div style="color:#555;font-size:12px;padding:6px 0">No cleanings logged yet.</div>';
+    wrap.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:6px 0">No cleanings logged yet.</div>';
     return;
   }
   let rows = '';
@@ -4631,11 +4919,11 @@ function prefillFromLastSession(sessions) {
 
 async function loadLogSessionsList() {
   const wrap = document.getElementById('log-sessions-list');
-  wrap.innerHTML = '<div style="color:#555;font-size:12px">Loading…</div>';
+  wrap.innerHTML = '<div style="color:var(--text-muted);font-size:12px">Loading…</div>';
   try {
     const sessions = await apiFetch('sessions');
     if (!sessions.length) {
-      wrap.innerHTML = '<div style="color:#555;font-size:12px">No sessions logged yet.</div>';
+      wrap.innerHTML = '<div style="color:var(--text-muted);font-size:12px">No sessions logged yet.</div>';
       return;
     }
     let rows = '';
@@ -5135,7 +5423,7 @@ function renderSuppressorDetail(sup) {
   const calTags = (sup.calibers || []).map(c =>
     `<span class="sup-caliber-tag">${escHtml(c)}</span>`
   ).join('');
-  document.getElementById('suppressor-detail-calibers').innerHTML = calTags || '<span style="color:#555">No calibers set</span>';
+  document.getElementById('suppressor-detail-calibers').innerHTML = calTags || '<span style="color:var(--text-muted)">No calibers set</span>';
 
   const s = sup.stats || {};
   const baseCount = sup.base_shot_count || 0;
@@ -5143,7 +5431,7 @@ function renderSuppressorDetail(sup) {
     ? new Date(s.last_cleaned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : 'Never';
   const baseHint = baseCount > 0
-    ? `<div style="font-size:10px;color:#444;margin-top:3px">incl. ${baseCount.toLocaleString()} base</div>`
+    ? `<div style="font-size:12px;color:var(--text-muted);margin-top:3px">incl. ${baseCount.toLocaleString()} base</div>`
     : '';
 
   document.getElementById('suppressor-stats').innerHTML = `
@@ -5172,7 +5460,7 @@ function renderSuppressorDetail(sup) {
   // Usage history
   const sessList = document.getElementById('suppressor-sessions-list');
   if (!sup.sessions || !sup.sessions.length) {
-    sessList.innerHTML = '<div style="color:#555;font-size:12px;padding:0 14px 8px">No sessions recorded yet.</div>';
+    sessList.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:0 14px 8px">No sessions recorded yet.</div>';
   } else {
     let rows = '';
     sup.sessions.forEach(s => {
@@ -5194,14 +5482,14 @@ function renderSuppressorDetail(sup) {
   // Cleaning history
   const cleanList = document.getElementById('suppressor-cleanings-list');
   if (!sup.cleanings || !sup.cleanings.length) {
-    cleanList.innerHTML = '<div style="color:#555;font-size:12px;padding:0 14px 8px">No cleanings logged yet.</div>';
+    cleanList.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:0 14px 8px">No cleanings logged yet.</div>';
   } else {
     cleanList.innerHTML = '<div style="padding:0 14px 8px">' +
       sup.cleanings.map(c => `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1a1a1a">
           <div>
             <div style="font-size:13px;color:#ccc">${fmtDate(c.cleaned_at)}</div>
-            ${c.notes ? `<div style="font-size:11px;color:#555;margin-top:2px">${escHtml(c.notes)}</div>` : ''}
+            ${c.notes ? `<div style="font-size:12px;color:var(--text-muted);margin-top:2px">${escHtml(c.notes)}</div>` : ''}
           </div>
           <button class="row-del-btn" data-cleaning-id="${escHtml(c.id)}" onclick="deleteSuppressorCleaning(this.dataset.cleaningId)">✕</button>
         </div>`).join('') +
