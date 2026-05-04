@@ -677,6 +677,14 @@ input, textarea, select {
   color: var(--text-secondary); font-size: 13px; font-weight: 600;
   letter-spacing: 0.5px; cursor: pointer; -webkit-appearance: none;
 }
+#login-email-btn {
+  width: 100%; max-width: 280px; height: 54px;
+  background: none; border: 1.5px solid var(--accent); border-radius: 16px;
+  color: var(--accent); font-size: 14px; font-weight: 800;
+  letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; -webkit-appearance: none; margin-bottom: 12px;
+}
+#login-email-btn:active { opacity: 0.8; }
 #login-demo-btn:active { opacity: 0.7; }
 #login-error {
   margin-top: 14px; font-size: 12px; color: var(--red);
@@ -1564,6 +1572,7 @@ select.form-input { cursor: pointer; background-color: var(--bg-elevated); }
     <div id="login-icon">🎯</div>
   </div>
   <button id="login-google-btn">Sign in with Google</button>
+  <button id="login-email-btn">Sign in with Email</button>
   <button id="login-demo-btn">Try Demo</button>
   <div id="login-error"></div>
 </div>
@@ -3603,6 +3612,7 @@ let demoMode = false;
 
 const loginScreen    = document.getElementById('login-screen');
 const loginGoogleBtn = document.getElementById('login-google-btn');
+const loginEmailBtn  = document.getElementById('login-email-btn');
 const loginDemoBtn   = document.getElementById('login-demo-btn');
 const btnSignOut     = document.getElementById('btn-signout');
 
@@ -3631,7 +3641,10 @@ netlifyIdentity.on('logout', () => {
 });
 
 loginGoogleBtn.addEventListener('click', () => {
-  window.location.href = '/.netlify/identity/authorize?provider=google';
+  window.location.href = '/.netlify/identity/authorize?provider=google&prompt=select_account';
+});
+loginEmailBtn.addEventListener('click', () => {
+  netlifyIdentity.open('login');
 });
 
 loginDemoBtn.addEventListener('click', () => {
