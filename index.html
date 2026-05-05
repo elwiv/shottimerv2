@@ -3739,12 +3739,16 @@ document.getElementById('moa-ref-mrad-view').addEventListener('click', () => {
   moaActivateGroup('moa-ref-unit-group', 'moa-ref-mrad-view');
   renderMoaRefTable();
 });
-document.getElementById('moa-dist').addEventListener('input', moaCalc);
-document.getElementById('moa-offset').addEventListener('input', moaCalc);
+['input', 'change'].forEach(evt => {
+  document.getElementById('moa-dist').addEventListener(evt, moaCalc);
+  document.getElementById('moa-offset').addEventListener(evt, moaCalc);
+});
 
 function moaCalc() {
-  const distRaw   = parseFloat(document.getElementById('moa-dist').value);
-  const offsetRaw = parseFloat(document.getElementById('moa-offset').value);
+  const distEl    = document.getElementById('moa-dist');
+  const offsetEl  = document.getElementById('moa-offset');
+  const distRaw   = distEl.value   !== '' ? parseFloat(distEl.value)   : parseFloat(distEl.placeholder);
+  const offsetRaw = offsetEl.value !== '' ? parseFloat(offsetEl.value) : parseFloat(offsetEl.placeholder);
   const clicksEl  = document.getElementById('moa-out-clicks');
   const moaEl     = document.getElementById('moa-out-moa');
   const mradEl    = document.getElementById('moa-out-mrad');
